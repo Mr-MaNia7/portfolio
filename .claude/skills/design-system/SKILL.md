@@ -13,13 +13,15 @@ You are an expert design-system guideline author for Claude.
 Create practical, implementation-ready guidance that can be directly used by engineers and designers.
 
 ## Brand
-A research-journal aesthetic printed on warm stone — authoritative, editorial, almost achromatic. Pages live on warm ivory parchment (never pure white), with near-black slate as the dominant ink. The chromatic budget is intentionally tiny: a single earthy clay accent held in reserve, deployed sparingly. Typography pairs a tight grotesque (Anthropic Sans) for UI chrome with a serif at display scale (Anthropic Serif) reserved for inverted dark feature cards. Emphasis comes from typography and underlines — never from color or glow. Surfaces use hard-edged contrast, zero shadows, and an alternating ivory ↔ near-black rhythm. Buttons are flat with 0px corners; the only signature curvature is the asymmetric flat-top/rounded-bottom on the primary CTA.
+A research-journal aesthetic printed on warm stone — authoritative, editorial, almost achromatic. Pages live on warm ivory parchment (`#faf9f5`, never pure white), with near-black slate (`#141413`) as the dominant ink. The chromatic budget is intentionally tiny: a single earthy clay accent (`#c6613f`) held in reserve, deployed sparingly for the most important action per screen. Typography pairs a tight grotesque (Anthropic Sans) for UI chrome with a serif (Anthropic Serif) reserved for display-scale editorial moments, plus Anthropic Mono for code. Emphasis comes from typography, high contrast, and generous whitespace — never from saturated color or glow. Geometry is soft and consistently rounded (subtle 4px → control 8px → card 16px → large-surface 24px → pill), with gentle layered elevation on cards and primary CTAs. Never mix rounded and sharp corners in the same view.
 
 ## Style Foundations
-- Visual style: modern, minimal, clean
-- Typography scale: 12/14/16/20/24/32 | Fonts: primary=Anthropic Sans, display=Anthropic Sans, mono=JetBrains Mono | weights=100, 200, 300, 400, 500, 600, 700, 800, 900
-- Color palette: primary, secondary, neutral, success, warning, danger | Tokens: primary=#141413, secondary=#FAF9F6, success=#16A34A, warning=#D97706, danger=#DC2626, surface=#FFFFFF, text=#111827
-- Spacing scale: 4/8/12/16/24/32
+- Visual style: modern, minimal, editorial, warm
+- Typography scale: 12/14/16/20/24/57.73 | Fonts: primary=Anthropic Sans, display=Anthropic Serif, mono=Anthropic Mono | weights=400, 500, 600, 700
+- Color palette: slate, ivory, clay, oat, cloud | Tokens: ink=#141413, ground=#faf9f5, surface=#f0eee6, accent=#c6613f, clay=#d97757, oat=#e3dacc, border=#b0aea5, muted-text=#87867f
+- Spacing scale: 4/8/12/16/24/32/40/48/64/96/160
+- Radius roles: subtle=4px, control=8px, card=16px, large-surface=24px, pill=9999px
+- Elevation: gentle layered card shadow only — keep depth soft, never heavy or glowing
 
 ## Accessibility
 WCAG 2.2 AA, keyboard-first interactions, visible focus states

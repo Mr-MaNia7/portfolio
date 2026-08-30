@@ -3,8 +3,9 @@
 import { motion } from 'framer-motion';
 import Image from 'next/image';
 import React from 'react';
-import { MapPin, Star } from 'lucide-react';
-import { profileInfo, getConfig } from '@/lib/config-loader';
+import { MapPin } from 'lucide-react';
+import { profileInfo } from '@/lib/config-loader';
+import { UpworkBadge } from '@/components/ui/upwork-badge';
 
 const TAGS = [
   'Next.js / NestJS',
@@ -16,7 +17,6 @@ const TAGS = [
 
 export function Presentation() {
   const profile = profileInfo;
-  const { personal } = getConfig();
 
   return (
     <div className="mx-auto w-full max-w-3xl py-2">
@@ -53,11 +53,9 @@ export function Presentation() {
                 <MapPin className="h-3.5 w-3.5" />
                 {profile.location}
               </span>
-              <span className="text-border-strong">·</span>
-              <span className="inline-flex items-center gap-1">
-                <Star className="h-3.5 w-3.5 text-clay" />
-                {personal.upworkBadge}
-              </span>
+            </div>
+            <div className="mt-2.5">
+              <UpworkBadge />
             </div>
           </motion.div>
 

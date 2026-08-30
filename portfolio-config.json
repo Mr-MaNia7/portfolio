@@ -7,17 +7,18 @@
     "tagline": "I design and ship production-grade web platforms and LLM-powered features end to end — from system architecture to deployment.",
     "location": "Addis Ababa, Ethiopia",
     "timezone": "EAT · UTC+3",
-    "email": "files@aivi.io",
+    "email": "abdulkarimgmohammed@gmail.com",
     "handle": "@abdulkarimgmohammed",
     "upworkBadge": "Top Rated Plus · 100% Job Success",
-    "bio": "I'm Abdulkarim — a senior full-stack engineer based in Addis Ababa with 5+ years shipping software for clients around the world. I'm Top Rated Plus on Upwork with a 100% Job Success score — $60K+ earned across 26 jobs and 4,289 tracked hours — and I've built everything from fintech banking backends to AI-assisted call-management systems.\n\nThese days I work where web engineering meets applied AI: designing Next.js and NestJS platforms, wiring up LLM features and AI agents with LangChain, LangGraph, and CrewAI, and training and evaluating frontier models — RLHF, prompt engineering, side-by-side comparison — including LLM-training work for Google via Turing. I care about clean architecture, measurable impact, and code that survives contact with real users.\n\nI also published research on hate-speech detection for Afan Oromo, a low-resource language, reaching 90%+ accuracy — because I like hard problems that matter.",
+    "upworkBadgeImage": "https://www.upworkmrr.com/badges/top-rated-plus-badge.svg",
+    "bio": "I'm Abdulkarim — a senior full-stack engineer based in Addis Ababa with 5+ years shipping software for clients around the world. I'm Top Rated Plus on Upwork with a 100% Job Success score — $60K+ earned across 26 jobs and 5,000+ hours — and I've built everything from fintech banking backends to AI-assisted call-management systems.\n\nThese days I work where web engineering meets applied AI: designing Next.js, NestJS, and Supabase platforms, wiring up LLM features and AI agents with LangChain, LangGraph, and CrewAI, and training and evaluating frontier models — RLHF, prompt engineering, side-by-side comparison — including LLM-training work for Google via Turing. I care about clean architecture, measurable impact, and code that survives contact with real users.\n\nI also published research on hate-speech detection for Afan Oromo, a low-resource language, reaching 90%+ accuracy — because I like hard problems that matter.",
     "avatar": "/avatar.svg",
     "fallbackAvatar": "/avatar.svg"
   },
   "stats": [
     { "value": "$60K+", "label": "Earned on Upwork" },
     { "value": "100%", "label": "Job Success · Top Rated Plus" },
-    { "value": "4,289", "label": "Hours across 26 jobs" },
+    { "value": "5,000+", "label": "Hours delivered" },
     { "value": "5+ yrs", "label": "Shipping for global clients" }
   ],
   "availability": {
@@ -46,10 +47,10 @@
       "type": "Freelance",
       "duration": "2022 — Present",
       "location": "Remote · Global clients",
-      "description": "Top Rated Plus freelancer (100% Job Success) delivering web, backend, data, and AI projects for international clients across e-learning, e-commerce, telecom, and AI. I own the full lifecycle — discovery, architecture, implementation, and handoff — on long-term retained engagements. $60K+ earned across 26 jobs and 4,289 tracked hours.",
+      "description": "Top Rated Plus freelancer (100% Job Success) delivering web, backend, data, and AI projects for international clients across e-learning, e-commerce, telecom, and AI. I own the full lifecycle — discovery, architecture, implementation, and handoff — on long-term retained engagements. $60K+ earned across 26 jobs and 5,000+ hours.",
       "highlights": [
         "Top Rated Plus — 100% Job Success across 26 jobs",
-        "$60K+ earned · 4,289 hours · 0–4 hour response time",
+        "$60K+ earned · 5,000+ hours · 0–4 hour response time",
         "Long-term client retention with repeat and would-rehire clients",
         "End-to-end ownership from system design to deployment"
       ],
@@ -135,11 +136,11 @@
   "skills": {
     "languages": ["TypeScript", "Python", "JavaScript", "Go", "SQL", "Dart", "Java"],
     "frontend": ["React", "Next.js", "Angular", "Vue.js", "Tailwind CSS", "Redux", "Framer Motion", "D3.js"],
-    "backend": ["Node.js", "NestJS", "Express.js", "Django", "FastAPI", "GraphQL", "REST APIs", "WebSockets", "Microservices"],
+    "backend": ["Node.js", "NestJS", "Supabase", "Express.js", "Django", "FastAPI", "GraphQL", "REST APIs", "WebSockets", "Microservices"],
     "ai_llm": ["LangChain", "LangGraph", "CrewAI", "AutoGen", "RAG pipelines", "RLHF", "Prompt Engineering", "OpenAI / Gemini / Claude APIs", "Model evaluation", "Vector databases"],
     "data_ml": ["PyTorch", "scikit-learn", "Pandas", "NumPy", "NLP", "ETL pipelines", "Data annotation"],
     "cloud_devops": ["AWS", "GCP", "Docker", "CI/CD · GitHub Actions", "Nginx", "PM2", "Linux", "Vercel"],
-    "databases": ["PostgreSQL", "MongoDB", "MySQL", "Redis", "Firebase"],
+    "databases": ["Supabase", "PostgreSQL", "MongoDB", "MySQL", "Redis", "Firebase"],
     "practices": ["System design & architecture", "Technical leadership & mentoring", "Code review", "Testing — unit / integration / E2E", "Agile delivery", "API design", "Performance optimization", "Security best practices"]
   },
   "projects": [
@@ -298,14 +299,14 @@
       ],
       "metrics": ["You're looking at it"],
       "cover": "/covers/portfolio.svg",
-      "links": [{ "name": "GitHub", "url": "https://github.com/abdulkarimg" }],
+      "links": [{ "name": "GitHub", "url": "https://github.com/Mr-MaNia7/portfolio" }],
       "images": []
     }
   ],
   "social": {
     "upwork": "https://www.upwork.com/freelancers/~01dc65c291b2936bc3",
-    "github": "https://github.com/abdulkarimg",
-    "linkedin": "https://www.linkedin.com/in/abdulkarimgmohammed",
+    "github": "https://github.com/Mr-MaNia7",
+    "linkedin": "https://www.linkedin.com/in/abdulkarim-mohammed-b3b0201b1/",
     "twitter": "https://x.com/abdulkarimg"
   },
   "resume": {

@@ -9,6 +9,7 @@ export interface PersonalInfo {
   email: string;
   handle: string;
   upworkBadge: string;
+  upworkBadgeImage?: string;
   bio: string;
   avatar: string;
   fallbackAvatar: string;

@@ -75,8 +75,8 @@ Get a key at [Google AI Studio](https://aistudio.google.com/apikey). The preset 
 |---|---|---|
 | **Profile photo** | `personal.avatar` | Currently a generated `AG` monogram (`/public/avatar.svg`). Drop a headshot in `/public` and point `avatar` at it (e.g. `/profile.jpg`). |
 | **Résumé PDF** | `resume.downloadUrl` | Add `public/resume.pdf` (the default path) or link an external URL. |
-| **Social links** | `social.github` / `linkedin` / `twitter` | Confirm these — the GitHub/LinkedIn/X handles are best-guess placeholders. Upwork is set. |
-| **Contact email** | `personal.email` | Currently `files@aivi.io`. |
+| **Social links** | `social.github` / `linkedin` / `twitter` | GitHub, LinkedIn, and Upwork are set; the X/Twitter handle is still a placeholder. |
+| **Contact email** | `personal.email` | Set to `abdulkarimgmohammed@gmail.com`. |
 | **Project covers** | `projects[].cover` | Branded SVGs live in `/public/covers`. Swap for real screenshots via `projects[].images`. |
 
 ### Design tokens

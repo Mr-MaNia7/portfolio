@@ -52,7 +52,7 @@ export const metadata: Metadata = {
     'TypeScript',
     'RLHF',
     'LangChain',
-    'Top Rated Upwork',
+    'Top Rated Plus Upwork',
     'Ethiopia Developer',
     'Freelance Software Engineer',
     'AI Portfolio',

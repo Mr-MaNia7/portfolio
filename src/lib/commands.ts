@@ -95,7 +95,7 @@ export function buildCommands(config: PortfolioConfig): Command[] {
     social.upwork && {
       id: 'upwork',
       label: 'Upwork profile',
-      hint: 'Top Rated',
+      hint: 'Top Rated Plus',
       slash: '/upwork',
       keywords: ['upwork', 'freelance', 'hire'],
       group: 'Elsewhere' as const,

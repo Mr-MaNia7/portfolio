@@ -101,7 +101,7 @@ const ChatLanding: React.FC<ChatLandingProps> = ({
         variants={item}
         className="mt-4 max-w-xl text-[15px] leading-relaxed text-muted-foreground"
       >
-        Senior full-stack engineer from {personal.location}, Top Rated on Upwork.
+        Senior full-stack engineer from {personal.location}, Top Rated Plus on Upwork.
         This page is a conversation — ask it anything about my work, or pick a
         thread below.
       </motion.p>

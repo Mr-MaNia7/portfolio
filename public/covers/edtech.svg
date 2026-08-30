@@ -1,0 +1,17 @@
+<svg width="800" height="600" viewBox="0 0 800 600" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <rect width="800" height="600" fill="#141413"/>
+  <g opacity="0.05" stroke="#FAF9F6" stroke-width="1">
+    <line x1="0" y1="150" x2="800" y2="150"/><line x1="0" y1="300" x2="800" y2="300"/><line x1="0" y1="450" x2="800" y2="450"/>
+    <line x1="200" y1="0" x2="200" y2="600"/><line x1="400" y1="0" x2="400" y2="600"/><line x1="600" y1="0" x2="600" y2="600"/>
+  </g>
+  <g transform="translate(400,300)">
+    <g stroke="#FAF9F6" stroke-width="1.5" fill="none">
+      <path d="M -150 60 L 0 10 L 150 60 L 0 110 Z" opacity="0.25"/>
+      <path d="M -150 10 L 0 -40 L 150 10 L 0 60 Z" opacity="0.4"/>
+      <path d="M -150 -40 L 0 -90 L 150 -40 L 0 10 Z" opacity="0.6"/>
+    </g>
+    <circle cx="0" cy="-65" r="14" fill="#C15F3C"/>
+    <path d="M -8 -70 L 8 -65 L -8 -60 Z" fill="#FAF9F6"/>
+  </g>
+  <text x="60" y="560" font-family="Georgia, serif" font-size="220" font-weight="400" fill="#FAF9F6" opacity="0.05">07</text>
+</svg>

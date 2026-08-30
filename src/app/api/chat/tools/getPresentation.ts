@@ -23,7 +23,7 @@ export const getPresentation = tool({
         gpa: config.education.gpa,
       },
       message:
-        "Short version: I'm a senior full-stack engineer who spends most of his time where web meets AI. I build the whole thing — architecture, backend, front end, and the LLM layer — and I've been doing it for global clients as a Top Rated freelancer for years.",
+        "Short version: I'm a senior full-stack engineer who spends most of his time where web meets AI. I build the whole thing — architecture, backend, front end, and the LLM layer — and I've been doing it for global clients as a Top Rated Plus freelancer (100% Job Success, $60K+ earned) for years.",
     };
   },
 });

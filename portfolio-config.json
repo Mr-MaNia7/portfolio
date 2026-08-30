@@ -9,16 +9,16 @@
     "timezone": "EAT · UTC+3",
     "email": "files@aivi.io",
     "handle": "@abdulkarimgmohammed",
-    "upworkBadge": "Top Rated · Top 3% in Ethiopia",
-    "bio": "I'm Abdulkarim — a senior full-stack engineer based in Addis Ababa with 5+ years shipping software for clients around the world. I hold Top Rated status on Upwork (top 3% in Ethiopia) and I've built everything from fintech banking backends to AI-assisted call-management systems.\n\nThese days I work where web engineering meets applied AI: designing Next.js and NestJS platforms, wiring up LLM features with LangChain and LangGraph, and training and evaluating frontier models — RLHF, prompt engineering, side-by-side comparison — for teams like Turing. I care about clean architecture, measurable impact, and code that survives contact with real users.\n\nI also published research on hate-speech detection for Afan Oromo, a low-resource language, reaching 90%+ accuracy — because I like hard problems that matter.",
+    "upworkBadge": "Top Rated Plus · 100% Job Success",
+    "bio": "I'm Abdulkarim — a senior full-stack engineer based in Addis Ababa with 5+ years shipping software for clients around the world. I'm Top Rated Plus on Upwork with a 100% Job Success score — $60K+ earned across 26 jobs and 4,289 tracked hours — and I've built everything from fintech banking backends to AI-assisted call-management systems.\n\nThese days I work where web engineering meets applied AI: designing Next.js and NestJS platforms, wiring up LLM features and AI agents with LangChain, LangGraph, and CrewAI, and training and evaluating frontier models — RLHF, prompt engineering, side-by-side comparison — including LLM-training work for Google via Turing. I care about clean architecture, measurable impact, and code that survives contact with real users.\n\nI also published research on hate-speech detection for Afan Oromo, a low-resource language, reaching 90%+ accuracy — because I like hard problems that matter.",
     "avatar": "/avatar.svg",
     "fallbackAvatar": "/avatar.svg"
   },
   "stats": [
-    { "value": "Top Rated", "label": "Upwork · Top 3% in Ethiopia" },
-    { "value": "5+ yrs", "label": "Shipping for global clients" },
-    { "value": "20+", "label": "Projects delivered end to end" },
-    { "value": "3.8 / 4.0", "label": "BSc Software Engineering, AAU" }
+    { "value": "$60K+", "label": "Earned on Upwork" },
+    { "value": "100%", "label": "Job Success · Top Rated Plus" },
+    { "value": "4,289", "label": "Hours across 26 jobs" },
+    { "value": "5+ yrs", "label": "Shipping for global clients" }
   ],
   "availability": {
     "open": true,
@@ -37,7 +37,7 @@
     ],
     "workStyle": "Senior, autonomous, and communicative. I scope tightly, ship in reviewable slices, and hand back clean, documented, tested code.",
     "goals": "I'm looking for teams building ambitious products where I can own meaningful surface area — web platforms, AI features, or both — and raise the bar on quality as we go.",
-    "note": "Top Rated on Upwork — happy to start the engagement there or work directly."
+    "note": "Top Rated Plus on Upwork (100% Job Success, $25/hr) — happy to start the engagement there or work directly. Typical response time: 0–4 hours."
   },
   "experience": [
     {
@@ -46,27 +46,28 @@
       "type": "Freelance",
       "duration": "2022 — Present",
       "location": "Remote · Global clients",
-      "description": "Top Rated freelancer delivering web, backend, data, and AI projects for international clients across fintech, telecom, and AI training. I own the full lifecycle — discovery, architecture, implementation, and handoff — on long-term retained engagements.",
+      "description": "Top Rated Plus freelancer (100% Job Success) delivering web, backend, data, and AI projects for international clients across e-learning, e-commerce, telecom, and AI. I own the full lifecycle — discovery, architecture, implementation, and handoff — on long-term retained engagements. $60K+ earned across 26 jobs and 4,289 tracked hours.",
       "highlights": [
-        "Top Rated status — top 3% of talent in Ethiopia",
-        "Long-term client retention across multiple industries",
+        "Top Rated Plus — 100% Job Success across 26 jobs",
+        "$60K+ earned · 4,289 hours · 0–4 hour response time",
+        "Long-term client retention with repeat and would-rehire clients",
         "End-to-end ownership from system design to deployment"
       ],
-      "technologies": ["Next.js", "NestJS", "Python", "TypeScript", "PostgreSQL", "GCP", "AWS"]
+      "technologies": ["Next.js", "NestJS", "Nuxt.js", "Python", "TypeScript", "Supabase", "PostgreSQL", "GCP", "AWS"]
     },
     {
-      "company": "Turing",
-      "position": "LLM Trainer & AI Data Specialist",
+      "company": "Google (via Turing)",
+      "position": "Expert LLM Trainer & AI Data Specialist",
       "type": "Contract",
-      "duration": "2024 — Present",
+      "duration": "2024",
       "location": "Remote",
-      "description": "Fine-tune and evaluate frontier large language models — including Google's Gemini — using RLHF, prompt engineering, and side-by-side model comparison. I design evaluation rubrics and run large-scale data cleaning and annotation to improve model quality.",
+      "description": "Trained and evaluated frontier large language models for Google through Turing, using RLHF, prompt engineering, and side-by-side model comparison across code and reasoning tasks. Designed evaluation rubrics and ran large-scale data cleaning and annotation to improve model quality — spanning React, Next.js, Python, Django, Flask, and Rust.",
       "highlights": [
         "RLHF and reward-signal data for frontier models",
         "Side-by-side model comparison and evaluation rubrics",
         "High-quality data annotation and cleaning at scale"
       ],
-      "technologies": ["RLHF", "Prompt Engineering", "LLM Evaluation", "Python", "Data Annotation"]
+      "technologies": ["RLHF", "Prompt Engineering", "LLM Evaluation", "Python", "Rust", "Django", "Data Annotation"]
     },
     {
       "company": "EWA Services",
@@ -88,13 +89,14 @@
       "type": "Full-time",
       "duration": "2022 — 2024",
       "location": "Addis Ababa",
-      "description": "Built ATCOM, a call-management system with AI-assisted routing and quality scoring that improved call-handling quality by roughly 35%. Also delivered Solar Village, an internal task-management application for field operations.",
+      "description": "Built ATCOM, a real-time call-center management system on Django and Vue.js with FreePBX/Asterisk VOIP, IVR configuration, role-based interfaces for operators, managers, and admins, Telegram integration for incident management, and live dashboards over WebSockets — lifting call-handling quality by roughly 35%. Also delivered Solar Village, an internal task-management application for field operations.",
       "highlights": [
-        "~35% improvement in call-handling quality via AI integration",
-        "Delivered Solar Village task-management app",
-        "Owned features from spec to production"
+        "Real-time call-center platform with Asterisk/FreePBX VOIP and IVR",
+        "Role-based operator / manager / admin dashboards over WebSockets",
+        "~35% improvement in call-handling quality",
+        "Telegram integration for incident management"
       ],
-      "technologies": ["Node.js", "Express.js", "MySQL", "JavaScript", "AI Integration"]
+      "technologies": ["Django", "Python", "Vue.js", "Asterisk", "PostgreSQL", "WebSockets"]
     },
     {
       "company": "Hiya General Trading PLC",
@@ -122,9 +124,12 @@
       "link": ""
     },
     "achievements": [
-      "Top Rated on Upwork — top 3% of talent in Ethiopia",
+      "Top Rated Plus on Upwork — 100% Job Success, $60K+ earned across 26 jobs",
       "Published NLP research on a low-resource language (90%+ accuracy)",
-      "GPA 3.8 / 4.0 — BSc Software Engineering, AI stream"
+      "GPA 3.8 / 4.0 — BSc Software Engineering, AI stream",
+      "200+ competitive-programming problems solved (LeetCode / mania7)",
+      "Marketable Software Development 101 — ITC × ICOG Makers (2022)",
+      "HACKcellence Fest — Toshiba/KIOXIA × Middlesex University Dubai (2021)"
     ]
   },
   "skills": {
@@ -138,6 +143,46 @@
     "practices": ["System design & architecture", "Technical leadership & mentoring", "Code review", "Testing — unit / integration / E2E", "Agile delivery", "API design", "Performance optimization", "Security best practices"]
   },
   "projects": [
+    {
+      "title": "Alertix AI — Amazon Listing Monitoring",
+      "category": "SaaS · AI",
+      "role": "Full-Stack Developer & AI",
+      "client": "Upwork client",
+      "description": "A SaaS platform that makes sure Amazon sellers never miss a critical listing alert — real-time monitoring, automated alerts, and instant resolutions. Tracks active alerts, issue resolution, and SKU-level suppression risk, flagging deleted, inactive, suppressed, lost-buy-box, and FBA-stockout listings before they cost the seller sales.",
+      "techStack": ["Next.js", "NestJS", "Supabase", "Vercel", "AI Agent Development"],
+      "date": "2025",
+      "status": "Delivered",
+      "featured": true,
+      "highlights": [
+        "Real-time listing monitoring with automated alerts",
+        "Suppression-risk and buy-box loss detection",
+        "AI-agent-driven issue resolution tracking"
+      ],
+      "metrics": ["5.0★ — “Would gladly rehire.”"],
+      "cover": "/covers/saas.svg",
+      "links": [],
+      "images": []
+    },
+    {
+      "title": "Aladia — E-Learning Workspace",
+      "category": "EdTech · Frontend",
+      "role": "Senior Frontend Engineer",
+      "client": "Aladia",
+      "description": "An all-in-one B2B and B2C e-learning workspace bringing events, courses, chats, and collaborative spaces into one place. I led frontend engineering on a Nuxt.js/Vue.js stack, building the interactive workspace UI from Figma designs and integrating an AI chatbot, deployed on Google Cloud Platform.",
+      "techStack": ["Nuxt.js", "Vue.js", "AI Chatbot", "Figma", "Google Cloud Platform"],
+      "date": "2024 — 2025",
+      "status": "Live",
+      "featured": true,
+      "highlights": [
+        "All-in-one workspace: events, courses, chat, collaboration",
+        "AI chatbot integration",
+        "Figma-to-production frontend leadership"
+      ],
+      "metrics": ["5.0★ engagement", "Live at aladia.io"],
+      "cover": "/covers/edtech.svg",
+      "links": [{ "name": "Live site", "url": "https://aladia.io" }],
+      "images": []
+    },
     {
       "title": "FINN — Mobile Banking Platform",
       "category": "Fintech · Backend",
@@ -159,21 +204,22 @@
       "images": []
     },
     {
-      "title": "ATCOM — AI Call-Management System",
-      "category": "Telecom · AI",
-      "role": "Software Engineer",
+      "title": "ATCOM — Real-Time Call-Center Management",
+      "category": "Telecom · Full-Stack",
+      "role": "Full-Stack Developer",
       "client": "Canal+",
-      "description": "A call-management platform with AI-assisted routing and quality scoring. The AI layer analysed calls and surfaced quality signals to supervisors, improving call-handling quality by roughly 35% and giving the team a data-driven view of service performance.",
-      "techStack": ["Node.js", "Express.js", "MySQL", "AI Integration", "JavaScript"],
+      "description": "A real-time call-center management platform built on Django and Vue.js with FreePBX/Asterisk VOIP and IVR configuration. Three role-based interfaces — operators, managers, and admins — with call-agent QA, reporting, Telegram integration for incident management, and live dashboards driven over WebSockets. Improved call-handling quality by roughly 35% and gave the team a data-driven view of service performance.",
+      "techStack": ["Django", "Python", "Vue.js", "Asterisk", "PostgreSQL", "WebSockets"],
       "date": "2022 — 2024",
       "status": "Delivered",
       "featured": true,
       "highlights": [
-        "AI-assisted call routing and quality scoring",
-        "Supervisor dashboard for service performance",
-        "Owned from spec through production"
+        "FreePBX/Asterisk VOIP with IVR configuration",
+        "Role-based operator / manager / admin dashboards",
+        "Real-time data flow over WebSockets",
+        "Telegram integration for incident management"
       ],
-      "metrics": ["~35% quality improvement"],
+      "metrics": ["~35% quality improvement", "“A realistic game-changer.” — Leul M."],
       "cover": "/covers/telecom.svg",
       "links": [],
       "images": []
@@ -264,7 +310,7 @@
   },
   "resume": {
     "title": "Abdulkarim G. Mohammed — Résumé",
-    "description": "Senior Full-Stack Engineer & AI/LLM Specialist · Top Rated on Upwork",
+    "description": "Senior Full-Stack Engineer & AI/LLM Specialist · Top Rated Plus on Upwork",
     "fileType": "PDF",
     "lastUpdated": "August 2026",
     "fileSize": "—",
@@ -318,8 +364,8 @@
     ]
   },
   "meta": {
-    "configVersion": "3.0",
-    "lastUpdated": "2026-08-29",
+    "configVersion": "3.1",
+    "lastUpdated": "2026-08-30",
     "generatedBy": "Abdulkarim G. Mohammed",
     "description": "Senior full-stack + AI/LLM portfolio, Claude research-journal design system."
   }

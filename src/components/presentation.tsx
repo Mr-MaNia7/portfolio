@@ -11,7 +11,7 @@ const TAGS = [
   'LLM · RLHF',
   'System design',
   'TypeScript & Python',
-  'Top Rated',
+  'Top Rated Plus',
 ];
 
 export function Presentation() {

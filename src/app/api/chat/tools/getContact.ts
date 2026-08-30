@@ -22,7 +22,7 @@ export const getContact = tool({
         twitter: config.social.twitter,
       },
       message:
-        "The fastest way to reach me is email — I read everything and reply quickly. I'm also Top Rated on Upwork if you'd rather run the engagement through there. Tell me a little about what you're building and I'll come back with concrete next steps.",
+        "The fastest way to reach me is email — I read everything and reply quickly. I'm also Top Rated Plus on Upwork (100% Job Success) if you'd rather run the engagement through there. Tell me a little about what you're building and I'll come back with concrete next steps.",
     };
   },
 });

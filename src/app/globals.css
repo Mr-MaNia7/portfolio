@@ -4,6 +4,66 @@
 
 /*
   ────────────────────────────────────────────────────────────────
+  Real Anthropic typefaces (DESIGN.md dual-typeface system)
+  Anthropic Sans (UI chrome) · Anthropic Serif (display/editorial) ·
+  Anthropic Mono (code). These are licensed faces — drop the .woff2
+  files into /public/fonts/ (see public/fonts/README.md). Until then
+  the stacks fall back to Inter / Newsreader / JetBrains, then system.
+  local() lets an installed copy resolve without a bundled file.
+  ────────────────────────────────────────────────────────────────
+*/
+@font-face {
+  font-family: "Anthropic Sans";
+  src: local("Anthropic Sans"), url("/fonts/AnthropicSans-Regular.woff2") format("woff2");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: "Anthropic Sans";
+  src: local("Anthropic Sans Medium"), url("/fonts/AnthropicSans-Medium.woff2") format("woff2");
+  font-weight: 500;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: "Anthropic Sans";
+  src: local("Anthropic Sans SemiBold"), url("/fonts/AnthropicSans-SemiBold.woff2") format("woff2");
+  font-weight: 600;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: "Anthropic Sans";
+  src: local("Anthropic Sans Bold"), url("/fonts/AnthropicSans-Bold.woff2") format("woff2");
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: "Anthropic Serif";
+  src: local("Anthropic Serif"), url("/fonts/AnthropicSerif-Regular.woff2") format("woff2");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: "Anthropic Serif";
+  src: local("Anthropic Serif Italic"), url("/fonts/AnthropicSerif-Italic.woff2") format("woff2");
+  font-weight: 400;
+  font-style: italic;
+  font-display: swap;
+}
+@font-face {
+  font-family: "Anthropic Mono";
+  src: local("Anthropic Mono"), url("/fonts/AnthropicMono-Regular.woff2") format("woff2");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+/*
+  ────────────────────────────────────────────────────────────────
   Anthropic Design System (DESIGN.md)
   Warm ivory parchment · near-black slate ink · a single clay accent.
   Soft rounded geometry (4 → 24px → pill), gentle layered elevation,
@@ -47,9 +107,9 @@
   --color-input: var(--input);
   --color-ring: var(--ring);
 
-  --font-sans: var(--font-inter), ui-sans-serif, system-ui, sans-serif;
-  --font-serif: var(--font-newsreader), ui-serif, Georgia, serif;
-  --font-mono: var(--font-jetbrains), ui-monospace, "SF Mono", monospace;
+  --font-sans: "Anthropic Sans", var(--font-inter), Arial, ui-sans-serif, system-ui, sans-serif;
+  --font-serif: "Anthropic Serif", var(--font-newsreader), Georgia, ui-serif, serif;
+  --font-mono: "Anthropic Mono", var(--font-jetbrains), ui-monospace, "SF Mono", monospace;
 
   /* DESIGN.md radius roles: subtle · control · card · large surface */
   --radius-sm: 0.25rem;  /* radius-small  — subtle corner        */
@@ -250,7 +310,7 @@
    Uses the real next/font variable directly — @theme inline tokens are
    not emitted to :root, so var(--font-serif) would be undefined here. */
 .font-display {
-  font-family: var(--font-newsreader), ui-serif, Georgia, serif;
+  font-family: "Anthropic Serif", var(--font-newsreader), Georgia, ui-serif, serif;
   font-weight: 430;
   letter-spacing: -0.02em;
 }

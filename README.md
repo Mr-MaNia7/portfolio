@@ -5,7 +5,7 @@ A conversational, AI-powered portfolio for **Abdulkarim G. Mohammed**, Senior Fu
 Built on the **Claude research-journal design system** — warm ivory parchment, near-black slate ink, a single clay accent, an editorial serif for display, and JetBrains Mono for chrome. Flat, hard-edged, zero shadows.
 
 <p align="center">
-  <img src="https://img.shields.io/badge/Next.js-15.5-black?logo=next.js" alt="Next.js 15.5">
+  <img src="https://img.shields.io/badge/Next.js-16-black?logo=next.js" alt="Next.js 16">
   <img src="https://img.shields.io/badge/React-19-149eca?logo=react" alt="React 19">
   <img src="https://img.shields.io/badge/TypeScript-5.9-3178c6?logo=typescript" alt="TypeScript 5.9">
   <img src="https://img.shields.io/badge/Tailwind-v4-38bdf8?logo=tailwindcss" alt="Tailwind CSS v4">
@@ -37,7 +37,7 @@ Built on the **Claude research-journal design system** — warm ivory parchment,
 
 | Layer | Choices |
 |---|---|
-| **Framework** | Next.js 15.5 (App Router, RSC) · React 19 · TypeScript 5.9 (strict) |
+| **Framework** | Next.js 16 (App Router, RSC, Turbopack) · React 19 · TypeScript 5.9 (strict) |
 | **Styling** | Tailwind CSS v4 · design tokens in `globals.css` · Framer Motion |
 | **AI** | Vercel AI SDK (`ai`, `@ai-sdk/google`, `@ai-sdk/react`) → Google Gemini |
 | **UI** | Radix primitives · lucide-react · sonner · vaul |

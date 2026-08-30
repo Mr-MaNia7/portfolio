@@ -5,7 +5,7 @@ import { getConfig } from '@/lib/config-loader';
 export const getInternship = tool({
   description:
     'Provides current availability for freelance and contract work: engagement types, focus areas, start date, and how the work is run. Use for questions about hiring, rates, availability, or working together.',
-  parameters: z.object({}),
+  inputSchema: z.object({}),
   execute: async () => {
     const config = getConfig();
     const { availability, personal, social } = config;

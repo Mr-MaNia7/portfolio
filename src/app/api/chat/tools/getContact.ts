@@ -5,7 +5,7 @@ import { getConfig } from '@/lib/config-loader';
 export const getContact = tool({
   description:
     'Provides professional contact information and links (email, Upwork, GitHub, LinkedIn, X).',
-  parameters: z.object({}),
+  inputSchema: z.object({}),
   execute: async () => {
     const config = getConfig();
 

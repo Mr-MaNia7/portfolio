@@ -1,5 +1,6 @@
 'use client';
 import { useChat } from '@ai-sdk/react';
+import { DefaultChatTransport, isToolUIPart } from 'ai';
 import { AnimatePresence, motion } from 'framer-motion';
 import { useTheme } from 'next-themes';
 import { useSearchParams } from 'next/navigation';
@@ -36,6 +37,7 @@ const Chat = () => {
   const [autoSubmitted, setAutoSubmitted] = useState(false);
   const [loadingSubmit, setLoadingSubmit] = useState(false);
   const [paletteOpen, setPaletteOpen] = useState(false);
+  const [input, setInput] = useState('');
   const [presetReply, setPresetReply] = useState<{
     question: string;
     reply: string;
@@ -43,37 +45,35 @@ const Chat = () => {
   } | null>(null);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
-  const {
-    messages,
-    input,
-    handleInputChange,
-    isLoading,
-    stop,
-    setInput,
-    reload,
-    addToolResult,
-    append,
-  } = useChat({
-    onResponse: (response) => {
-      if (response) setLoadingSubmit(false);
-    },
-    onFinish: () => setLoadingSubmit(false),
-    onError: (error) => {
-      setLoadingSubmit(false);
-      console.error('Chat error:', error.message);
-      const quota =
-        error.message?.includes('quota') ||
-        error.message?.includes('exceeded') ||
-        error.message?.includes('429') ||
-        error.message?.includes('API key');
-      if (quota) {
-        setErrorMessage('quota_exhausted');
-      } else {
-        toast.error('Something went wrong. Try a quick question below.');
-        setErrorMessage('quota_exhausted');
-      }
-    },
-  });
+  const { messages, status, stop, regenerate, sendMessage } =
+    useChat({
+      transport: new DefaultChatTransport({ api: '/api/chat' }),
+      onFinish: () => setLoadingSubmit(false),
+      onError: (error) => {
+        setLoadingSubmit(false);
+        console.error('Chat error:', error.message);
+        const quota =
+          error.message?.includes('quota') ||
+          error.message?.includes('exceeded') ||
+          error.message?.includes('429') ||
+          error.message?.includes('API key');
+        if (quota) {
+          setErrorMessage('quota_exhausted');
+        } else {
+          toast.error('Something went wrong. Try a quick question below.');
+          setErrorMessage('quota_exhausted');
+        }
+      },
+    });
+
+  const isLoading = status === 'submitted' || status === 'streaming';
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) =>
+    setInput(e.target.value);
+
+  // Hide the standalone loading bubble once the response starts streaming.
+  useEffect(() => {
+    if (status === 'streaming') setLoadingSubmit(false);
+  }, [status]);
 
   const { currentAIMessage, latestUserMessage, hasActiveTool } = useMemo(() => {
     const latestAIMessageIndex = messages.findLastIndex(
@@ -94,9 +94,7 @@ const Chat = () => {
     if (result.currentAIMessage) {
       result.hasActiveTool =
         result.currentAIMessage.parts?.some(
-          (part) =>
-            part.type === 'tool-invocation' &&
-            part.toolInvocation?.state === 'result'
+          (part) => isToolUIPart(part) && part.state === 'output-available'
         ) || false;
     }
 
@@ -111,9 +109,7 @@ const Chat = () => {
     (m) =>
       m.role === 'assistant' &&
       m.parts?.some(
-        (part) =>
-          part.type === 'tool-invocation' &&
-          part.toolInvocation?.state !== 'result'
+        (part) => isToolUIPart(part) && part.state !== 'output-available'
       )
   );
 
@@ -129,9 +125,9 @@ const Chat = () => {
       }
       setLoadingSubmit(true);
       setPresetReply(null);
-      append({ role: 'user', content: query });
+      sendMessage({ text: query });
     },
-    [append, isToolInProgress]
+    [sendMessage, isToolInProgress]
   );
 
   const submitQueryToAI = useCallback(
@@ -140,9 +136,9 @@ const Chat = () => {
       setErrorMessage(null);
       setLoadingSubmit(true);
       setPresetReply(null);
-      append({ role: 'user', content: query });
+      sendMessage({ text: query });
     },
-    [append, isToolInProgress]
+    [sendMessage, isToolInProgress]
   );
 
   const handlePresetReply = useCallback(
@@ -318,8 +314,7 @@ const Chat = () => {
                   <SimplifiedChatView
                     message={currentAIMessage}
                     isLoading={isLoading}
-                    reload={reload}
-                    addToolResult={addToolResult}
+                    reload={regenerate}
                   />
                 ) : (
                   loadingSubmit && (

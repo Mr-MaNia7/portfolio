@@ -5,7 +5,7 @@ import { getConfig } from '@/lib/config-loader';
 export const getProjects = tool({
   description:
     'Showcases the project portfolio — real client and research work with the stack, role, and measurable impact.',
-  parameters: z.object({}),
+  inputSchema: z.object({}),
   execute: async () => {
     const config = getConfig();
 

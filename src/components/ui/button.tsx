@@ -9,21 +9,21 @@ const buttonVariants = cva(
   {
     variants: {
       variant: {
-        // Signature CTA: flat top, rounded bottom, no shadow
+        // Primary CTA: fully-rounded pill with gentle elevation (DESIGN.md)
         default:
-          "rounded-b-xl rounded-t-none bg-primary text-primary-foreground hover:bg-primary/90 active:translate-y-px",
+          "rounded-full bg-primary text-primary-foreground elevation-card elevation-card-hover hover:bg-primary/90 active:translate-y-px",
         clay:
-          "rounded-b-xl rounded-t-none bg-clay text-clay-foreground hover:bg-clay-strong active:translate-y-px",
+          "rounded-full bg-clay text-clay-foreground elevation-card elevation-card-hover hover:bg-clay-strong active:translate-y-px",
         flat:
-          "rounded-sm bg-primary text-primary-foreground hover:bg-primary/90",
+          "rounded-md bg-primary text-primary-foreground hover:bg-primary/90",
         destructive:
-          "rounded-sm bg-destructive text-white hover:opacity-90",
+          "rounded-md bg-destructive text-white hover:opacity-90",
         outline:
-          "rounded-sm border border-border-strong bg-transparent hover:bg-secondary text-foreground",
+          "rounded-md border border-border-strong bg-transparent hover:bg-secondary text-foreground",
         secondary:
-          "rounded-sm bg-secondary text-secondary-foreground hover:bg-secondary/70",
+          "rounded-md bg-secondary text-secondary-foreground hover:bg-secondary/70",
         ghost:
-          "rounded-sm hover:bg-secondary text-foreground",
+          "rounded-md hover:bg-secondary text-foreground",
         link: "text-clay underline-offset-4 hover:underline decoration-clay/50",
       },
       size: {

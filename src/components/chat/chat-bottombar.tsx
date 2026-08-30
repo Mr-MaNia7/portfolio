@@ -180,7 +180,7 @@ export default function ChatBottombar({
               type="button"
               onClick={stop}
               aria-label="Stop"
-              className="flex h-8 w-8 items-center justify-center rounded-t-none rounded-b-lg bg-primary text-primary-foreground transition-transform active:translate-y-px"
+              className="flex h-8 w-8 items-center justify-center rounded-full bg-primary text-primary-foreground transition-transform active:translate-y-px"
             >
               <Square className="h-3.5 w-3.5 fill-current" />
             </button>
@@ -189,7 +189,7 @@ export default function ChatBottombar({
               type="submit"
               disabled={!input.trim() || isToolInProgress}
               aria-label="Send"
-              className="flex h-8 w-8 items-center justify-center rounded-t-none rounded-b-lg bg-primary text-primary-foreground transition-transform active:translate-y-px disabled:opacity-35"
+              className="flex h-8 w-8 items-center justify-center rounded-full bg-primary text-primary-foreground transition-transform active:translate-y-px disabled:opacity-35"
             >
               <ArrowUp className="h-4 w-4" />
             </button>

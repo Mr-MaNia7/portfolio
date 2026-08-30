@@ -5,7 +5,7 @@ import { getConfig } from '@/lib/config-loader';
 export const getResume = tool({
   description:
     'Provides résumé information — professional experience, education, research, and a downloadable résumé.',
-  parameters: z.object({}),
+  inputSchema: z.object({}),
   execute: async () => {
     const config = getConfig();
 

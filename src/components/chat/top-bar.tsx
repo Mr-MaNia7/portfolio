@@ -1,6 +1,7 @@
 'use client';
 
-import { Command as CommandIcon, Github } from 'lucide-react';
+import { Command as CommandIcon } from 'lucide-react';
+import { Github } from '@/components/ui/brand-icons';
 import Image from 'next/image';
 import { ThemeToggle } from '@/components/theme-toggle';
 import { getConfig } from '@/lib/config-loader';

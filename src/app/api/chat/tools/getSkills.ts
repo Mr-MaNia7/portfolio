@@ -5,7 +5,7 @@ import { getConfig } from '@/lib/config-loader';
 export const getSkills = tool({
   description:
     'Provides a structured overview of technical skills and engineering practices across the full stack and AI/LLM work.',
-  parameters: z.object({}),
+  inputSchema: z.object({}),
   execute: async () => {
     const config = getConfig();
 

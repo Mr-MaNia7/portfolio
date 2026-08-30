@@ -1,6 +1,5 @@
 import { createGoogleGenerativeAI } from '@ai-sdk/google';
-import { streamText, tool } from 'ai';
-import { z } from 'zod';
+import { convertToModelMessages, stepCountIs, streamText } from 'ai';
 
 import { SYSTEM_PROMPT } from './prompt';
 import { getContact } from './tools/getContact';
@@ -34,18 +33,12 @@ function errorHandler(error: unknown) {
 export async function POST(req: Request) {
   try {
     const { messages } = await req.json();
-    console.log('[CHAT-API] Incoming messages:', messages);
-    
+
     // Check if API key is available
     if (!process.env.GOOGLE_GENERATIVE_AI_API_KEY) {
       console.error('[CHAT-API] Missing GOOGLE_GENERATIVE_AI_API_KEY environment variable');
       return new Response('Missing API key', { status: 500 });
     }
-    
-    console.log('[CHAT-API] API key available:', process.env.GOOGLE_GENERATIVE_AI_API_KEY?.slice(0, 10) + '...');
-
-    // Add system prompt
-    messages.unshift(SYSTEM_PROMPT);
 
     // Add tools
     const tools = {
@@ -57,22 +50,17 @@ export async function POST(req: Request) {
       getInternship,
     };
 
-    console.log('[CHAT-API] About to call streamText');
-    
-    const result = await streamText({
+    const result = streamText({
       model: google('gemini-1.5-flash'),
-      messages,
+      system: SYSTEM_PROMPT.content,
+      messages: await convertToModelMessages(messages),
       tools,
-      maxSteps: 2,
+      stopWhen: stepCountIs(2),
     });
 
-    console.log('[CHAT-API] streamText completed successfully');
-    console.log('[CHAT-API] Result object keys:', Object.keys(result));
-    
-    const response = result.toDataStreamResponse();
-    console.log('[CHAT-API] DataStreamResponse created');
-    
-    return response;
+    return result.toUIMessageStreamResponse({
+      onError: errorHandler,
+    });
   } catch (error) {
     console.error('Chat API error:', error);
     console.error('Error details:', error instanceof Error ? error.message : 'Unknown error');

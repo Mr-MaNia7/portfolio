@@ -4,19 +4,15 @@ import {
   ChatBubble,
   ChatBubbleMessage,
 } from '@/components/ui/chat/chat-bubble';
-import { ChatRequestOptions } from 'ai';
-import { Message } from 'ai/react';
+import { getToolName, isToolUIPart, type UIMessage } from 'ai';
 import { motion } from 'framer-motion';
 import ChatMessageContent from './chat-message-content';
 import ToolRenderer from './tool-renderer';
 
 interface SimplifiedChatViewProps {
-  message: Message;
+  message: UIMessage;
   isLoading: boolean;
-  reload: (
-    chatRequestOptions?: ChatRequestOptions
-  ) => Promise<string | null | undefined>;
-  addToolResult?: (args: { toolCallId: string; result: string }) => void;
+  reload: () => void;
 }
 
 const MOTION_CONFIG = {
@@ -33,33 +29,34 @@ export function SimplifiedChatView({
   message,
   isLoading,
   reload,
-  addToolResult,
 }: SimplifiedChatViewProps) {
   if (message.role !== 'assistant') return null;
 
-  // Extract tool invocations that are in "result" state
-  const toolInvocations =
-    message.parts
-      ?.filter(
-        (part) =>
-          part.type === 'tool-invocation' &&
-          part.toolInvocation?.state === 'result'
-      )
-      .map((part) =>
-        part.type === 'tool-invocation' ? part.toolInvocation : null
-      )
-      .filter(Boolean) || [];
+  // Extract completed tool calls (v5 tool parts: type 'tool-<name>', state 'output-available')
+  const toolInvocations = (message.parts ?? [])
+    .filter((part) => isToolUIPart(part) && part.state === 'output-available')
+    .map((part) => ({
+      toolCallId: isToolUIPart(part) ? part.toolCallId : '',
+      toolName: isToolUIPart(part) ? getToolName(part) : '',
+      result: isToolUIPart(part) ? part.output : undefined,
+    }));
 
   // Only display the first tool (if any)
   const currentTool = toolInvocations.length > 0 ? [toolInvocations[0]] : [];
 
+  // Concatenate the text parts into the message's visible text
+  const textContent = (message.parts ?? [])
+    .filter((part) => part.type === 'text')
+    .map((part) => (part.type === 'text' ? part.text : ''))
+    .join('');
+
   // Check if we have meaningful text content (more than just confirmations)
-  const hasTextContent = message.content.trim().length > 0;
+  const hasTextContent = textContent.trim().length > 0;
   const hasTools = currentTool.length > 0;
-  
+
   // If we have tools, minimize text content to avoid redundancy
   const showTextContent =
-    hasTextContent && (!hasTools || message.content.trim().length > 50);
+    hasTextContent && (!hasTools || textContent.trim().length > 50);
 
   return (
     <motion.div {...MOTION_CONFIG} className="flex h-full w-full flex-col px-4">
@@ -85,7 +82,6 @@ export function SimplifiedChatView({
                   isLast={true}
                   isLoading={isLoading}
                   reload={reload}
-                  addToolResult={addToolResult}
                   skipToolRendering={true}
                 />
               </ChatBubbleMessage>

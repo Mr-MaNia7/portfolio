@@ -5,7 +5,7 @@ A conversational, AI-powered portfolio for **Abdulkarim G. Mohammed**, Senior Fu
 Built on the **Claude research-journal design system** — warm ivory parchment, near-black slate ink, a single clay accent, an editorial serif for display, and JetBrains Mono for chrome. Flat, hard-edged, zero shadows.
 
 <p align="center">
-  <img src="https://img.shields.io/badge/Next.js-15.5-black?logo=next.js" alt="Next.js 15.5">
+  <img src="https://img.shields.io/badge/Next.js-16-black?logo=next.js" alt="Next.js 16">
   <img src="https://img.shields.io/badge/React-19-149eca?logo=react" alt="React 19">
   <img src="https://img.shields.io/badge/TypeScript-5.9-3178c6?logo=typescript" alt="TypeScript 5.9">
   <img src="https://img.shields.io/badge/Tailwind-v4-38bdf8?logo=tailwindcss" alt="Tailwind CSS v4">
@@ -23,7 +23,7 @@ Built on the **Claude research-journal design system** — warm ivory parchment,
 
 ## Signature features
 
-- **Conversational UI** — a ChatGPT-style interface where the "digital twin" answers as Abdulkarim, calling tools that render bespoke cards.
+- **Conversational UI** — a Claude Style interface where the "digital twin" answers as Abdulkarim, calling tools that render bespoke cards.
 - **⌘K command palette** — Raycast-style menu to jump anywhere: ask a question, open a profile, copy the email, toggle the theme.
 - **Slash commands** — type `/` in the composer for `/projects`, `/skills`, `/resume`, `/hire`, `/contact`, `/upwork`, and more.
 - **Instant preset answers** — the core questions render immediately from curated content, with **no API call**, so the site never looks broken at rate limits. An "Ask the live AI" button escalates to the model for free-form depth.
@@ -37,7 +37,7 @@ Built on the **Claude research-journal design system** — warm ivory parchment,
 
 | Layer | Choices |
 |---|---|
-| **Framework** | Next.js 15.5 (App Router, RSC) · React 19 · TypeScript 5.9 (strict) |
+| **Framework** | Next.js 16 (App Router, RSC, Turbopack) · React 19 · TypeScript 5.9 (strict) |
 | **Styling** | Tailwind CSS v4 · design tokens in `globals.css` · Framer Motion |
 | **AI** | Vercel AI SDK (`ai`, `@ai-sdk/google`, `@ai-sdk/react`) → Google Gemini |
 | **UI** | Radix primitives · lucide-react · sonner · vaul |
@@ -120,6 +120,10 @@ Optimized for **Vercel**:
 
 ---
 
-## Credits
+## Credits & acknowledgements
 
-The conversational-portfolio concept and initial scaffold come from the open-source [AI-Powered Portfolio](https://github.com/anujjainbatu/portfolio) template by **Anuj Jain** (MIT). This project rebuilds the content and redesigns the entire UI to the Claude design system. See [`docs/LICENSE`](docs/LICENSE).
+This project began as a fork of the open-source [**AI-Powered Portfolio**](https://github.com/anujjainbatu/portfolio) template created by **Anuj Jain** ([@anujjainbatu](https://github.com/anujjainbatu)) — full credit to them for the original conversational-portfolio concept and scaffold, released under the MIT License.
+
+From that starting point, this version rebuilds all of the content and completely redesigns the UI/UX to the Claude research-journal design system, and upgrades the stack (Next.js 16, AI SDK v7, and more). The original license and attribution are preserved in [`docs/LICENSE`](docs/LICENSE).
+
+Thank you, [@anujjainbatu](https://github.com/anujjainbatu). 🙏

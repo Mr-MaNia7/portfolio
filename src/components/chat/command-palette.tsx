@@ -10,16 +10,14 @@ import {
   ExternalLink,
   FileText,
   FolderGit2,
-  Github,
   Layers,
-  Linkedin,
   Mail,
   MoonStar,
   Search,
-  Twitter,
   User,
 } from 'lucide-react';
 import { useEffect, useMemo, useRef, useState } from 'react';
+import { Github, Linkedin, Twitter } from '@/components/ui/brand-icons';
 import type { Command } from '@/lib/commands';
 
 const ICONS: Record<string, React.ComponentType<{ className?: string }>> = {

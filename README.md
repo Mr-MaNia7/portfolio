@@ -120,6 +120,10 @@ Optimized for **Vercel**:
 
 ---
 
-## Credits
+## Credits & acknowledgements
 
-The conversational-portfolio concept and initial scaffold come from the open-source [AI-Powered Portfolio](https://github.com/anujjainbatu/portfolio) template by **Anuj Jain** (MIT). This project rebuilds the content and redesigns the entire UI to the Claude design system. See [`docs/LICENSE`](docs/LICENSE).
+This project began as a fork of the open-source [**AI-Powered Portfolio**](https://github.com/anujjainbatu/portfolio) template created by **Anuj Jain** ([@anujjainbatu](https://github.com/anujjainbatu)) — full credit to them for the original conversational-portfolio concept and scaffold, released under the MIT License.
+
+From that starting point, this version rebuilds all of the content and completely redesigns the UI/UX to the Claude research-journal design system, and upgrades the stack (Next.js 16, AI SDK v7, and more). The original license and attribution are preserved in [`docs/LICENSE`](docs/LICENSE).
+
+Thank you, [@anujjainbatu](https://github.com/anujjainbatu). 🙏

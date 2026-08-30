@@ -53,8 +53,7 @@ export function Presentation() {
                 <MapPin className="h-3.5 w-3.5" />
                 {profile.location}
               </span>
-            </div>
-            <div className="mt-2.5">
+              <span className="text-border-strong">·</span>
               <UpworkBadge />
             </div>
           </motion.div>

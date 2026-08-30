@@ -25,7 +25,7 @@ export function Presentation() {
         <motion.div
           initial={{ opacity: 0, scale: 0.96 }}
           animate={{ opacity: 1, scale: 1 }}
-          transition={{ duration: 0.6, ease: [0.19, 1, 0.22, 1] }}
+          transition={{ duration: 0.6, ease: [0.19, 1, 0.22, 1] as [number, number, number, number] }}
           className="relative mx-auto aspect-square w-40 overflow-hidden rounded-lg border border-border-strong sm:mx-0 sm:w-full"
         >
           <Image

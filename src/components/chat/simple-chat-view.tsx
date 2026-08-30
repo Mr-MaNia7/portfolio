@@ -27,7 +27,7 @@ const MOTION_CONFIG = {
     duration: 0.3,
     ease: 'easeOut',
   },
-};
+} as const;
 
 export function SimplifiedChatView({
   message,

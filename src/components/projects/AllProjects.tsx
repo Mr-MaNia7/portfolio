@@ -1,19 +1,25 @@
-"use client";
-import { Card, Carousel } from "@/components/projects/apple-cards-carousel";
-import { data } from "@/components/projects/ConfigData";
-
+'use client';
+import { Card, Carousel } from '@/components/projects/apple-cards-carousel';
+import { data } from '@/components/projects/ConfigData';
 
 export default function AllProjects() {
   const cards = data.map((card, index) => (
-    <Card key={card.src} card={card} index={index} layout={true} />
+    <Card key={card.src + index} card={card} index={index} layout={true} />
   ));
-  console.log(data[0]);
 
   return (
-    <div className="w-full h-full pt-8">
-      <h2 className="max-w-7xl mx-auto text-xl md:text-3xl font-bold text-neutral-800 dark:text-neutral-200 font-sans">
-        My Projects
-      </h2>
+    <div className="w-full py-2">
+      <header className="mx-auto max-w-3xl">
+        <span className="font-mono text-[10px] tracking-wider text-muted-foreground uppercase">
+          Selected work
+        </span>
+        <h2 className="font-display mt-1 text-2xl tracking-tight text-foreground sm:text-3xl">
+          Things I&apos;ve built
+        </h2>
+        <p className="mt-1.5 text-sm text-muted-foreground">
+          Client work and research — tap any card for the detail.
+        </p>
+      </header>
       <Carousel items={cards} />
     </div>
   );

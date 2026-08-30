@@ -1,131 +1,154 @@
 'use client';
 
 import { motion } from 'framer-motion';
-import { Award, Code, GraduationCap, Mail, MessageSquare, Briefcase } from 'lucide-react';
+import {
+  Briefcase,
+  Command,
+  FileText,
+  FolderGit2,
+  Layers,
+  Mail,
+  User,
+} from 'lucide-react';
+import Image from 'next/image';
 import React from 'react';
 
-import { presetReplies } from '@/lib/config-loader';
+import { presetReplies, getConfig } from '@/lib/config-loader';
 
 interface ChatLandingProps {
   submitQuery: (query: string) => void;
   handlePresetReply?: (question: string, reply: string, tool: string) => void;
+  onOpenCommand?: () => void;
 }
 
-const ChatLanding: React.FC<ChatLandingProps> = ({ submitQuery, handlePresetReply }) => {
+const SUGGESTIONS = [
+  { q: 'Who are you?', slash: '/about', icon: User },
+  { q: 'What projects are you most proud of?', slash: '/projects', icon: FolderGit2 },
+  { q: 'What are your skills?', slash: '/skills', icon: Layers },
+  { q: 'Are you available for work?', slash: '/hire', icon: Briefcase },
+  { q: 'Can I see your résumé?', slash: '/resume', icon: FileText },
+  { q: 'How can I reach you?', slash: '/contact', icon: Mail },
+];
 
-  // Suggested questions that the user can click on
-  const suggestedQuestions = [
-    {
-      icon: <MessageSquare className="h-4 w-4" />,
-      text: 'Who are you?',
-    },
-    {
-      icon: <Code className="h-4 w-4" />,
-      text: 'What projects are you most proud of?',
-    },
-    {
-      icon: <Award className="h-4 w-4" />,
-      text: 'What are your skills?',
-    },
-    {
-      icon: <Briefcase className="h-4 w-4" />,
-      text: 'Am I available for opportunities?',
-    },
-    {
-      icon: <Mail className="h-4 w-4" />,
-      text: 'How can I reach you?',
-    },
-  ];
+const container = {
+  hidden: { opacity: 0 },
+  visible: { opacity: 1, transition: { staggerChildren: 0.06 } },
+};
+const item = {
+  hidden: { opacity: 0, y: 14 },
+  visible: {
+    opacity: 1,
+    y: 0,
+    transition: { duration: 0.5, ease: [0.19, 1, 0.22, 1] },
+  },
+};
 
-  const handleQuestionClick = (questionText: string) => {
-    // Check if this question has a preset reply
-    const preset = presetReplies[questionText as keyof typeof presetReplies];
-    
+const ChatLanding: React.FC<ChatLandingProps> = ({
+  submitQuery,
+  handlePresetReply,
+  onOpenCommand,
+}) => {
+  const { personal, stats, availability } = getConfig();
+
+  const ask = (q: string) => {
+    const preset = presetReplies[q as keyof typeof presetReplies];
     if (preset && handlePresetReply) {
-      // Show preset reply first
-      handlePresetReply(questionText, preset.reply, preset.tool);
+      handlePresetReply(q, preset.reply, preset.tool);
     } else {
-      // Fall back to AI query
-      submitQuery(questionText);
+      submitQuery(q);
     }
-  };
-
-  // Animation variants for staggered animation
-  const containerVariants = {
-    hidden: { opacity: 0 },
-    visible: {
-      opacity: 1,
-      transition: {
-        staggerChildren: 0.1,
-      },
-    },
-  };
-
-  const itemVariants = {
-    hidden: { opacity: 0, y: 20 },
-    visible: {
-      opacity: 1,
-      y: 0,
-      transition: {
-        duration: 0.4,
-        ease: [0.25, 0.1, 0.25, 1],
-      },
-    },
   };
 
   return (
     <motion.div
-      className="flex w-full flex-col items-center px-4 py-6"
+      className="mx-auto w-full max-w-2xl py-6"
+      variants={container}
       initial="hidden"
       animate="visible"
-      variants={containerVariants}
     >
-      {/* Welcome message */}
-      <motion.div className="mb-8 text-center" variants={itemVariants}>
-        <h2 className="mb-3 text-2xl font-semibold">
-            I'm Anuj's digital twin
-        </h2>
-        <p className="text-muted-foreground mx-auto max-w-md">
-          Begin your interview with my digital twin.
-        </p>
-      </motion.div>
-
-      {/* Available for Opportunities Button */}
-      <motion.div className="mb-8" variants={itemVariants}>
-        <motion.button
-          onClick={() => handleQuestionClick('Am I available for opportunities?')}
-          className="bg-white hover:bg-gray-50 dark:bg-gray-800 dark:hover:bg-gray-700 border border-gray-200 dark:border-gray-700 rounded-full px-6 py-3 text-sm font-medium text-gray-700 dark:text-gray-300 transition-all duration-200 shadow-sm hover:shadow-md flex items-center gap-2 mx-auto"
-          whileHover={{ scale: 1.02 }}
-          whileTap={{ scale: 0.98 }}
-        >
-          <span className="relative flex h-2 w-2">
-            <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-green-500 opacity-75"></span>
-            <span className="relative inline-flex h-2 w-2 rounded-full bg-green-500"></span>
-          </span>
-          Available for Opportunities
-        </motion.button>
-      </motion.div>
-
-      {/* Suggested questions */}
-      <motion.div
-        className="w-full max-w-md space-y-3"
-        variants={containerVariants}
-      >
-        {suggestedQuestions.map((question, index) => (
-          <motion.button
-            key={index}
-            className="bg-accent hover:bg-accent/80 flex w-full items-center rounded-lg px-4 py-3 transition-colors"
-            onClick={() => handleQuestionClick(question.text)}
-            variants={itemVariants}
-            whileHover={{ scale: 1.02 }}
-            whileTap={{ scale: 0.98 }}
-          >
-            <span className="bg-background mr-3 rounded-full p-2">
-              {question.icon}
+      {/* Identity */}
+      <motion.div variants={item} className="flex items-center gap-4">
+        <span className="relative h-14 w-14 shrink-0 overflow-hidden rounded-full border border-border-strong">
+          <Image
+            src={personal.avatar}
+            alt={personal.name}
+            fill
+            sizes="56px"
+            className="object-cover"
+          />
+        </span>
+        <div className="min-w-0">
+          {availability.open && (
+            <span className="mb-1 inline-flex items-center gap-1.5 rounded-sm border border-border px-2 py-0.5 text-[11px] font-medium text-muted-foreground">
+              <span className="status-dot" />
+              {availability.headline}
             </span>
-            <span className="text-left">{question.text}</span>
-          </motion.button>
+          )}
+        </div>
+      </motion.div>
+
+      {/* Headline */}
+      <motion.h1
+        variants={item}
+        className="font-display mt-6 text-[2rem] leading-[1.1] tracking-tight text-foreground sm:text-[2.75rem]"
+      >
+        I&apos;m {personal.shortName}. I design and ship{' '}
+        <span className="text-clay">web platforms</span> and{' '}
+        <span className="italic">LLM features</span>, end to end.
+      </motion.h1>
+
+      <motion.p
+        variants={item}
+        className="mt-4 max-w-xl text-[15px] leading-relaxed text-muted-foreground"
+      >
+        Senior full-stack engineer from {personal.location}, Top Rated on Upwork.
+        This page is a conversation — ask it anything about my work, or pick a
+        thread below.
+      </motion.p>
+
+      {/* Stats */}
+      <motion.div
+        variants={item}
+        className="mt-8 grid grid-cols-2 gap-px overflow-hidden rounded-lg border border-border bg-border sm:grid-cols-4"
+      >
+        {stats.map((s) => (
+          <div key={s.label} className="bg-background px-4 py-3.5">
+            <div className="font-display text-xl text-foreground">{s.value}</div>
+            <div className="mt-0.5 text-[11px] leading-tight text-muted-foreground">
+              {s.label}
+            </div>
+          </div>
         ))}
+      </motion.div>
+
+      {/* Suggestions */}
+      <motion.div variants={item} className="mt-8">
+        <div className="mb-2 flex items-center justify-between">
+          <span className="font-mono text-[10px] tracking-wider text-muted-foreground uppercase">
+            Start here
+          </span>
+          <button
+            onClick={onOpenCommand}
+            className="flex items-center gap-1.5 font-mono text-[11px] text-muted-foreground transition-colors hover:text-foreground"
+          >
+            <Command className="h-3 w-3" /> ⌘K for everything
+          </button>
+        </div>
+        <div className="grid grid-cols-1 gap-px overflow-hidden rounded-lg border border-border bg-border sm:grid-cols-2">
+          {SUGGESTIONS.map(({ q, slash, icon: Icon }) => (
+            <button
+              key={q}
+              onClick={() => ask(q)}
+              className="group flex items-center gap-3 bg-background px-4 py-3 text-left transition-colors hover:bg-secondary"
+            >
+              <Icon className="h-4 w-4 shrink-0 text-muted-foreground transition-colors group-hover:text-clay" />
+              <span className="flex-1 truncate text-sm text-foreground">{q}</span>
+              <span className="font-mono text-[11px] text-muted-foreground/60">
+                {slash}
+              </span>
+            </button>
+          ))}
+        </div>
       </motion.div>
     </motion.div>
   );

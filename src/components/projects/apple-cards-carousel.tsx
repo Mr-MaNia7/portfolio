@@ -170,20 +170,22 @@ export const Carousel = ({
             ))}
           </div>
         </div>
-        <div className="mr-10 flex justify-end gap-2 md:mr-20">
+        <div className="mx-auto flex max-w-3xl justify-end gap-2">
           <button
-            className="relative z-40 flex h-10 w-10 items-center justify-center rounded-full bg-gray-100 disabled:opacity-50"
+            className="relative z-40 flex h-9 w-9 items-center justify-center rounded-sm border border-border-strong bg-card text-muted-foreground transition-colors hover:text-foreground disabled:opacity-40"
             onClick={scrollLeft}
             disabled={!canScrollLeft}
+            aria-label="Previous"
           >
-            <IconArrowNarrowLeft className="h-6 w-6 text-gray-500" />
+            <IconArrowNarrowLeft className="h-5 w-5" />
           </button>
           <button
-            className="relative z-40 flex h-10 w-10 items-center justify-center rounded-full bg-gray-100 disabled:opacity-50"
+            className="relative z-40 flex h-9 w-9 items-center justify-center rounded-sm border border-border-strong bg-card text-muted-foreground transition-colors hover:text-foreground disabled:opacity-40"
             onClick={scrollRight}
             disabled={!canScrollRight}
+            aria-label="Next"
           >
-            <IconArrowNarrowRight className="h-6 w-6 text-gray-500" />
+            <IconArrowNarrowRight className="h-5 w-5" />
           </button>
         </div>
       </div>
@@ -250,30 +252,31 @@ export const Card = ({
               exit={{ opacity: 0 }}
               ref={containerRef}
               layoutId={layout ? `card-${card.title}` : undefined}
-              className="relative z-[60] mx-auto my-10 h-fit max-w-5xl rounded-3xl bg-white font-sans dark:bg-neutral-900"
+              className="relative z-[60] mx-auto my-10 h-fit max-w-3xl rounded-lg border border-border bg-card font-sans"
             >
               {/* Sticky close button */}
-              <div className="sticky top-4 z-52 flex justify-end px-8 pt-8 md:px-14 md:pt-8">
+              <div className="sticky top-4 z-52 flex justify-end px-6 pt-6 md:px-10 md:pt-8">
                 <button
-                  className="flex h-8 w-8 items-center justify-center rounded-full bg-black/90 shadow-md dark:bg-white/90"
+                  className="flex h-8 w-8 items-center justify-center rounded-sm bg-primary text-primary-foreground transition-transform active:translate-y-px"
                   onClick={handleClose}
+                  aria-label="Close"
                 >
-                  <IconX className="h-6 w-6 text-neutral-100 dark:text-neutral-900" />
+                  <IconX className="h-5 w-5" />
                 </button>
               </div>
 
               {/* Header section with consistent padding */}
-              <div className="relative px-8 pt-2 pb-0 md:px-14">
+              <div className="relative -mt-4 px-6 pt-2 pb-0 md:px-10">
                 <div>
                   <motion.p
                     layoutId={layout ? `category-${card.title}` : undefined}
-                    className="text-base font-medium text-black dark:text-white"
+                    className="font-mono text-[11px] tracking-wider text-clay uppercase"
                   >
                     {card.category}
                   </motion.p>
                   <motion.p
                     layoutId={layout ? `title-${card.title}` : undefined}
-                    className="mt-4 text-2xl font-semibold text-neutral-700 md:text-5xl dark:text-white"
+                    className="font-display mt-2 text-2xl tracking-tight text-foreground md:text-4xl"
                   >
                     {card.title}
                   </motion.p>
@@ -281,7 +284,7 @@ export const Card = ({
               </div>
 
               {/* Content with consistent padding */}
-              <div className="px-8 pt-8 pb-14 md:px-14">{card.content}</div>
+              <div className="px-6 pt-6 pb-12 md:px-10">{card.content}</div>
             </motion.div>
           </div>
         )}
@@ -289,20 +292,19 @@ export const Card = ({
       <motion.button
         layoutId={layout ? `card-${card.title}` : undefined}
         onClick={handleOpen}
-        className="relative z-10 flex h-48 w-80 flex-col items-start justify-start overflow-hidden rounded-3xl bg-gray-100 dark:bg-neutral-900"
+        className="group relative z-10 flex h-56 w-[280px] flex-col items-start justify-end overflow-hidden rounded-lg border border-border-strong bg-primary md:w-[320px]"
       >
-        <div className="absolute inset-x-0 top-0 z-30 h-full cursor-pointer bg-gradient-to-b from-black hover:scale-110 via-transparent to-transparent" />
-        {/*<div className="absolute inset-0 z-20 cursor-pointer bg-black/20 hover:bg-black/2" />*/}
-        <div className="relative z-40 p-8">
+        <div className="absolute inset-0 z-30 cursor-pointer bg-gradient-to-t from-black/85 via-black/25 to-transparent" />
+        <div className="relative z-40 p-6">
           <motion.p
             layoutId={layout ? `category-${card.category}` : undefined}
-            className="text-left font-sans text-sm font-medium text-white md:text-base"
+            className="text-left font-mono text-[11px] tracking-wider text-white/70 uppercase"
           >
             {card.category}
           </motion.p>
           <motion.p
             layoutId={layout ? `title-${card.title}` : undefined}
-            className="max-w-xs text-left font-sans text-xl font-semibold [text-wrap:balance] text-white md:text-3xl"
+            className="font-display mt-1.5 max-w-xs text-left text-xl [text-wrap:balance] text-white md:text-2xl"
           >
             {card.title}
           </motion.p>
@@ -311,7 +313,7 @@ export const Card = ({
           src={card.src}
           alt={card.title}
           fill
-          className="absolute inset-0 z-10 object-cover"
+          className="absolute inset-0 z-10 object-cover transition-transform duration-500 group-hover:scale-[1.04]"
         />
       </motion.button>
     </>

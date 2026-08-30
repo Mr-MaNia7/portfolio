@@ -1,89 +1,99 @@
 import Image from 'next/image';
-import { Image as Img } from 'lucide-react';
-import { ChevronRight, Link } from 'lucide-react';
-import { Separator } from '@/components/ui/separator';
+import { ArrowUpRight } from 'lucide-react';
 import { projectData, getConfig } from '@/lib/config-loader';
+import type { Project } from '@/types/portfolio';
 
-// Get project content from configuration
-const config = getConfig();
-const PROJECT_CONTENT = config.projects;
+const PROJECT_CONTENT = getConfig().projects;
 
-// ProjectContent component - now uses config data
+const statusStyles: Record<string, string> = {
+  Production: 'bg-clay-soft text-clay-strong',
+  Live: 'bg-clay-soft text-clay-strong',
+  Ongoing: 'bg-secondary text-foreground/70',
+  Delivered: 'bg-secondary text-foreground/70',
+  Published: 'bg-secondary text-foreground/70',
+};
+
 const ProjectContent = ({ project }: { project: { title: string } }) => {
-  const projectData = PROJECT_CONTENT.find(p => p.title === project.title);
-  
-  if (!projectData) return null;
+  const data = PROJECT_CONTENT.find((p) => p.title === project.title) as
+    | Project
+    | undefined;
+
+  if (!data) return null;
 
   return (
-    <div className="bg-card text-card-foreground max-w-4xl space-y-6 p-0">
-      {/* Header */}
-      <div className="space-y-4">
-        <div className="flex items-center gap-3">
-          <div className="bg-primary/10 text-primary rounded-lg p-2">
-            <Img className="h-6 w-6" />
-          </div>
-          <div>
-            <h3 className="text-xl font-semibold">{projectData.title}</h3>
-            <p className="text-muted-foreground text-sm">{projectData.date}</p>
-          </div>
-        </div>
-        
-        <p className="text-muted-foreground leading-relaxed">
-          {projectData.description}
-        </p>
+    <div className="max-w-2xl space-y-6 text-card-foreground">
+      {/* Meta line */}
+      <div className="flex flex-wrap items-center gap-x-3 gap-y-1 font-mono text-xs text-muted-foreground">
+        {data.role && <span>{data.role}</span>}
+        {data.client && (
+          <>
+            <span className="text-border-strong">·</span>
+            <span>{data.client}</span>
+          </>
+        )}
+        {data.date && (
+          <>
+            <span className="text-border-strong">·</span>
+            <span>{data.date}</span>
+          </>
+        )}
+        {data.status && (
+          <span
+            className={`rounded-sm px-2 py-0.5 text-[11px] ${
+              statusStyles[data.status] ?? 'bg-secondary text-foreground/70'
+            }`}
+          >
+            {data.status}
+          </span>
+        )}
       </div>
 
-      {/* Status & Achievements */}
-      {(projectData.status || projectData.achievements || projectData.metrics) && (
-        <div className="space-y-3">
-          {projectData.status && (
-            <div className="flex items-center gap-2">
-              <span className="text-sm font-medium">Status:</span>
-              <span className={`text-sm px-2 py-1 rounded-full ${
-                projectData.status === 'Completed' ? 'bg-green-100 text-green-800' :
-                projectData.status === 'Ongoing' ? 'bg-blue-100 text-blue-800' :
-                'bg-gray-100 text-gray-800'
-              }`}>
-                {projectData.status}
-              </span>
-            </div>
-          )}
-          
-          {projectData.achievements && (
-            <div>
-              <h4 className="font-medium mb-1">Achievements</h4>
-              <ul className="text-sm text-muted-foreground list-disc list-inside">
-                {projectData.achievements.map((achievement, index) => (
-                  <li key={index}>{achievement}</li>
-                ))}
-              </ul>
-            </div>
-          )}
-          
-          {projectData.metrics && (
-            <div>
-              <h4 className="font-medium mb-1">Key Metrics</h4>
-              <div className="flex flex-wrap gap-2">
-                {projectData.metrics.map((metric, index) => (
-                  <span key={index} className="text-sm bg-blue-100 text-blue-800 px-2 py-1 rounded">
-                    {metric}
-                  </span>
-                ))}
-              </div>
-            </div>
-          )}
+      <p className="text-[15px] leading-relaxed text-foreground/85">
+        {data.description}
+      </p>
+
+      {/* Metrics */}
+      {data.metrics && data.metrics.length > 0 && (
+        <div className="flex flex-wrap gap-2">
+          {data.metrics.map((m) => (
+            <span
+              key={m}
+              className="rounded-sm border border-clay/30 bg-clay-soft px-3 py-1 text-xs font-medium text-clay-strong"
+            >
+              {m}
+            </span>
+          ))}
         </div>
       )}
 
-      {/* Tech Stack */}
-      {projectData.techStack && projectData.techStack.length > 0 && (
-        <div className="space-y-3">
-          <h4 className="font-medium">Tech Stack</h4>
-          <div className="flex flex-wrap gap-2">
-            {projectData.techStack.map((tech, index) => (
+      {/* Highlights */}
+      {data.highlights && data.highlights.length > 0 && (
+        <div>
+          <h4 className="mb-2 text-[11px] tracking-wider text-muted-foreground uppercase">
+            Highlights
+          </h4>
+          <ul className="space-y-1.5">
+            {data.highlights.map((h) => (
+              <li key={h} className="flex gap-2.5 text-sm text-foreground/80">
+                <span className="mt-1.5 h-1 w-1 shrink-0 rounded-full bg-clay" />
+                {h}
+              </li>
+            ))}
+          </ul>
+        </div>
+      )}
+
+      {/* Tech stack */}
+      {data.techStack && data.techStack.length > 0 && (
+        <div>
+          <h4 className="mb-2 text-[11px] tracking-wider text-muted-foreground uppercase">
+            Stack
+          </h4>
+          <div className="flex flex-wrap gap-1.5">
+            {data.techStack.map((tech) => (
               <span
-                key={index}
-                className="bg-accent text-accent-foreground rounded-full px-3 py-1 text-sm"
+                key={tech}
+                className="rounded-sm border border-border bg-secondary/50 px-2.5 py-1 text-xs text-foreground/75"
               >
                 {tech}
               </span>
@@ -93,54 +103,48 @@ const ProjectContent = ({ project }: { project: { title: string } }) => {
       )}
 
       {/* Links */}
-      {projectData.links && projectData.links.length > 0 && (
-        <div className="space-y-3">
-          <h4 className="font-medium">Links</h4>
-          <div className="flex flex-wrap gap-3">
-            {projectData.links.map((link, index) => (
-              <a
-                key={index}
-                href={link.url}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="text-primary hover:text-primary/80 flex items-center gap-2 transition-colors"
-              >
-                <Link className="h-4 w-4" />
-                {link.name}
-                <ChevronRight className="h-4 w-4" />
-              </a>
-            ))}
-          </div>
+      {data.links && data.links.length > 0 && (
+        <div className="flex flex-wrap gap-2 pt-1">
+          {data.links.map((link) => (
+            <a
+              key={link.name}
+              href={link.url}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center gap-1.5 rounded-sm border border-border-strong px-3 py-1.5 text-sm text-foreground transition-colors hover:bg-secondary"
+            >
+              {link.name}
+              <ArrowUpRight className="h-4 w-4" />
+            </a>
+          ))}
         </div>
       )}
 
-      {/* Images gallery */}
-      {projectData.images && projectData.images.length > 0 && (
-        <div className="space-y-6">
-          <div className="grid grid-cols-1 gap-4">
-            {projectData.images.map((image, index) => (
-              <div
-                key={index}
-                className="relative overflow-hidden rounded-2xl"
-              >
-                <Image
-                  src={image.src}
-                  alt={image.alt}
-                  width={800}
-                  height={600}
-                  className="w-full h-auto transition-transform"
-                />
-              </div>
-            ))}
-          </div>
+      {/* Images */}
+      {data.images && data.images.length > 0 && (
+        <div className="grid grid-cols-1 gap-4 pt-2">
+          {data.images.map((image) => (
+            <div
+              key={image.src}
+              className="overflow-hidden rounded-lg border border-border"
+            >
+              <Image
+                src={image.src}
+                alt={image.alt}
+                width={800}
+                height={600}
+                className="h-auto w-full"
+              />
+            </div>
+          ))}
         </div>
       )}
     </div>
   );
 };
 
-// Main data export - now dynamically generated from config
-export const data = projectData.map(project => ({
+// Dynamically generated from config
+export const data = projectData.map((project) => ({
   category: project.category,
   title: project.title,
   src: project.src,

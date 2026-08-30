@@ -2,149 +2,275 @@
 
 @custom-variant dark (&:is(.dark *));
 
+/*
+  ────────────────────────────────────────────────────────────────
+  Claude research-journal design system
+  Warm ivory parchment · near-black slate ink · a single clay accent.
+  Flat, hard-edged, zero shadows. Emphasis from type + underlines.
+  ────────────────────────────────────────────────────────────────
+*/
+
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-  --color-sidebar-ring: var(--sidebar-ring);
-  --color-sidebar-border: var(--sidebar-border);
-  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
-  --color-sidebar-accent: var(--sidebar-accent);
-  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
-  --color-sidebar-primary: var(--sidebar-primary);
-  --color-sidebar-foreground: var(--sidebar-foreground);
-  --color-sidebar: var(--sidebar);
-  --color-chart-5: var(--chart-5);
-  --color-chart-4: var(--chart-4);
-  --color-chart-3: var(--chart-3);
-  --color-chart-2: var(--chart-2);
-  --color-chart-1: var(--chart-1);
-  --color-ring: var(--ring);
-  --color-input: var(--input);
-  --color-border: var(--border);
-  --color-destructive: var(--destructive);
-  --color-accent-foreground: var(--accent-foreground);
-  --color-accent: var(--accent);
-  --color-muted-foreground: var(--muted-foreground);
-  --color-muted: var(--muted);
-  --color-secondary-foreground: var(--secondary-foreground);
-  --color-secondary: var(--secondary);
-  --color-primary-foreground: var(--primary-foreground);
-  --color-primary: var(--primary);
-  --color-popover-foreground: var(--popover-foreground);
-  --color-popover: var(--popover);
-  --color-card-foreground: var(--card-foreground);
+
   --color-card: var(--card);
-  --radius-sm: calc(var(--radius) - 4px);
-  --radius-md: calc(var(--radius) - 2px);
-  --radius-lg: var(--radius);
-  --radius-xl: calc(var(--radius) + 4px);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+
+  --color-clay: var(--clay);
+  --color-clay-strong: var(--clay-strong);
+  --color-clay-foreground: var(--clay-foreground);
+  --color-clay-soft: var(--clay-soft);
+
+  --color-destructive: var(--destructive);
+  --color-success: var(--success);
+  --color-warning: var(--warning);
+
+  --color-border: var(--border);
+  --color-border-strong: var(--border-strong);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+
+  --font-sans: var(--font-inter), ui-sans-serif, system-ui, sans-serif;
+  --font-serif: var(--font-newsreader), ui-serif, Georgia, serif;
+  --font-mono: var(--font-jetbrains), ui-monospace, "SF Mono", monospace;
+
+  --radius-sm: 0.25rem;
+  --radius-md: 0.375rem;
+  --radius-lg: 0.5rem;
+  --radius-xl: 0.75rem;
 }
 
 :root {
-  --radius: 0.625rem;
-  --background: oklch(1 0 0);
-  --foreground: oklch(0.141 0.005 285.823);
-  --card: oklch(1 0 0);
-  --card-foreground: oklch(0.141 0.005 285.823);
-  --popover: oklch(1 0 0);
-  --popover-foreground: oklch(0.141 0.005 285.823);
-  --primary: oklch(0.21 0.006 285.885);
-  --primary-foreground: oklch(0.985 0 0);
-  --secondary: oklch(0.967 0.001 286.375);
-  --secondary-foreground: oklch(0.21 0.006 285.885);
-  --muted: oklch(0.967 0.001 286.375);
-  --muted-foreground: oklch(0.552 0.016 285.938);
-  --accent: oklch(0.967 0.001 286.375);
-  --accent-foreground: oklch(0.21 0.006 285.885);
-  --destructive: oklch(0.577 0.245 27.325);
-  --border: oklch(0.92 0.004 286.32);
-  --input: oklch(0.92 0.004 286.32);
-  --ring: oklch(0.705 0.015 286.067);
-  --chart-1: oklch(0.646 0.222 41.116);
-  --chart-2: oklch(0.6 0.118 184.704);
-  --chart-3: oklch(0.398 0.07 227.392);
-  --chart-4: oklch(0.828 0.189 84.429);
-  --chart-5: oklch(0.769 0.188 70.08);
-  --sidebar: oklch(0.985 0 0);
-  --sidebar-foreground: oklch(0.141 0.005 285.823);
-  --sidebar-primary: oklch(0.21 0.006 285.885);
-  --sidebar-primary-foreground: oklch(0.985 0 0);
-  --sidebar-accent: oklch(0.967 0.001 286.375);
-  --sidebar-accent-foreground: oklch(0.21 0.006 285.885);
-  --sidebar-border: oklch(0.92 0.004 286.32);
-  --sidebar-ring: oklch(0.705 0.015 286.067);
+  /* Warm ivory parchment — never pure white */
+  --background: #faf9f6;
+  --foreground: #141413;
+
+  --card: #ffffff;
+  --card-foreground: #141413;
+  --popover: #ffffff;
+  --popover-foreground: #141413;
+
+  /* Near-black slate as the dominant ink */
+  --primary: #141413;
+  --primary-foreground: #faf9f6;
+
+  /* Warm sand for inset surfaces */
+  --secondary: #f0eee6;
+  --secondary-foreground: #201f1d;
+  --muted: #f0eee6;
+  --muted-foreground: #6b6960;
+  --accent: #f0eee6;
+  --accent-foreground: #201f1d;
+
+  /* The single earthy clay accent, held in reserve */
+  --clay: #c15f3c;
+  --clay-strong: #a54a2a;
+  --clay-foreground: #ffffff;
+  --clay-soft: #f3e6de;
+
+  --destructive: #b4402e;
+  --success: #4f7a3f;
+  --warning: #b5812a;
+
+  --border: #e7e4da;
+  --border-strong: #d6d2c4;
+  --input: #e0ddd1;
+  --ring: #141413;
+
+  --radius: 0.375rem;
 }
 
 .dark {
-  --background: oklch(0.141 0.005 285.823);
-  --foreground: oklch(0.985 0 0);
-  --card: oklch(0.21 0.006 285.885);
-  --card-foreground: oklch(0.985 0 0);
-  --popover: oklch(0.21 0.006 285.885);
-  --popover-foreground: oklch(0.985 0 0);
-  --primary: oklch(0.92 0.004 286.32);
-  --primary-foreground: oklch(0.21 0.006 285.885);
-  --secondary: oklch(0.274 0.006 286.033);
-  --secondary-foreground: oklch(0.985 0 0);
-  --muted: oklch(0.274 0.006 286.033);
-  --muted-foreground: oklch(0.705 0.015 286.067);
-  --accent: oklch(0.274 0.006 286.033);
-  --accent-foreground: oklch(0.985 0 0);
-  --destructive: oklch(0.704 0.191 22.216);
-  --border: oklch(1 0 0 / 10%);
-  --input: oklch(1 0 0 / 15%);
-  --ring: oklch(0.552 0.016 285.938);
-  --chart-1: oklch(0.488 0.243 264.376);
-  --chart-2: oklch(0.696 0.17 162.48);
-  --chart-3: oklch(0.769 0.188 70.08);
-  --chart-4: oklch(0.627 0.265 303.9);
-  --chart-5: oklch(0.645 0.246 16.439);
-  --sidebar: oklch(0.21 0.006 285.885);
-  --sidebar-foreground: oklch(0.985 0 0);
-  --sidebar-primary: oklch(0.488 0.243 264.376);
-  --sidebar-primary-foreground: oklch(0.985 0 0);
-  --sidebar-accent: oklch(0.274 0.006 286.033);
-  --sidebar-accent-foreground: oklch(0.985 0 0);
-  --sidebar-border: oklch(1 0 0 / 10%);
-  --sidebar-ring: oklch(0.552 0.016 285.938);
+  --background: #141312;
+  --foreground: #f5f3ec;
+
+  --card: #201e1a;
+  --card-foreground: #f5f3ec;
+  --popover: #201e1a;
+  --popover-foreground: #f5f3ec;
+
+  --primary: #f5f3ec;
+  --primary-foreground: #141312;
+
+  --secondary: #262420;
+  --secondary-foreground: #f5f3ec;
+  --muted: #262420;
+  --muted-foreground: #a8a49a;
+  --accent: #2b2925;
+  --accent-foreground: #f5f3ec;
+
+  --clay: #d97757;
+  --clay-strong: #e2917a;
+  --clay-foreground: #141312;
+  --clay-soft: #3a2a21;
+
+  --destructive: #e07a63;
+  --success: #86b06f;
+  --warning: #d6ab5f;
+
+  --border: #302d28;
+  --border-strong: #423e37;
+  --input: #383530;
+  --ring: #f5f3ec;
 }
 
 @layer base {
   * {
-    @apply border-border outline-ring/50;
+    @apply border-border;
   }
+
+  html {
+    -webkit-text-size-adjust: 100%;
+    text-rendering: optimizeLegibility;
+  }
+
   body {
     @apply bg-background text-foreground;
+    font-feature-settings: "cv02", "cv03", "cv04", "cv11";
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  ::selection {
+    background: var(--clay);
+    color: var(--clay-foreground);
+  }
+
+  /* Keyboard focus — a crisp slate ring, no glow */
+  :focus-visible {
+    outline: 2px solid var(--ring);
+    outline-offset: 2px;
+  }
+
+  h1, h2, h3, h4 {
+    text-wrap: balance;
+  }
+
+  p {
+    text-wrap: pretty;
+  }
+}
+
+@layer components {
+  /*
+    The one signature curvature in the system: the primary CTA has a
+    flat top and a rounded bottom. Flat, no shadow — a pressed-ink feel.
+  */
+  .btn-claude {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    border-radius: 0 0 0.75rem 0.75rem;
+    background: var(--primary);
+    color: var(--primary-foreground);
+    font-weight: 500;
+    letter-spacing: -0.01em;
+    transition: transform 0.12s ease, background 0.15s ease, opacity 0.15s ease;
+  }
+  .btn-claude:hover {
+    background: color-mix(in oklab, var(--primary) 88%, var(--clay));
+  }
+  .btn-claude:active {
+    transform: translateY(1px);
+  }
+
+  .btn-clay {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    border-radius: 0 0 0.75rem 0.75rem;
+    background: var(--clay);
+    color: var(--clay-foreground);
+    font-weight: 500;
+    letter-spacing: -0.01em;
+    transition: transform 0.12s ease, background 0.15s ease;
+  }
+  .btn-clay:hover {
+    background: var(--clay-strong);
+  }
+  .btn-clay:active {
+    transform: translateY(1px);
+  }
+
+  /* A hairline rule in the warm border tone */
+  .hairline {
+    border-color: var(--border);
+  }
+
+}
+
+/* Display serif for editorial moments.
+   Uses the real next/font variable directly — @theme inline tokens are
+   not emitted to :root, so var(--font-serif) would be undefined here. */
+.font-display {
+  font-family: var(--font-newsreader), ui-serif, Georgia, serif;
+  font-weight: 430;
+  letter-spacing: -0.02em;
+}
+
+/* Live status dot — a quiet clay pulse */
+.status-dot {
+  position: relative;
+  display: inline-flex;
+  height: 0.5rem;
+  width: 0.5rem;
+}
+.status-dot::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: 9999px;
+  background: var(--success);
+  opacity: 0.65;
+  animation: status-ping 1.8s cubic-bezier(0, 0, 0.2, 1) infinite;
+}
+.status-dot::after {
+  content: "";
+  position: relative;
+  display: inline-flex;
+  height: 0.5rem;
+  width: 0.5rem;
+  border-radius: 9999px;
+  background: var(--success);
+}
+@keyframes status-ping {
+  75%, 100% {
+    transform: scale(2);
+    opacity: 0;
   }
 }
 
 .custom-scrollbar {
-  /* For Firefox */
   scrollbar-width: thin;
-  scrollbar-color: rgba(155, 155, 155, 0.5) transparent;
+  scrollbar-color: var(--border-strong) transparent;
 }
-
-/* For Chrome, Edge, and Safari */
 .custom-scrollbar::-webkit-scrollbar {
-  width: 4px;
-  height: 4px;
+  width: 5px;
+  height: 5px;
 }
-
 .custom-scrollbar::-webkit-scrollbar-track {
   background: transparent;
 }
-
 .custom-scrollbar::-webkit-scrollbar-thumb {
-  background-color: rgba(155, 155, 155, 0.5);
-  border-radius: 10px;
-  border: transparent;
+  background-color: var(--border-strong);
+  border-radius: 9999px;
 }
-
-/* Hide scrollbar when not in use but keep functionality */
 .custom-scrollbar::-webkit-scrollbar-thumb:hover {
-  background-color: rgba(155, 155, 155, 0.7);
+  background-color: var(--muted-foreground);
 }
 
 /* Ensure code blocks can scroll horizontally */
@@ -152,4 +278,29 @@ pre {
   white-space: pre;
   word-wrap: normal;
   overflow-x: auto;
+}
+
+/* Subtle rising-in animation used across cards */
+@keyframes claude-rise {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+.animate-rise {
+  animation: claude-rise 0.5s cubic-bezier(0.19, 1, 0.22, 1) both;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+  }
 }

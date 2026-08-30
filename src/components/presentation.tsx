@@ -3,107 +3,87 @@
 import { motion } from 'framer-motion';
 import Image from 'next/image';
 import React from 'react';
-import { profileInfo } from '@/lib/config-loader';
+import { MapPin, Star } from 'lucide-react';
+import { profileInfo, getConfig } from '@/lib/config-loader';
+
+const TAGS = [
+  'Next.js / NestJS',
+  'LLM · RLHF',
+  'System design',
+  'TypeScript & Python',
+  'Top Rated',
+];
 
 export function Presentation() {
-  // Personal information now loaded from configuration
   const profile = profileInfo;
-
-  // Animation variants for text elements
-  const textVariants = {
-    hidden: { opacity: 0, y: 20 },
-    visible: {
-      opacity: 1,
-      y: 0,
-      transition: { duration: 0.6, ease: 'easeOut' },
-    },
-  };
-
-  // Animation for the entire paragraph rather than word-by-word
-  const paragraphAnimation = {
-    hidden: { opacity: 0, y: 20 },
-    visible: {
-      opacity: 1,
-      y: 0,
-      transition: {
-        duration: 0.6,
-        ease: 'easeOut',
-        delay: 0.2,
-      },
-    },
-  };
+  const { personal } = getConfig();
 
   return (
-    <div className="mx-auto w-full max-w-5xl py-6 font-sans">
-      <div className="grid grid-cols-1 items-center gap-10 md:grid-cols-2">
-        {/* Image section */}
-        <div className="relative mx-auto aspect-square w-full max-w-sm">
-          <div className="relative h-full w-full overflow-hidden rounded-2xl">
-            <motion.div
-              initial={{ scale: 0.92, opacity: 0 }}
-              animate={{ scale: 1, opacity: 1 }}
-              transition={{ duration: 0.8, ease: [0.19, 1, 0.22, 1] }}
-              className="h-full w-full"
-            >
-              <Image
-                src={profile.src}
-                alt={profile.name}
-                width={500}
-                height={500}
-                className="h-full w-full object-cover object-center"
-                onError={(e) => {
-                  // Fallback to placeholder if image fails to load
-                  const target = e.target as HTMLImageElement;
-                  target.src = profile.fallbackSrc;
-                }}
-              />
-            </motion.div>
-          </div>
-        </div>
+    <div className="mx-auto w-full max-w-3xl py-2">
+      <div className="grid grid-cols-1 gap-6 sm:grid-cols-[200px_1fr] sm:gap-8">
+        {/* Portrait */}
+        <motion.div
+          initial={{ opacity: 0, scale: 0.96 }}
+          animate={{ opacity: 1, scale: 1 }}
+          transition={{ duration: 0.6, ease: [0.19, 1, 0.22, 1] }}
+          className="relative mx-auto aspect-square w-40 overflow-hidden rounded-lg border border-border-strong sm:mx-0 sm:w-full"
+        >
+          <Image
+            src={profile.src}
+            alt={profile.name}
+            fill
+            sizes="200px"
+            className="object-cover"
+          />
+        </motion.div>
 
-        {/* Text content section */}
-        <div className="flex flex-col space-y">
+        {/* Text */}
+        <div className="flex flex-col">
           <motion.div
-            initial="hidden"
-            animate="visible"
-            variants={textVariants}
+            initial={{ opacity: 0, y: 12 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5 }}
           >
-            <h1 className="from-foreground to-muted-foreground bg-gradient-to-r bg-clip-text text-xl font-semibold text-transparent md:text-3xl">
+            <h1 className="font-display text-2xl leading-tight tracking-tight text-foreground sm:text-3xl">
               {profile.name}
             </h1>
-            <div className="mt-1 flex flex-col gap-1 md:flex-row md:items-center md:gap-4">
-              <p className="text-muted-foreground">{profile.age}</p>
-              <div className="bg-border hidden h-1.5 w-1.5 rounded-full md:block" />
-              <p className="text-muted-foreground">{profile.location}</p>
+            <p className="mt-1.5 text-sm text-foreground/70">{profile.title}</p>
+            <div className="mt-2 flex flex-wrap items-center gap-x-3 gap-y-1 text-[13px] text-muted-foreground">
+              <span className="inline-flex items-center gap-1">
+                <MapPin className="h-3.5 w-3.5" />
+                {profile.location}
+              </span>
+              <span className="text-border-strong">·</span>
+              <span className="inline-flex items-center gap-1">
+                <Star className="h-3.5 w-3.5 text-clay" />
+                {personal.upworkBadge}
+              </span>
             </div>
           </motion.div>
 
           <motion.p
-            initial="hidden"
-            animate="visible"
-            variants={paragraphAnimation}
-            className="text-foreground mt-6 leading-relaxed whitespace-pre-line"
+            initial={{ opacity: 0, y: 12 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5, delay: 0.1 }}
+            className="mt-5 text-[15px] leading-relaxed whitespace-pre-line text-foreground/90"
           >
             {profile.description}
           </motion.p>
 
-          {/* Tags/Keywords */}
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
-            transition={{ delay: 0.6, duration: 0.5 }}
-            className="mt-4 flex flex-wrap gap-2"
+            transition={{ delay: 0.35, duration: 0.5 }}
+            className="mt-5 flex flex-wrap gap-1.5"
           >
-            {['AI Engineer', 'Python Developer', 'IoT Specialist', 'ML Engineer', 'Freelancer'].map(
-              (tag) => (
-                <span
-                  key={tag}
-                  className="bg-secondary text-secondary-foreground rounded-full px-3 py-1 text-sm"
-                >
-                  {tag}
-                </span>
-              )
-            )}
+            {TAGS.map((tag) => (
+              <span
+                key={tag}
+                className="rounded-sm border border-border bg-secondary/60 px-2.5 py-1 text-xs text-foreground/75"
+              >
+                {tag}
+              </span>
+            ))}
           </motion.div>
         </div>
       </div>

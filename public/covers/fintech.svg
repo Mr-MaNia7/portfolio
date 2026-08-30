@@ -1,0 +1,15 @@
+<svg width="800" height="600" viewBox="0 0 800 600" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <rect width="800" height="600" fill="#141413"/>
+  <g opacity="0.05" stroke="#FAF9F6" stroke-width="1">
+    <line x1="0" y1="150" x2="800" y2="150"/><line x1="0" y1="300" x2="800" y2="300"/><line x1="0" y1="450" x2="800" y2="450"/>
+    <line x1="200" y1="0" x2="200" y2="600"/><line x1="400" y1="0" x2="400" y2="600"/><line x1="600" y1="0" x2="600" y2="600"/>
+  </g>
+  <g transform="translate(480,320)" opacity="0.9">
+    <rect x="0" y="120" width="34" height="80" fill="#FAF9F6" opacity="0.14"/>
+    <rect x="52" y="80" width="34" height="120" fill="#FAF9F6" opacity="0.18"/>
+    <rect x="104" y="40" width="34" height="160" fill="#FAF9F6" opacity="0.22"/>
+    <rect x="156" y="0" width="34" height="200" fill="#C15F3C"/>
+    <path d="M17 130 L69 96 L121 60 L173 18" stroke="#C15F3C" stroke-width="3" fill="none" opacity="0.5"/>
+  </g>
+  <text x="60" y="560" font-family="Georgia, serif" font-size="220" font-weight="400" fill="#FAF9F6" opacity="0.05">01</text>
+</svg>

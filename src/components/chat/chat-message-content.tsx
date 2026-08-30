@@ -108,7 +108,7 @@ export default function ChatMessageContent({
                         href={href}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="text-blue-500 hover:underline"
+                        className="text-clay underline decoration-clay/40 underline-offset-2 hover:decoration-clay"
                       >
                         {children}
                       </a>

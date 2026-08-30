@@ -1,229 +1,106 @@
-# 🚀 AI-Powered Portfolio – Effortless, Customizable, Professional
+# Abdulkarim G. Mohammed — Portfolio
 
-**Create a powerful, modern developer portfolio in minutes — fully customizable through a single JSON file and enhanced by AI.**  
-No coding knowledge required. Just configure, deploy, and showcase your best self.
+A conversational, AI-powered portfolio for **Abdulkarim G. Mohammed**, Senior Full-Stack Engineer & AI/LLM Specialist. Instead of a static résumé, the site is a chat: ask it anything and it answers with rich, structured cards — projects, skills, experience, availability, contact.
 
-![Portfolio Preview](https://raw.githubusercontent.com/anujjainbatu/ai-portfolio-system-landing-page/refs/heads/main/assets/portfolio.png)
-
-<p align="center">
-  <a href="https://portfolio.anujjainbatu.tech/"><img src="https://img.shields.io/badge/Demo-Live%20Site-brightgreen" alt="Live Demo"></a>
-  <a href="docs/LICENSE"><img src="https://img.shields.io/badge/License-MIT-blue.svg" alt="MIT License"></a>
-  <a href="https://www.typescriptlang.org/"><img src="https://img.shields.io/badge/TypeScript-100%25-blue" alt="TypeScript"></a>
-  <a href="docs/CONTRIBUTING.md"><img src="https://img.shields.io/badge/Contributions-Welcome-brightgreen.svg" alt="Contributions Welcome"></a>
-  <a href="https://github.com/anujjainbatu/portfolio/issues"><img src="https://img.shields.io/github/issues/anujjainbatu/portfolio" alt="GitHub Issues"></a>
-  <a href="https://github.com/anujjainbatu/portfolio/stargazers"><img src="https://img.shields.io/github/stars/anujjainbatu/portfolio" alt="GitHub Stars"></a>
-</p>
-
-> 🌟 **NEW**: Looking for the marketing landing page? Check out our [dedicated landing page repository](https://github.com/anujjainbatu/portfolio-builder-landing) with SEO-optimized content designed to showcase this portfolio builder to the world!
-
----
-
-## ✨ Why Choose This Portfolio?
-
-| Traditional Portfolios              | **This Portfolio**                                   |
-|-------------------------------------|-----------------------------------------------------|
-| Tedious manual edits                | **Edit 1 JSON file — instant updates**              |
-| Risk of breaking code               | **Zero coding required**                            |
-| Complex, hard-to-customize codebase | **Intuitive configuration, AI-powered assistance**  |
-| Outdated design                     | **Modern, responsive layout**                       |
-
----
-
-## 🚦 Quick Start (5 Minutes)
-
-<details>
-<summary><strong>Step-by-step Setup</strong></summary>
-
-1. **Fork & Clone**
-    ```bash
-    git clone https://github.com/your-username/portfolio.git
-    cd portfolio
-    ```
-
-2. **Install Dependencies**
-    ```bash
-    npm install
-    # or
-    pnpm install
-    # or
-    yarn install
-    ```
-
-3. **Get a Google Gemini API Key**
-    - Visit [Google AI Studio](https://aistudio.google.com/)
-    - Sign in, create an API key, and copy it.
-
-4. **Configure Environment**
-    - Copy `.env.example` to `.env.local`
-    - Add your API key:
-      ```
-      GOOGLE_GENERATIVE_AI_API_KEY=your_google_ai_api_key_here
-      ```
-
-5. **Edit Your Info**
-    - Fill `portfolio-config.json` with your information (see below).
-
-6. **Add Images**
-    - Replace images in `/public/` as needed (profile, projects, etc).
-
-7. **Run Locally**
-    ```bash
-    npm run dev
-    ```
-    - Visit [http://localhost:3000](http://localhost:3000)
-
-8. **Deploy**
-    ```bash
-    npm run build
-    ```
-    - Deploy to Vercel, Netlify, or any platform.
-
-</details>
-
----
-
-## 🤖 AI-Driven Configuration
-
-**Let AI build your portfolio configuration for you!**
-
-- Upload your resume (PDF/DOC) and the sample `portfolio-config.json` to ChatGPT or Claude.
-- Use this prompt:
-    ```
-    Please generate a portfolio-config.json using my resume and this template. Include my experience, skills, projects, and suggested images.
-    ```
-- Alternatively, manually edit `portfolio-config.json` to customize your info, skills, and projects.
-
----
-
-## 🗂️ Project Structure
-
-<details>
-<summary><strong>View File Structure</strong></summary>
-
-```
-portfolio/
-├── portfolio-config.json   # Main configuration
-├── public/                # Images & assets
-├── src/                   # Source code
-│   ├── app/               # Next.js app structure
-│   ├── components/        # UI Components
-│   ├── lib/               # Config loaders & utilities
-│   ├── types/             # TypeScript types
-│   └── hooks/             # React hooks
-├── docs/                  # Documentation
-├── assets/                # Documentation assets
-├── package.json           # Project metadata
-└── ...
-```
-</details>
-
----
-
-## 🖼️ Image & Asset Guidelines
-
-- **Profile Picture**: `public/profile.jpeg` (400x400px+)
-- **Project Screenshots**: `public/project-1.jpg` (1200x800px recommended)
-- **Favicon**: `public/favicon.ico` (32x32px)
-- **Use compressed images** for faster load times (e.g., [TinyPNG](https://tinypng.com/))
-- **External URLs** supported
-
----
-
-## 🧠 AI Chatbot Configuration
-
-- Fully customizable AI chat, driven by your JSON config.
-- Features:
-  - Preset questions & responses
-  - Dynamic AI replies (Google Gemini API)
-  - Mobile optimized
-  - Quota management & graceful fallback
-
-Example config:
-```json
-{
-  "chatbot": {
-    "name": "Your Digital Twin",
-    "personality": "Professional yet friendly",
-    "tone": "Conversational and helpful"
-  }
-}
-```
-
----
-
-## ⚙️ Environment & Validation
-
-- **Environment Variables**:  
-  - `GOOGLE_GENERATIVE_AI_API_KEY=your_key`
-  - `NEXT_PUBLIC_SITE_URL=https://your-site.com` (optional)
-- **Validation**:
-    ```bash
-    node -e "console.log('Valid JSON:', !!JSON.parse(require('fs').readFileSync('portfolio-config.json')))"
-    npm run type-check
-    npm run build
-    ```
-
----
-
-## 🌎 Deployment
-
-**Vercel (Recommended):**  
-[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https%3A%2F%2Fgithub.com%2Fanujjainbatu%2Fportfolio)
-
-**Manual:**
-- Push to GitHub
-- Import to Vercel/Netlify/Railway
-- Set environment variables
-- Deploy!
-
----
-
-## 🎨 Customization & Advanced Usage
-
-- **Themes:** Edit `tailwind.config.ts`
-- **New Sections:** Update JSON, add components/tools/types as needed
-- **Analytics:** Integrate via `layout.tsx`
-- **Image Hosting:** Local, GitHub, CDN
-
----
-
-## 🆘 Troubleshooting & Support
-
-- **AI Chat not working?** Check your API key and quota.
-- **Images missing?** Ensure correct paths and filenames.
-- **Build failing?** Validate JSON and run type checks.
-- **Need help?**
-  - [Open an Issue](https://github.com/anujjainbatu/portfolio/issues)
-  - [Discussions](https://github.com/anujjainbatu/portfolio/discussions)
-  - Email: anujjainbatu@gmail.com
-
----
-
-## 📚 Documentation
-
-Full guides in [`docs/`](docs/):
-
-- [Contributing](docs/CONTRIBUTING.md)
-- [License](docs/LICENSE)
-- [Setup](#-quick-start-5-minutes)
-- [Troubleshooting](#-troubleshooting--support)
-
----
-
-## 🤝 Contributing
-
-We welcome your contributions!  
-Check [open issues](https://github.com/anujjainbatu/portfolio/issues) or read [CONTRIBUTING.md](docs/CONTRIBUTING.md) to get started.
-
----
-
-## 📄 License
-
-MIT License — see [LICENSE](docs/LICENSE) for details.
-
----
+Built on the **Claude research-journal design system** — warm ivory parchment, near-black slate ink, a single clay accent, an editorial serif for display, and JetBrains Mono for chrome. Flat, hard-edged, zero shadows.
 
 <p align="center">
-  <b>Made with ❤️ by developers, for developers</b><br>
-  <a href="https://github.com/anujjainbatu/portfolio">⭐ Star on GitHub</a> | <a href="https://github.com/anujjainbatu/portfolio/issues">🐛 Report Bug</a> | <a href="https://github.com/anujjainbatu/portfolio/discussions">💬 Request Feature</a>
+  <img src="https://img.shields.io/badge/Next.js-15-black" alt="Next.js 15">
+  <img src="https://img.shields.io/badge/React-19-blue" alt="React 19">
+  <img src="https://img.shields.io/badge/TypeScript-strict-blue" alt="TypeScript">
+  <img src="https://img.shields.io/badge/License-MIT-blue.svg" alt="MIT License">
 </p>
+
+---
+
+## Signature features
+
+- **Conversational UI** — a ChatGPT-style interface where the "digital twin" answers as Abdulkarim, calling tools that render bespoke cards.
+- **⌘K command palette** — Raycast-style menu to jump anywhere: ask a question, open a profile, copy the email, toggle the theme.
+- **Slash commands** — type `/` in the composer for `/projects`, `/skills`, `/resume`, `/hire`, `/contact`, and more.
+- **Instant preset answers** — the six core questions render immediately from curated content, with **no API call**, so the site never looks broken at rate limits. A "Ask the live AI" button escalates to the model for free-form depth.
+- **Light / dark** — the ivory ↔ slate rhythm in both themes.
+- **Dynamic OG image** — generated at `/opengraph-image` in the same design system.
+- Fully **responsive**, keyboard-first, and accessible (visible focus, ARIA labels, reduced-motion support).
+
+---
+
+## Tech stack
+
+Next.js 15 (App Router) · React 19 · TypeScript · Tailwind CSS v4 · Framer Motion · Vercel AI SDK (Google Gemini) · Newsreader / Inter / JetBrains Mono.
+
+---
+
+## Getting started
+
+```bash
+pnpm install
+cp .env.example .env.local   # then add your key (see below)
+pnpm dev                      # http://localhost:3000
+```
+
+### Environment
+
+```bash
+GOOGLE_GENERATIVE_AI_API_KEY=...     # Google AI Studio key for the live chat
+NEXT_PUBLIC_SITE_URL=https://...     # your domain (used for SEO/OG/sitemap)
+```
+
+Get a key at [Google AI Studio](https://aistudio.google.com/). The preset answers work **without** a key; only free-form questions need it.
+
+---
+
+## Editing the content
+
+**Everything** lives in one file: [`portfolio-config.json`](portfolio-config.json). Change it and the whole site — copy, cards, AI system prompt, SEO — updates. Sections: `personal`, `stats`, `availability`, `experience`, `education`, `skills`, `projects`, `social`, `resume`, `chatbot`, `presetQuestions`.
+
+### Things to personalize
+
+| What | Where | Notes |
+|---|---|---|
+| **Profile photo** | `personal.avatar` | Currently a generated `AG` monogram (`/public/avatar.svg`). Drop a headshot in `/public` and point `avatar` at it (e.g. `/profile.jpg`). |
+| **Résumé PDF** | `resume.downloadUrl` | Add `public/resume.pdf` (the default path) or link an external URL. |
+| **Social links** | `social.github` / `linkedin` / `twitter` | Confirm these — the GitHub/LinkedIn/X handles are best-guess placeholders. Upwork is set. |
+| **Contact email** | `personal.email` | Currently `files@aivi.io`. |
+| **Project covers** | `projects[].cover` | Branded SVGs live in `/public/covers`. Swap for real screenshots via `projects[].images`. |
+
+### Design tokens
+
+Colors, fonts, and the signature CTA shape are defined in [`src/app/globals.css`](src/app/globals.css) (`:root` and `.dark`). Commands for the palette/slash menu are in [`src/lib/commands.ts`](src/lib/commands.ts).
+
+---
+
+## Architecture
+
+```
+portfolio-config.json        # single source of truth
+src/
+├─ app/
+│  ├─ layout.tsx             # fonts, metadata, JSON-LD
+│  ├─ page.tsx               # renders <Chat/>
+│  ├─ opengraph-image.tsx    # dynamic social card
+│  └─ api/chat/              # Vercel AI SDK route + 6 tools
+├─ components/
+│  ├─ chat/                  # shell, top bar, composer, command palette, landing
+│  ├─ presentation · skills · contact · resume · AvailabilityCard · projects/
+│  └─ ui/                    # primitives (button, badge, chat bubble…)
+├─ lib/
+│  ├─ config-loader.ts       # loads config, exposes parsed data
+│  ├─ config-parser.ts       # builds the AI system prompt + view models
+│  └─ commands.ts            # ⌘K / slash command set
+└─ types/portfolio.ts        # config schema
+```
+
+The AI's tools (`getProjects`, `getPresentation`, `getSkills`, `getResume`, `getContact`, `getInternship`) each return data from the config and render a matching card component.
+
+---
+
+## Deploy
+
+Optimized for **Vercel**: push to GitHub, import, set `GOOGLE_GENERATIVE_AI_API_KEY` and `NEXT_PUBLIC_SITE_URL`, deploy.
+
+---
+
+## Credits
+
+The conversational-portfolio concept and initial scaffold come from the open-source [AI-Powered Portfolio](https://github.com/anujjainbatu/portfolio) template by **Anuj Jain** (MIT). This project rebuilds the content and redesigns the entire UI to the Claude design system. See [`docs/LICENSE`](docs/LICENSE).

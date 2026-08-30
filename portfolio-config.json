@@ -1,424 +1,326 @@
 {
   "personal": {
-    "name": "Anuj Jain",
-    "age": 22,
-    "location": "Vidisha, Madhya Pradesh, India",
-    "title": "Full-stack Python Developer & AI Engineer",
-    "email": "anujjainbatu@gmail.com",
-    "phone": "+91 8305117236",
-    "handle": "@anujjainbatu",
-    "bio": "Hey 👋\nI'm Anuj, a passionate Full-stack Python developer and AI engineer with experience across ML, Generative AI, and IoT. Amazon ML Summer School trainee, SIH 2025 finalist, and active freelancer with 25+ delivered automation projects. I love building end-to-end smart systems — from IoT devices to LLM-powered applications.",
-    "avatar": "/profile.jpeg",
-    "fallbackAvatar": "https://images.unsplash.com/photo-1610216705422-caa3fcb6d158?q=80&w=3560&auto=format&fit=crop&ixlib=rb-4.0.3"
+    "name": "Abdulkarim G. Mohammed",
+    "shortName": "Abdulkarim",
+    "initials": "AG",
+    "title": "Senior Full-Stack Engineer & AI/LLM Specialist",
+    "tagline": "I design and ship production-grade web platforms and LLM-powered features end to end — from system architecture to deployment.",
+    "location": "Addis Ababa, Ethiopia",
+    "timezone": "EAT · UTC+3",
+    "email": "files@aivi.io",
+    "handle": "@abdulkarimgmohammed",
+    "upworkBadge": "Top Rated · Top 3% in Ethiopia",
+    "bio": "I'm Abdulkarim — a senior full-stack engineer based in Addis Ababa with 5+ years shipping software for clients around the world. I hold Top Rated status on Upwork (top 3% in Ethiopia) and I've built everything from fintech banking backends to AI-assisted call-management systems.\n\nThese days I work where web engineering meets applied AI: designing Next.js and NestJS platforms, wiring up LLM features with LangChain and LangGraph, and training and evaluating frontier models — RLHF, prompt engineering, side-by-side comparison — for teams like Turing. I care about clean architecture, measurable impact, and code that survives contact with real users.\n\nI also published research on hate-speech detection for Afan Oromo, a low-resource language, reaching 90%+ accuracy — because I like hard problems that matter.",
+    "avatar": "/avatar.svg",
+    "fallbackAvatar": "/avatar.svg"
   },
-  "education": {
-    "current": {
-      "degree": "B.Tech in Internet of Things",
-      "institution": "Samrat Ashok Technological Institute (SATI)",
-      "duration": "2022-2026",
-      "cgpa": "7.85/10.0",
-      "graduationDate": "June 2026"
-    },
-    "previous": {
-      "degree": "Higher Secondary Certificate (Science Stream)",
-      "institution": "Board of Secondary Education, MP",
-      "duration": "2021",
-      "percentage": "96.4%",
-      "completionDate": "March 2021"
-    },
-    "achievements": [
-      "Smart India Hackathon 2025 Finalist (2nd among 88,221 teams)",
-      "Amazon ML Summer School Trainee (Selected from 60,000+ applicants)",
-      "HDFC Badhte Kadam Scholarship recipient (2023 & 2024)",
-      "Satyarth Techfest 2023: 3rd position in Robo Race"
-    ]
+  "stats": [
+    { "value": "Top Rated", "label": "Upwork · Top 3% in Ethiopia" },
+    { "value": "5+ yrs", "label": "Shipping for global clients" },
+    { "value": "20+", "label": "Projects delivered end to end" },
+    { "value": "3.8 / 4.0", "label": "BSc Software Engineering, AAU" }
+  ],
+  "availability": {
+    "open": true,
+    "headline": "Available for freelance & contract work",
+    "types": ["Freelance", "Contract", "Fractional lead"],
+    "workMode": "Remote",
+    "location": "Addis Ababa, Ethiopia — working across US & EU hours",
+    "timezone": "EAT · UTC+3",
+    "startDate": "Immediately",
+    "focusAreas": [
+      "Full-stack web platforms (Next.js / NestJS)",
+      "LLM & AI feature development",
+      "Model training & evaluation (RLHF)",
+      "Backend & API architecture",
+      "Technical leadership & mentoring"
+    ],
+    "workStyle": "Senior, autonomous, and communicative. I scope tightly, ship in reviewable slices, and hand back clean, documented, tested code.",
+    "goals": "I'm looking for teams building ambitious products where I can own meaningful surface area — web platforms, AI features, or both — and raise the bar on quality as we go.",
+    "note": "Top Rated on Upwork — happy to start the engagement there or work directly."
   },
   "experience": [
     {
-      "company": "Amazon ML Summer School",
-      "position": "Trainee",
-      "type": "Training Program",
-      "duration": "August 2025",
-      "description": "Selected from 60,000+ applicants for intensive machine learning program. Completed 8 modules covering Supervised/Unsupervised Learning, Deep Neural Networks, Sequential Models, Reinforcement Learning, Generative AI, and Causal Inference. Gained hands-on experience with Amazon-scale ML systems and recommendation engines.",
-      "technologies": ["Machine Learning", "Deep Neural Networks", "Reinforcement Learning", "Generative AI", "Sequential Models", "Causal Inference"]
-    },
-    {
-      "company": "MookMati",
-      "position": "Machine Learning Intern",
-      "type": "Internship",
-      "duration": "July 2024",
-      "description": "AI-Powered Book Startup - Developed ML model for book genre classification using TF-IDF and XGBoost, achieving 88% F1-score. Engineered FastAPI backend with REST endpoints for genre prediction and recommendations. Containerized and deployed service on AWS EC2 with monitoring and auto-restart capabilities.",
-      "technologies": ["Python", "Machine Learning", "TF-IDF", "XGBoost", "FastAPI", "AWS EC2", "Docker"]
-    },
-    {
-      "company": "Fiverr",
-      "position": "Freelance Python & AI Developer",
+      "company": "Upwork",
+      "position": "Senior Full-Stack Engineer",
       "type": "Freelance",
-      "duration": "August 2023 - Present",
-      "description": "Delivered 25+ Python automation solutions reducing manual work by 60% for global clients. Built GenAI-powered chatbots and autonomous agents using LangChain, LangGraph, OpenAI APIs. Developed LLM-backed APIs using FastAPI and Docker for conversational AI integration.",
-      "technologies": ["Python", "LangChain", "LangGraph", "OpenAI API", "FastAPI", "Docker", "Web Scraping", "Automation"]
+      "duration": "2022 — Present",
+      "location": "Remote · Global clients",
+      "description": "Top Rated freelancer delivering web, backend, data, and AI projects for international clients across fintech, telecom, and AI training. I own the full lifecycle — discovery, architecture, implementation, and handoff — on long-term retained engagements.",
+      "highlights": [
+        "Top Rated status — top 3% of talent in Ethiopia",
+        "Long-term client retention across multiple industries",
+        "End-to-end ownership from system design to deployment"
+      ],
+      "technologies": ["Next.js", "NestJS", "Python", "TypeScript", "PostgreSQL", "GCP", "AWS"]
+    },
+    {
+      "company": "Turing",
+      "position": "LLM Trainer & AI Data Specialist",
+      "type": "Contract",
+      "duration": "2024 — Present",
+      "location": "Remote",
+      "description": "Fine-tune and evaluate frontier large language models — including Google's Gemini — using RLHF, prompt engineering, and side-by-side model comparison. I design evaluation rubrics and run large-scale data cleaning and annotation to improve model quality.",
+      "highlights": [
+        "RLHF and reward-signal data for frontier models",
+        "Side-by-side model comparison and evaluation rubrics",
+        "High-quality data annotation and cleaning at scale"
+      ],
+      "technologies": ["RLHF", "Prompt Engineering", "LLM Evaluation", "Python", "Data Annotation"]
+    },
+    {
+      "company": "EWA Services",
+      "position": "Backend Engineer — FINN Banking App",
+      "type": "Contract",
+      "duration": "2023 — Present",
+      "location": "Remote",
+      "description": "Built the backend for FINN, a consumer banking application: secure authentication, accounts, and transaction APIs on Node.js and TypeScript with Firebase and GCP, integrated with an Angular client.",
+      "highlights": [
+        "Secure auth, accounts, and transaction flows",
+        "REST APIs consumed by an Angular front end",
+        "Firebase + GCP infrastructure"
+      ],
+      "technologies": ["Node.js", "TypeScript", "Angular", "Firebase", "GCP", "PostgreSQL"]
+    },
+    {
+      "company": "Canal+",
+      "position": "Software Engineer",
+      "type": "Full-time",
+      "duration": "2022 — 2024",
+      "location": "Addis Ababa",
+      "description": "Built ATCOM, a call-management system with AI-assisted routing and quality scoring that improved call-handling quality by roughly 35%. Also delivered Solar Village, an internal task-management application for field operations.",
+      "highlights": [
+        "~35% improvement in call-handling quality via AI integration",
+        "Delivered Solar Village task-management app",
+        "Owned features from spec to production"
+      ],
+      "technologies": ["Node.js", "Express.js", "MySQL", "JavaScript", "AI Integration"]
+    },
+    {
+      "company": "Hiya General Trading PLC",
+      "position": "Software Engineer",
+      "type": "Full-time",
+      "duration": "2021 — 2022",
+      "location": "Addis Ababa",
+      "description": "Delivered a rental-management platform that automated bookings, tenants, and billing, raising operational productivity by around 75%.",
+      "highlights": [
+        "~75% productivity gain from automation",
+        "Full CRUD platform: bookings, tenants, billing"
+      ],
+      "technologies": ["Node.js", "MySQL", "JavaScript"]
     }
   ],
-  "skills": {
-    "programming": ["Python", "JavaScript", "SQL", "HTML/CSS", "TypeScript"],
-    "ml_ai": ["Scikit-learn", "XGBoost", "TensorFlow", "OpenCV", "Pandas", "NumPy", "LangChain", "LangGraph", "OpenAI API", "LLM Agents", "ChatGPT Integration", "Hugging Face"],
-    "web_development": ["React.js", "Next.js", "FastAPI", "Flask", "Django", "Firebase SDK", "REST APIs", "Tailwind CSS", "Node.js"],
-    "databases": ["PostgreSQL", "MongoDB", "Firebase", "MySQL"],
-    "devops_cloud": ["Docker", "Git", "GitHub Actions", "CI/CD", "AWS (EC2/S3)", "Firebase", "Heroku"],
-    "iot_hardware": ["ESP32", "Arduino", "PCB Design", "Hardware Development", "IoT Systems", "Raspberry Pi"],
-    "soft_skills": ["Problem Solving", "Team Leadership", "Project Management", "Communication", "Learning Agility", "Innovation"]
+  "education": {
+    "degree": "BSc in Software Engineering",
+    "institution": "Addis Ababa University",
+    "stream": "Artificial Intelligence",
+    "gpa": "3.8 / 4.0",
+    "note": "Software Engineering with an Artificial Intelligence specialization.",
+    "research": {
+      "title": "Hate-speech detection for Afan Oromo (low-resource NLP)",
+      "summary": "Published machine-learning research on detecting hate speech in Afan Oromo, a low-resource language — covering data collection, preprocessing, and model training — reaching 90%+ accuracy.",
+      "link": ""
+    },
+    "achievements": [
+      "Top Rated on Upwork — top 3% of talent in Ethiopia",
+      "Published NLP research on a low-resource language (90%+ accuracy)",
+      "GPA 3.8 / 4.0 — BSc Software Engineering, AI stream"
+    ]
   },
-  "certifications": [
-    {
-      "name": "Joy of Computing with Python",
-      "issuer": "IIT Madras (NPTEL)",
-      "grade": "Elite + Silver",
-      "year": "2024"
-    },
-    {
-      "name": "Machine Learning Specialization",
-      "issuer": "Stanford University (Coursera)",
-      "year": "2024"
-    },
-    {
-      "name": "Meta Front-End Developer Professional Certificate",
-      "issuer": "Meta (Coursera)",
-      "year": "2024"
-    },
-    {
-      "name": "Java Programming & Software Engineering",
-      "issuer": "Duke University (Coursera)",
-      "year": "2023"
-    }
-  ],
+  "skills": {
+    "languages": ["TypeScript", "Python", "JavaScript", "Go", "SQL", "Dart", "Java"],
+    "frontend": ["React", "Next.js", "Angular", "Vue.js", "Tailwind CSS", "Redux", "Framer Motion", "D3.js"],
+    "backend": ["Node.js", "NestJS", "Express.js", "Django", "FastAPI", "GraphQL", "REST APIs", "WebSockets", "Microservices"],
+    "ai_llm": ["LangChain", "LangGraph", "CrewAI", "AutoGen", "RAG pipelines", "RLHF", "Prompt Engineering", "OpenAI / Gemini / Claude APIs", "Model evaluation", "Vector databases"],
+    "data_ml": ["PyTorch", "scikit-learn", "Pandas", "NumPy", "NLP", "ETL pipelines", "Data annotation"],
+    "cloud_devops": ["AWS", "GCP", "Docker", "CI/CD · GitHub Actions", "Nginx", "PM2", "Linux", "Vercel"],
+    "databases": ["PostgreSQL", "MongoDB", "MySQL", "Redis", "Firebase"],
+    "practices": ["System design & architecture", "Technical leadership & mentoring", "Code review", "Testing — unit / integration / E2E", "Agile delivery", "API design", "Performance optimization", "Security best practices"]
+  },
   "projects": [
     {
-      "title": "AI-Powered Developer Portfolio",
-      "category": "AI/Web Development",
-      "description": "Built customizable portfolio platform using Next.js, TypeScript, and Google Gemini API. Implemented AI-driven content generation and resume parsing for automated portfolio creation. Features include dynamic chatbot, responsive design, and Vercel deployment.",
-      "techStack": ["Next.js", "TypeScript", "Google Gemini API", "React", "Tailwind CSS", "Vercel"],
-      "date": "April 2025",
-      "status": "Completed",
+      "title": "FINN — Mobile Banking Platform",
+      "category": "Fintech · Backend",
+      "role": "Backend Engineer",
+      "client": "EWA Services",
+      "description": "Backend for a consumer banking application: secure authentication, accounts, and transaction APIs built on Node.js and TypeScript with Firebase and GCP, integrated with an Angular client. Focused on correctness, security, and clean API contracts for a product handling real money.",
+      "techStack": ["Node.js", "TypeScript", "NestJS", "Firebase", "GCP", "Angular", "PostgreSQL"],
+      "date": "2023 — Present",
+      "status": "Production",
       "featured": true,
-      "links": [
-        {
-          "name": "Live Site",
-          "url": "https://portfolio.anujjainbatu.tech/"
-        },
-        {
-          "name": "GitHub",
-          "url": "https://github.com/anujjainbatu/portfolio"
-        }
+      "highlights": [
+        "Secure auth, accounts, and transaction flows",
+        "REST APIs consumed by an Angular mobile client",
+        "Firebase + GCP cloud infrastructure"
       ],
-      "images": [
-        {
-          "src": "https://raw.githubusercontent.com/anujjainbatu/portfolio/main/assets/portfolio.png",
-          "alt": "Portfolio Homepage"
-        }
-      ]
+      "metrics": ["Live banking product", "Security-first architecture"],
+      "cover": "/covers/fintech.svg",
+      "links": [],
+      "images": []
     },
     {
-      "title": "Insurance Premium Prediction API",
-      "category": "Backend API/Machine Learning",
-      "description": "Built production-ready ML inference API with FastAPI and Pydantic validation. Dockerized application with comprehensive monitoring endpoints and Swagger documentation. Designed scalable architecture following industry best practices for input validation and error handling.",
-      "techStack": ["Python", "FastAPI", "Pydantic", "Docker", "Machine Learning", "Swagger", "Uvicorn"],
-      "date": "September 2025",
-      "status": "Completed",
+      "title": "ATCOM — AI Call-Management System",
+      "category": "Telecom · AI",
+      "role": "Software Engineer",
+      "client": "Canal+",
+      "description": "A call-management platform with AI-assisted routing and quality scoring. The AI layer analysed calls and surfaced quality signals to supervisors, improving call-handling quality by roughly 35% and giving the team a data-driven view of service performance.",
+      "techStack": ["Node.js", "Express.js", "MySQL", "AI Integration", "JavaScript"],
+      "date": "2022 — 2024",
+      "status": "Delivered",
       "featured": true,
-      "links": [
-        {
-          "name": "GitHub",
-          "url": "https://github.com/anujjainbatu/insurance-premium-prediction-fastapi"
-        },
-        {
-          "name": "Docker Hub",
-          "url": "https://hub.docker.com/r/anujjainbatu/insurance-premium-api"
-        },
-        {
-          "name": "Live API Docs",
-          "url": "http://51.20.55.205:8000/docs"
-        }
+      "highlights": [
+        "AI-assisted call routing and quality scoring",
+        "Supervisor dashboard for service performance",
+        "Owned from spec through production"
       ],
-      "images": [
-        {
-          "src": "https://raw.githubusercontent.com/anujjainbatu/insurance-premium-prediction-fastapi/main/assets/demo.gif",
-          "alt": "Insurance Premium Prediction API Demo"
-        }
-      ]
+      "metrics": ["~35% quality improvement"],
+      "cover": "/covers/telecom.svg",
+      "links": [],
+      "images": []
     },
     {
-      "title": "LeetConnect",
-      "category": "Chrome Extension",
-      "description": "JavaScript-based Chrome Extension that connects you with friends and tracks LeetCode statistics in real-time. Stay motivated by seeing your friends' progress, get notified when they solve new problems, and manage your study group or team's coding journey together.",
-      "techStack": ["JavaScript", "Chrome Extension Manifest V3", "HTML", "CSS", "Chrome Storage API", "Chrome Notifications API", "LeetCode API"],
-      "date": "2024",
+      "title": "LLM Training & Evaluation",
+      "category": "AI · LLM",
+      "role": "LLM Trainer",
+      "client": "Turing",
+      "description": "Fine-tuning and evaluating frontier LLMs, including Google's Gemini, using RLHF, prompt engineering, and side-by-side model comparison. I design evaluation rubrics and run large-scale data cleaning and annotation to push model quality and reduce failure modes.",
+      "techStack": ["RLHF", "Prompt Engineering", "LLM Evaluation", "Python", "Data Annotation"],
+      "date": "2024 — Present",
       "status": "Ongoing",
       "featured": true,
-      "links": [
-        {
-          "name": "GitHub",
-          "url": "https://github.com/anujjainbatu/leetconnect"
-        },
-        {
-          "name": "Demo GIF",
-          "url": "https://raw.githubusercontent.com/anujjainbatu/leetconnect/main/assets-landing/screenshots/demo-web.gif"
-        }
+      "highlights": [
+        "RLHF and reward-signal authoring for frontier models",
+        "Side-by-side comparison and evaluation rubrics",
+        "High-quality, high-volume data annotation"
       ],
-      "images": [
-        {
-          "src": "https://raw.githubusercontent.com/anujjainbatu/leetconnect/main/assets-landing/screenshots/demo-web.gif",
-          "alt": "LeetConnect Extension Demo"
-        }
-      ]
-    },
-    {
-      "title": "IntelliPrice",
-      "category": "Machine Learning",
-      "description": "ML-powered laptop price prediction system built with Streamlit. Features clean interface, fast predictions, and easy deployment via Docker. Uses key attributes like brand, CPU, RAM, storage, GPU, and screen size for accurate real-time price estimates.",
-      "techStack": ["Python", "Streamlit", "scikit-learn", "Docker", "Pandas", "Machine Learning"],
-      "date": "2025",
-      "status": "Completed",
-      "featured": true,
-      "links": [
-        {
-          "name": "GitHub",
-          "url": "https://github.com/anujjainbatu/IntelliPrice"
-        },
-        {
-          "name": "Demo GIF",
-          "url": "https://github.com/anujjainbatu/IntelliPrice/blob/main/assets/demo.gif"
-        }
-      ],
-      "images": [
-        {
-          "src": "https://github.com/anujjainbatu/IntelliPrice/blob/main/assets/demo.gif?raw=true",
-          "alt": "IntelliPrice App Demo"
-        }
-      ]
-    },
-    {
-      "title": "SpamSense",
-      "category": "NLP System",
-      "description": "NLP-based spam detection tool that predicts whether marketing emails will land in inbox or spam folder. Features Streamlit web interface and scikit-learn ML model trained on real spam datasets for agencies to optimize campaign deliverability.",
-      "techStack": ["Python", "Streamlit", "scikit-learn", "NLP", "Machine Learning", "Heroku"],
-      "date": "2025",
-      "status": "Completed",
-      "featured": true,
-      "links": [
-        {
-          "name": "GitHub",
-          "url": "https://github.com/anujjainbatu/spamsense"
-        },
-        {
-          "name": "Demo GIF",
-          "url": "https://github.com/anujjainbatu/spamsense/blob/main/assets/demo.gif"
-        }
-      ],
-      "images": [
-        {
-          "src": "https://raw.githubusercontent.com/anujjainbatu/spamsense/main/assets/demo.gif",
-          "alt": "SpamSense Demo"
-        }
-      ]
-    },
-    {
-      "title": "PopcornPicks",
-      "category": "Machine Learning",
-      "description": "Movie recommendation system built with Streamlit. Select a movie you like and get personalized recommendations with detailed information and posters. Uses machine learning to suggest similar movies based on selection using movie metadata and similarity matrix.",
-      "techStack": ["Python", "Streamlit", "Pickle", "scikit-learn", "pandas", "Heroku"],
-      "date": "2024",
-      "status": "Completed",
-      "featured": true,
-      "links": [
-        {
-          "name": "GitHub",
-          "url": "https://github.com/anujjainbatu/popcornpicks"
-        }
-      ],
+      "metrics": ["Frontier-model quality work"],
+      "cover": "/covers/ai.svg",
+      "links": [],
       "images": []
     },
     {
-      "title": "Chess Trace",
-      "category": "IoT System",
-      "description": "Built an IoT-enabled chessboard using ESP32, multiplexers, and 64 reed switches with 98.2% move detection accuracy at 1/8th the commercial cost. Features real-time move logging to Firebase, a web dashboard for live analysis and replay, and Stockfish-powered engine integration. Led a 3-member team through hardware prototyping, firmware development, cloud setup, and user testing with 20+ players.",
-      "techStack": ["ESP32", "C++ (Arduino)", "HTML", "CSS", "JavaScript", "Firebase", "Stockfish.js", "PCB Design", "IoT", "Cloud Integration", "Hardware Development"],
-      "date": "2025",
-      "status": "Completed",
+      "title": "Afan Oromo Hate-Speech Detection",
+      "category": "Research · NLP",
+      "role": "Researcher & Author",
+      "description": "Published machine-learning research detecting hate speech in Afan Oromo, a low-resource language. The work spanned data collection, preprocessing, feature engineering, and model training — reaching 90%+ accuracy and contributing tooling for an under-served language.",
+      "techStack": ["Python", "NLP", "scikit-learn", "PyTorch", "Research"],
+      "date": "2023",
+      "status": "Published",
       "featured": true,
-      "links": [
-        {
-          "name": "GitHub",
-          "url": "https://github.com/anujjainbatu/chess-trace"
-        }
+      "highlights": [
+        "End-to-end NLP pipeline for a low-resource language",
+        "Data collection, preprocessing, and modelling",
+        "Published academic research"
       ],
-      "images": [
-        {
-          "src": "https://raw.githubusercontent.com/anujjainbatu/chess-trace/main/assets/solution_architecture_dia.jpeg",
-          "alt": "Solution Architecture Diagram"
-        },
-        {
-          "src": "https://raw.githubusercontent.com/anujjainbatu/chess-trace/main/assets/product.png",
-          "alt": "Product"
-        }
-      ]
-    },
-    {
-      "title": "Pralay Mitra",
-      "category": "AI/Disaster Management",
-      "description": "AI-powered disaster management system to assist government officials during emergencies. Features interactive dashboard, real-time high-risk city alerts, AI chatbot (Gemini API) for response planning, and centralized resources for food, shelter, and medical aid.",
-      "techStack": ["Python", "Django", "JavaScript", "Bootstrap", "FontAwesome", "Gemini API"],
-      "date": "2024",
-      "status": "Completed",
-      "featured": true,
-      "links": [
-        {
-          "name": "GitHub",
-          "url": "https://github.com/anujjainbatu/Pralay_Mitra"
-        }
-      ],
+      "metrics": ["90%+ accuracy", "Published research"],
+      "cover": "/covers/research.svg",
+      "links": [],
       "images": []
     },
     {
-      "title": "hideFlare: CDN Obfuscation Detection System",
-      "category": "Cybersecurity Tool",
-      "description": "Python tool to uncover real hosting details of websites protected by Cloudflare. Automates subdomain enumeration, SSL analysis, ASN/org/GeoIP lookups, historical IP resolution, and outputs results for security researchers. Used for SIH 2024 finalist project for MP Police.",
-      "techStack": ["Python", "Subdomain Enumeration", "SSL Analysis", "SecurityTrails API"],
-      "date": "2024",
-      "status": "Completed",
-      "featured": true,
-      "achievements": ["Smart India Hackathon 2024 Finalist"],
-      "links": [
-        {
-          "name": "GitHub",
-          "url": "https://github.com/anujjainbatu/hideFlare"
-        }
+      "title": "Rental Management System",
+      "category": "Web App · Automation",
+      "role": "Software Engineer",
+      "client": "Hiya General Trading PLC",
+      "description": "A rental-operations platform that automated bookings, tenant records, and billing. Replacing manual workflows lifted operational productivity by around 75% and gave the business a single source of truth.",
+      "techStack": ["Node.js", "MySQL", "JavaScript", "Express.js"],
+      "date": "2021 — 2022",
+      "status": "Delivered",
+      "featured": false,
+      "highlights": [
+        "Automated bookings, tenants, and billing",
+        "Single source of truth for operations"
       ],
+      "metrics": ["~75% productivity gain"],
+      "cover": "/covers/automation.svg",
+      "links": [],
       "images": []
     },
     {
-      "title": "Python Automation Suite",
-      "category": "Automation",
-      "description": "Delivered 25+ Python automation projects for global clients, including web scraping, API bots, and data pipelines. Built GenAI-powered chatbots and autonomous agents using LangChain, LangGraph, and OpenAI APIs, reducing manual work by 60%.",
-      "techStack": ["Python", "LangChain", "LangGraph", "OpenAI API", "Web Scraping", "Automation", "FastAPI", "Docker"],
-      "date": "2023-Present",
-      "status": "Ongoing",
+      "title": "This Portfolio — Conversational AI Site",
+      "category": "AI · Web",
+      "role": "Designer & Engineer",
+      "description": "The site you're on. A Claude-style conversational portfolio: ask it anything about my work and it answers with rich, structured cards. Built with Next.js 15, React 19, the Vercel AI SDK, a command palette, and slash commands — designed to feel like a developer tool, not a résumé.",
+      "techStack": ["Next.js 15", "React 19", "TypeScript", "Vercel AI SDK", "Tailwind CSS", "Framer Motion"],
+      "date": "2026",
+      "status": "Live",
       "featured": true,
-      "metrics": ["25+ Projects Delivered", "60% Manual Work Reduction"],
-      "links": [
-        {
-          "name": "Fiverr Profile",
-          "url": "https://www.fiverr.com"
-        },
-        {
-          "name": "GitHub",
-          "url": "https://github.com/anujjainbatu"
-        }
+      "highlights": [
+        "Conversational, tool-driven UI",
+        "⌘K command palette and slash commands",
+        "Claude research-journal design system"
       ],
+      "metrics": ["You're looking at it"],
+      "cover": "/covers/portfolio.svg",
+      "links": [{ "name": "GitHub", "url": "https://github.com/abdulkarimg" }],
       "images": []
     }
   ],
   "social": {
-    "linkedin": "https://linkedin.com/in/anujjainbatu",
-    "github": "https://github.com/anujjainbatu",
-    "twitter": "https://x.com/anujainbatu",
-    "kaggle": "https://www.kaggle.com/anujjainbatu",
-    "leetcode": "https://leetcode.com/u/anujjainbatu/",
-    "fiverr": "https://www.fiverr.com",
-    "portfolio": "https://portfolio.anujjainbatu.tech/"
-  },
-  "internship": {
-    "seeking": true,
-    "duration": "6 months",
-    "startDate": "February 2025",
-    "preferredLocation": "Remote or On-site",
-    "focusAreas": ["AI Development", "Full-stack Development", "Machine Learning", "Generative AI"],
-    "availability": "Available for immediate start",
-    "workStyle": "Fast learner, team player, problem solver with hands-on experience in production systems",
-    "goals": "Join an innovative team building AI-powered solutions. I want to contribute to meaningful projects while growing my skills in enterprise-level development and scaling ML systems."
-  },
-  "personality": {
-    "traits": ["passionate", "curious", "determined", "collaborative", "results-driven"],
-    "interests": ["AI/ML", "Generative AI", "IoT", "Web Development", "Open Source", "Hackathons", "Automation"],
-    "funFacts": [
-      "Smart India Hackathon 2025 finalist among 88,221 teams",
-      "Amazon ML Summer School trainee (top 5% selection rate)",
-      "Built 25+ automation projects reducing manual work by 60%",
-      "Achieved 88% F1-score in ML model for book genre classification"
-    ],
-    "workingStyle": "I move fast, learn faster, and love tackling challenging problems with scalable solutions",
-    "motivation": "Building technology that makes a real impact on people's lives through AI and automation"
+    "upwork": "https://www.upwork.com/freelancers/~01dc65c291b2936bc3",
+    "github": "https://github.com/abdulkarimg",
+    "linkedin": "https://www.linkedin.com/in/abdulkarimgmohammed",
+    "twitter": "https://x.com/abdulkarimg"
   },
   "resume": {
-    "title": "Anuj Jain - Resume",
-    "description": "Full-stack Python Developer & AI Engineer | Amazon ML Summer School Trainee | SIH 2025 Finalist",
+    "title": "Abdulkarim G. Mohammed — Résumé",
+    "description": "Senior Full-Stack Engineer & AI/LLM Specialist · Top Rated on Upwork",
     "fileType": "PDF",
-    "lastUpdated": "September 2025",
-    "fileSize": "2.1 MB",
-    "downloadUrl": "https://anujjainbatu.github.io/anujjainbatu/resume_show_16092025.pdf"
+    "lastUpdated": "August 2026",
+    "fileSize": "—",
+    "downloadUrl": "/resume.pdf"
   },
   "chatbot": {
-    "name": "Anuj",
-    "personality": "casual, enthusiastic, tech-savvy",
-    "tone": "friendly and conversational",
+    "name": "Abdulkarim",
+    "personality": "senior, warm, precise",
+    "tone": "confident and conversational",
     "language": "english",
-    "responseStyle": "short and interactive",
-    "useEmojis": true,
-    "topics": ["projects", "skills", "experience", "internship", "contact", "fun_facts", "certifications", "achievements"]
+    "responseStyle": "concise and substantive",
+    "useEmojis": false,
+    "topics": ["projects", "skills", "experience", "availability", "contact", "background", "ai", "leadership"]
   },
   "presetQuestions": {
     "me": [
       "Who are you?",
       "Tell me about yourself",
       "What's your background?",
-      "What are your passions?",
-      "How did you get started in tech?",
-      "Where do you see yourself in 5 years?"
+      "How did you get into AI and LLMs?",
+      "What kind of work do you enjoy most?"
     ],
     "professional": [
       "What are your skills?",
-      "Can I see your resume?",
+      "Can I see your résumé?",
       "What's your experience?",
-      "Are you looking for internships?",
-      "What makes you a valuable team member?",
-      "Tell me about your Amazon ML Summer School experience",
-      "What certifications do you have?",
+      "Are you available for work?",
       "Why should I hire you?",
-      "What's your educational background?",
-      "How was your experience as a freelancer?"
+      "Tell me about your LLM training work",
+      "How do you approach system design?",
+      "What's your freelance track record?"
     ],
     "projects": [
       "What projects are you most proud of?",
       "Tell me about your AI projects",
-      "What are your recent projects?",
-      "Tell me about your best project",
-      "What are you working on?",
-      "Show me your machine learning projects"
-    ],
-    "achievements": [
-      "What are your major achievements?",
-      "Tell me about Smart India Hackathon",
-      "What awards have you won?",
-      "Tell me about your Amazon selection"
+      "Show me your recent work",
+      "What did you build for fintech?",
+      "Tell me about the banking app"
     ],
     "contact": [
       "How can I reach you?",
-      "How can I contact you?",
       "What's your email?",
       "Where can I find you online?",
-      "What kind of project would make you say 'yes' immediately?",
-      "Where are you located?"
+      "What makes you say yes to a project?",
+      "Where are you based?"
     ],
     "fun": [
-      "What are your hobbies?",
-      "Tell me something interesting about you",
+      "What do you do outside of code?",
       "What motivates you?",
-      "What's a fun fact about you?"
+      "Tell me something interesting about you"
     ]
   },
   "meta": {
-    "configVersion": "2.0",
-    "lastUpdated": "2025-09-15",
-    "generatedBy": "Anuj Jain",
-    "description": "Updated portfolio configuration with latest resume information including Amazon ML Summer School, updated projects, and enhanced certifications"
+    "configVersion": "3.0",
+    "lastUpdated": "2026-08-29",
+    "generatedBy": "Abdulkarim G. Mohammed",
+    "description": "Senior full-stack + AI/LLM portfolio, Claude research-journal design system."
   }
 }

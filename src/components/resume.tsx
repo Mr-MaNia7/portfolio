@@ -1,92 +1,128 @@
 'use client';
 
-import React, { useState } from 'react';
+import React from 'react';
 import { motion } from 'framer-motion';
-import { ArrowDownToLine, Download, Eye, File, ExternalLink } from 'lucide-react';
-import Image from 'next/image';
-import { resumeDetails } from '@/lib/config-loader';
+import { Download, GraduationCap, FlaskConical } from 'lucide-react';
+import { resumeDetails, getConfig } from '@/lib/config-loader';
 
 export function Resume() {
-  // Resume details loaded from configuration
+  const { experience, education } = getConfig();
 
   const handleDownload = () => {
-    // For external URLs, open in a new tab
     window.open(resumeDetails.downloadUrl, '_blank');
   };
 
   return (
-    <div className="mx-auto w-full py-8 font-sans">
-      {/* Resume Card */}
-      <motion.div
-        className="group relative overflow-hidden rounded-xl bg-accent p-0 transition-all duration-300 mb-4"
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.0, ease: 'easeOut' }}
-      >
-        {/* Details area */}
-        <div className="p-5">
-          <div className="flex items-center justify-between">
-            <div>
-              <h3 className="text-lg font-medium text-foreground">
-                {resumeDetails.title}
-              </h3>
-              <p className="text-sm text-muted-foreground">
-                {resumeDetails.description}
-              </p>
-              <div className="mt-1 flex text-xs text-muted-foreground">
-                <span>{resumeDetails.fileType}</span>
-                <span className="mx-2">•</span>
-                <span>Updated {resumeDetails.lastUpdated}</span>
-                <span className="mx-2">•</span>
-                <span>{resumeDetails.fileSize}</span>
+    <div className="mx-auto w-full max-w-3xl py-2">
+      {/* Header */}
+      <div className="flex flex-wrap items-end justify-between gap-4 border-b border-border pb-4">
+        <div>
+          <span className="font-mono text-[10px] tracking-wider text-muted-foreground uppercase">
+            Résumé · updated {resumeDetails.lastUpdated}
+          </span>
+          <h2 className="font-display mt-1 text-2xl tracking-tight text-foreground sm:text-3xl">
+            Experience
+          </h2>
+        </div>
+        <button
+          onClick={handleDownload}
+          className="btn-claude h-9 px-4 text-sm"
+        >
+          <Download className="h-4 w-4" />
+          Download PDF
+        </button>
+      </div>
+
+      {/* Timeline */}
+      <div className="mt-6">
+        {experience.map((exp, i) => (
+          <motion.div
+            key={exp.company + i}
+            initial={{ opacity: 0, y: 12 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, margin: '-40px' }}
+            transition={{ duration: 0.4, delay: i * 0.04 }}
+            className="grid grid-cols-1 gap-2 border-b border-border py-5 sm:grid-cols-[128px_1fr] sm:gap-6"
+          >
+            <div className="font-mono text-xs text-muted-foreground">
+              {exp.duration}
+              <div className="mt-1 hidden text-[11px] text-muted-foreground/70 sm:block">
+                {exp.type}
               </div>
             </div>
+            <div>
+              <h3 className="text-[15px] font-semibold text-foreground">
+                {exp.position}
+              </h3>
+              <p className="text-sm text-clay">{exp.company}</p>
+              <p className="mt-2 text-sm leading-relaxed text-foreground/80">
+                {exp.description}
+              </p>
+              {exp.highlights && exp.highlights.length > 0 && (
+                <ul className="mt-2.5 space-y-1">
+                  {exp.highlights.map((h) => (
+                    <li
+                      key={h}
+                      className="flex gap-2 text-[13px] text-muted-foreground"
+                    >
+                      <span className="mt-1.5 h-1 w-1 shrink-0 rounded-full bg-clay" />
+                      {h}
+                    </li>
+                  ))}
+                </ul>
+              )}
+              <div className="mt-3 flex flex-wrap gap-1.5">
+                {exp.technologies.map((t) => (
+                  <span
+                    key={t}
+                    className="rounded-sm border border-border bg-secondary/50 px-2 py-0.5 text-[11px] text-foreground/70"
+                  >
+                    {t}
+                  </span>
+                ))}
+              </div>
+            </div>
+          </motion.div>
+        ))}
+      </div>
 
-            {/* Download button */}
-            <motion.button
-              onClick={handleDownload}
-              className="flex h-10 w-10 items-center justify-center rounded-full bg-black text-white hover:bg-black/80 transition-colors"
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
-              title="Download PDF"
-            >
-              <Download className="h-5 w-5" />
-            </motion.button>
+      {/* Education & research */}
+      <div className="mt-6 grid grid-cols-1 gap-5 sm:grid-cols-2">
+        <div className="rounded-lg border border-border p-5">
+          <div className="mb-2 flex items-center gap-2">
+            <GraduationCap className="h-4 w-4 text-clay" />
+            <span className="text-[13px] font-semibold text-foreground">
+              Education
+            </span>
+          </div>
+          <p className="text-sm text-foreground">{education.degree}</p>
+          <p className="text-sm text-muted-foreground">{education.institution}</p>
+          <div className="mt-2 flex flex-wrap gap-x-3 gap-y-1 text-xs text-muted-foreground">
+            {education.stream && <span>{education.stream} stream</span>}
+            {education.gpa && (
+              <>
+                <span className="text-border-strong">·</span>
+                <span>GPA {education.gpa}</span>
+              </>
+            )}
           </div>
         </div>
-      </motion.div>
 
-      {/* PDF Preview - Always Visible */}
-      <motion.div
-        initial={{ opacity: 0, y: 10 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.4, delay: 0.2 }}
-        className="w-full rounded-xl overflow-hidden border bg-white shadow-lg"
-      >
-        <div className="bg-gray-100 px-4 py-2 flex items-center justify-between border-b">
-          <div className="flex items-center gap-2">
-            <File className="h-4 w-4 text-gray-600" />
-            <span className="text-sm font-medium text-gray-700">Resume Preview</span>
+        {education.research && (
+          <div className="rounded-lg border border-border p-5">
+            <div className="mb-2 flex items-center gap-2">
+              <FlaskConical className="h-4 w-4 text-clay" />
+              <span className="text-[13px] font-semibold text-foreground">
+                Research
+              </span>
+            </div>
+            <p className="text-sm text-foreground">{education.research.title}</p>
+            <p className="mt-1 text-[13px] leading-relaxed text-muted-foreground">
+              {education.research.summary}
+            </p>
           </div>
-          <button
-            onClick={handleDownload}
-            className="flex items-center gap-1 px-3 py-1 text-xs bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors"
-          >
-            <ExternalLink className="h-3 w-3" />
-            Open Full
-          </button>
-        </div>
-        
-        <div className="w-full h-[600px] bg-gray-50">
-          <iframe
-            src={resumeDetails.downloadUrl}
-            width="100%"
-            height="100%"
-            className="border-0"
-            title="Resume Preview"
-          />
-        </div>
-      </motion.div>
+        )}
+      </div>
     </div>
   );
 }

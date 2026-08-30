@@ -5,13 +5,11 @@ import { toast } from 'sonner';
 import {
   ArrowUpRight,
   Copy,
-  Github,
-  Linkedin,
   Mail,
   MapPin,
-  Twitter,
   Briefcase,
 } from 'lucide-react';
+import { Github, Linkedin, Twitter } from '@/components/ui/brand-icons';
 import { contactInfo, getConfig } from '@/lib/config-loader';
 
 const SOCIAL_ICONS: Record<string, React.ComponentType<{ className?: string }>> = {

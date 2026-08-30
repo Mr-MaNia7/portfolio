@@ -4,9 +4,11 @@
 
 /*
   ────────────────────────────────────────────────────────────────
-  Claude research-journal design system
+  Anthropic Design System (DESIGN.md)
   Warm ivory parchment · near-black slate ink · a single clay accent.
-  Flat, hard-edged, zero shadows. Emphasis from type + underlines.
+  Soft rounded geometry (4 → 24px → pill), gentle layered elevation,
+  dual typeface (Sans for chrome, Serif at display scale). Emphasis
+  from typography, high contrast, and generous whitespace.
   ────────────────────────────────────────────────────────────────
 */
 
@@ -32,6 +34,9 @@
   --color-clay-strong: var(--clay-strong);
   --color-clay-foreground: var(--clay-foreground);
   --color-clay-soft: var(--clay-soft);
+  --color-clay-highlight: var(--clay-highlight);
+
+  --color-oat: var(--oat);
 
   --color-destructive: var(--destructive);
   --color-success: var(--success);
@@ -46,27 +51,34 @@
   --font-serif: var(--font-newsreader), ui-serif, Georgia, serif;
   --font-mono: var(--font-jetbrains), ui-monospace, "SF Mono", monospace;
 
-  --radius-sm: 0.25rem;
-  --radius-md: 0.375rem;
-  --radius-lg: 0.5rem;
-  --radius-xl: 0.75rem;
+  /* DESIGN.md radius roles: subtle · control · card · large surface */
+  --radius-sm: 0.25rem;  /* radius-small  — subtle corner        */
+  --radius-md: 0.5rem;   /* radius-main   — control corner        */
+  --radius-lg: 1rem;     /* radius-large  — card corner           */
+  --radius-xl: 1.5rem;   /* radius-xl     — large surface corner  */
+
+  /* Gentle layered elevation (DESIGN.md card-elevation) */
+  --shadow-card: 0 1px 2px rgba(20, 20, 19, 0.04), 0 2px 8px rgba(20, 20, 19, 0.05);
+  --shadow-card-hover: 0 2px 4px rgba(20, 20, 19, 0.05), 0 8px 24px rgba(20, 20, 19, 0.07);
 }
 
 :root {
-  /* Warm ivory parchment — never pure white */
-  --background: #faf9f6;
+  /* Warm ivory parchment (ivory-light) — never pure white */
+  --background: #faf9f5;
   --foreground: #141413;
 
-  --card: #ffffff;
+  /* Card surface: a hair lighter than the ground, lifted by border + shadow.
+     Deliberately warm, never pure #ffffff. */
+  --card: #fffdf8;
   --card-foreground: #141413;
-  --popover: #ffffff;
+  --popover: #fffdf8;
   --popover-foreground: #141413;
 
   /* Near-black slate as the dominant ink */
   --primary: #141413;
-  --primary-foreground: #faf9f6;
+  --primary-foreground: #faf9f5;
 
-  /* Warm sand for inset surfaces */
+  /* Warm sand for inset surfaces (ivory-medium) */
   --secondary: #f0eee6;
   --secondary-foreground: #201f1d;
   --muted: #f0eee6;
@@ -74,22 +86,28 @@
   --accent: #f0eee6;
   --accent-foreground: #201f1d;
 
-  /* The single earthy clay accent, held in reserve */
-  --clay: #c15f3c;
+  /* The single earthy clay accent (DESIGN.md accent #c6613f, held in reserve).
+     clay-highlight is the softer companion tone for large accent moments. */
+  --clay: #c6613f;
   --clay-strong: #a54a2a;
+  --clay-highlight: #d97757;
   --clay-foreground: #ffffff;
   --clay-soft: #f3e6de;
+
+  /* Warm decorative surface / footer accent */
+  --oat: #e3dacc;
 
   --destructive: #b4402e;
   --success: #4f7a3f;
   --warning: #b5812a;
 
-  --border: #e7e4da;
-  --border-strong: #d6d2c4;
-  --input: #e0ddd1;
+  /* Cloud stone tones for dividers and borders */
+  --border: #e3dacc;
+  --border-strong: #b0aea5;
+  --input: #d6d2c4;
   --ring: #141413;
 
-  --radius: 0.375rem;
+  --radius: 0.5rem;
 }
 
 .dark {
@@ -113,8 +131,11 @@
 
   --clay: #d97757;
   --clay-strong: #e2917a;
+  --clay-highlight: #e2917a;
   --clay-foreground: #141312;
   --clay-soft: #3a2a21;
+
+  --oat: #3a352c;
 
   --destructive: #e07a63;
   --success: #86b06f;
@@ -165,23 +186,25 @@
 
 @layer components {
   /*
-    The one signature curvature in the system: the primary CTA has a
-    flat top and a rounded bottom. Flat, no shadow — a pressed-ink feel.
+    Soft rounded geometry (DESIGN.md): the primary CTA is a fully-rounded
+    pill with gentle elevation — consistent curvature, no sharp corners.
   */
   .btn-claude {
     display: inline-flex;
     align-items: center;
     justify-content: center;
     gap: 0.5rem;
-    border-radius: 0 0 0.75rem 0.75rem;
+    border-radius: 100vw;
     background: var(--primary);
     color: var(--primary-foreground);
     font-weight: 500;
     letter-spacing: -0.01em;
-    transition: transform 0.12s ease, background 0.15s ease, opacity 0.15s ease;
+    box-shadow: var(--shadow-card);
+    transition: transform 0.12s ease, background 0.15s ease, box-shadow 0.15s ease, opacity 0.15s ease;
   }
   .btn-claude:hover {
     background: color-mix(in oklab, var(--primary) 88%, var(--clay));
+    box-shadow: var(--shadow-card-hover);
   }
   .btn-claude:active {
     transform: translateY(1px);
@@ -192,15 +215,17 @@
     align-items: center;
     justify-content: center;
     gap: 0.5rem;
-    border-radius: 0 0 0.75rem 0.75rem;
+    border-radius: 100vw;
     background: var(--clay);
     color: var(--clay-foreground);
     font-weight: 500;
     letter-spacing: -0.01em;
-    transition: transform 0.12s ease, background 0.15s ease;
+    box-shadow: var(--shadow-card);
+    transition: transform 0.12s ease, background 0.15s ease, box-shadow 0.15s ease;
   }
   .btn-clay:hover {
     background: var(--clay-strong);
+    box-shadow: var(--shadow-card-hover);
   }
   .btn-clay:active {
     transform: translateY(1px);
@@ -209,6 +234,14 @@
   /* A hairline rule in the warm border tone */
   .hairline {
     border-color: var(--border);
+  }
+
+  /* Gentle layered elevation for cards and raised surfaces */
+  .elevation-card {
+    box-shadow: var(--shadow-card);
+  }
+  .elevation-card-hover:hover {
+    box-shadow: var(--shadow-card-hover);
   }
 
 }

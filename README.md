@@ -23,7 +23,7 @@ Built on the **Claude research-journal design system** — warm ivory parchment,
 
 ## Signature features
 
-- **Conversational UI** — a ChatGPT-style interface where the "digital twin" answers as Abdulkarim, calling tools that render bespoke cards.
+- **Conversational UI** — a Claude Style interface where the "digital twin" answers as Abdulkarim, calling tools that render bespoke cards.
 - **⌘K command palette** — Raycast-style menu to jump anywhere: ask a question, open a profile, copy the email, toggle the theme.
 - **Slash commands** — type `/` in the composer for `/projects`, `/skills`, `/resume`, `/hire`, `/contact`, `/upwork`, and more.
 - **Instant preset answers** — the core questions render immediately from curated content, with **no API call**, so the site never looks broken at rate limits. An "Ask the live AI" button escalates to the model for free-form depth.

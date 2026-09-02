@@ -8,6 +8,7 @@ import {
   FolderGit2,
   Layers,
   Mail,
+  Sparkles,
   User,
 } from 'lucide-react';
 import Image from 'next/image';
@@ -28,6 +29,14 @@ const SUGGESTIONS = [
   { q: 'Are you available for work?', slash: '/hire', icon: Briefcase },
   { q: 'Can I see your résumé?', slash: '/resume', icon: FileText },
   { q: 'How can I reach you?', slash: '/contact', icon: Mail },
+];
+
+// Free-form prompts with no preset — clicking one answers live via the AI, so
+// visitors discover that this is a real conversation, not a fixed FAQ.
+const LIVE_EXAMPLES = [
+  'How would you architect an LLM feature end to end?',
+  'What was the hardest problem you solved recently?',
+  'Why should I hire you over another senior engineer?',
 ];
 
 const container = {
@@ -63,7 +72,7 @@ const ChatLanding: React.FC<ChatLandingProps> = ({
     <motion.div
       className="mx-auto w-full max-w-2xl py-6"
       variants={container}
-      initial="hidden"
+      initial={false}
       animate="visible"
     >
       {/* Identity */}
@@ -146,6 +155,22 @@ const ChatLanding: React.FC<ChatLandingProps> = ({
               <span className="font-mono text-[11px] text-muted-foreground/60">
                 {slash}
               </span>
+            </button>
+          ))}
+        </div>
+
+        {/* Free-form: proves it's a live conversation, not a fixed FAQ */}
+        <div className="mt-3 flex flex-wrap items-center gap-2">
+          <span className="inline-flex items-center gap-1.5 font-mono text-[10px] tracking-wider text-muted-foreground uppercase">
+            <Sparkles className="h-3 w-3 text-clay" /> Or ask live
+          </span>
+          {LIVE_EXAMPLES.map((q) => (
+            <button
+              key={q}
+              onClick={() => submitQuery(q)}
+              className="rounded-sm border border-border bg-background px-2.5 py-1 text-left text-[12px] text-muted-foreground transition-colors hover:border-border-strong hover:text-foreground"
+            >
+              {q}
             </button>
           ))}
         </div>

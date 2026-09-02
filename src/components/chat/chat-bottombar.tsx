@@ -7,7 +7,7 @@ import React, { useEffect, useMemo, useRef, useState } from 'react';
 import type { Command } from '@/lib/commands';
 
 interface ChatBottombarProps {
-  handleInputChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
+  handleInputChange: (e: React.ChangeEvent<HTMLTextAreaElement>) => void;
   handleSubmit: (
     e: React.FormEvent<HTMLFormElement>,
     chatRequestOptions?: ChatRequestOptions
@@ -21,6 +21,20 @@ interface ChatBottombarProps {
   onOpenCommand: () => void;
 }
 
+// Rotating example questions shown as ghost text in the empty composer. They
+// double as inline autocomplete suggestions: press Tab (or tap the hint) to
+// drop the current one into the field — the Gmail / Copilot "ghost text"
+// pattern — so visitors discover the composer answers free-form questions live.
+const EXAMPLES = [
+  'How would you architect a RAG pipeline?',
+  'What was the hardest bug you shipped a fix for?',
+  'How do you approach LLM evals?',
+  "What's your experience leading a team?",
+  'Why should I hire you over another senior engineer?',
+];
+
+const MAX_TEXTAREA_HEIGHT = 160; // ~6 lines
+
 export default function ChatBottombar({
   input,
   handleInputChange,
@@ -32,8 +46,11 @@ export default function ChatBottombar({
   onRunCommand,
   onOpenCommand,
 }: ChatBottombarProps) {
-  const inputRef = useRef<HTMLInputElement>(null);
+  const inputRef = useRef<HTMLTextAreaElement>(null);
   const [active, setActive] = useState(0);
+  const [exampleIdx, setExampleIdx] = useState(0);
+
+  const currentExample = EXAMPLES[exampleIdx];
 
   const isSlash = input.startsWith('/');
   const slashMatches = useMemo(() => {
@@ -54,19 +71,78 @@ export default function ChatBottombar({
 
   const showSlash = isSlash && slashMatches.length > 0;
 
+  // A suggestion is offered only while the field is empty and idle — so Tab is
+  // never intercepted mid-typing, and the ghost text can't be mistaken for
+  // something the user actually entered.
+  const suggestionActive = input.length === 0 && !isToolInProgress && !showSlash;
+
   useEffect(() => setActive(0), [input]);
+
+  // Auto-grow the textarea up to a max height, then scroll internally.
+  useEffect(() => {
+    const el = inputRef.current;
+    if (!el) return;
+    el.style.height = 'auto';
+    el.style.height = `${Math.min(el.scrollHeight, MAX_TEXTAREA_HEIGHT)}px`;
+  }, [input]);
+
+  // Cycle the suggested example while the field is empty and idle.
+  useEffect(() => {
+    if (!suggestionActive) return;
+    const id = setInterval(
+      () => setExampleIdx((i) => (i + 1) % EXAMPLES.length),
+      3800
+    );
+    return () => clearInterval(id);
+  }, [suggestionActive]);
+
+  // Drop the current suggestion into the field, ready to edit or send.
+  const acceptSuggestion = () => {
+    handleInputChange({
+      target: { value: currentExample },
+    } as React.ChangeEvent<HTMLTextAreaElement>);
+    requestAnimationFrame(() => {
+      const el = inputRef.current;
+      if (el) {
+        el.focus();
+        const end = el.value.length;
+        el.setSelectionRange(end, end);
+      }
+    });
+  };
 
   const clearInput = () =>
     handleInputChange({
       target: { value: '' },
-    } as React.ChangeEvent<HTMLInputElement>);
+    } as React.ChangeEvent<HTMLTextAreaElement>);
 
   const runSlash = (cmd: Command) => {
     clearInput();
     onRunCommand(cmd);
   };
 
-  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+  const submit = () =>
+    handleSubmit({
+      preventDefault: () => {},
+    } as unknown as React.FormEvent<HTMLFormElement>);
+
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
+    // Accept the ghost suggestion with Tab or → (Right). Only while empty, and
+    // never on Shift+Tab — keyboard users keep normal focus traversal.
+    if (
+      suggestionActive &&
+      (e.key === 'Tab' || e.key === 'ArrowRight') &&
+      !e.shiftKey &&
+      !e.metaKey &&
+      !e.ctrlKey &&
+      !e.altKey &&
+      !e.nativeEvent.isComposing
+    ) {
+      e.preventDefault();
+      acceptSuggestion();
+      return;
+    }
+
     if (showSlash) {
       if (e.key === 'ArrowDown') {
         e.preventDefault();
@@ -78,7 +154,7 @@ export default function ChatBottombar({
         setActive((a) => Math.max(a - 1, 0));
         return;
       }
-      if (e.key === 'Enter' && !e.nativeEvent.isComposing) {
+      if (e.key === 'Enter' && !e.shiftKey && !e.nativeEvent.isComposing) {
         e.preventDefault();
         runSlash(slashMatches[active]);
         return;
@@ -89,14 +165,16 @@ export default function ChatBottombar({
       }
     }
 
+    // Enter submits; Shift+Enter inserts a newline.
     if (
       e.key === 'Enter' &&
+      !e.shiftKey &&
       !e.nativeEvent.isComposing &&
       !isToolInProgress &&
       input.trim()
     ) {
       e.preventDefault();
-      handleSubmit(e as unknown as React.FormEvent<HTMLFormElement>);
+      submit();
     }
   };
 
@@ -143,34 +221,45 @@ export default function ChatBottombar({
       </AnimatePresence>
 
       <form onSubmit={handleSubmit} className="w-full">
-        <div className="group flex items-center gap-2 rounded-lg border border-input bg-card px-3 py-2 transition-colors focus-within:border-border-strong">
+        <div className="group flex items-end gap-2 rounded-lg border border-input bg-card px-3 py-2 transition-colors focus-within:border-border-strong">
           <span
             aria-hidden
-            className="select-none pl-0.5 font-mono text-sm text-clay"
+            className="select-none py-1 pl-0.5 font-mono text-sm text-clay"
           >
             ›
           </span>
-          <input
+          <textarea
             ref={inputRef}
-            type="text"
+            rows={1}
             value={input}
             onChange={handleInputChange}
             onKeyDown={handleKeyDown}
             placeholder={
-              isToolInProgress
-                ? 'One moment…'
-                : 'Ask me anything — or type / for commands'
+              isToolInProgress ? 'One moment…' : currentExample
             }
             aria-label="Ask a question"
-            className="w-full bg-transparent text-[15px] text-foreground placeholder:text-muted-foreground focus:outline-none"
+            className="custom-scrollbar max-h-40 w-full resize-none self-center bg-transparent py-1 text-[15px] leading-relaxed text-foreground placeholder:text-muted-foreground focus:outline-none"
             disabled={isToolInProgress}
           />
+
+          {/* Accept-suggestion hint — tappable, so mobile (no Tab key) can use it too */}
+          {suggestionActive && (
+            <button
+              type="button"
+              onClick={acceptSuggestion}
+              aria-label={`Use example question: ${currentExample}`}
+              title="Fill this question"
+              className="mb-1 flex shrink-0 items-center gap-1 self-end rounded-sm border border-border px-1.5 py-0.5 font-mono text-[10px] text-muted-foreground transition-colors hover:border-border-strong hover:text-foreground"
+            >
+              ⇥ Tab
+            </button>
+          )}
 
           <button
             type="button"
             onClick={onOpenCommand}
             aria-label="Open command menu"
-            className="hidden items-center gap-1 rounded-sm border border-border px-1.5 py-0.5 font-mono text-[10px] text-muted-foreground transition-colors hover:text-foreground sm:flex"
+            className="mb-1 hidden items-center gap-1 self-end rounded-sm border border-border px-1.5 py-0.5 font-mono text-[10px] text-muted-foreground transition-colors hover:text-foreground sm:flex"
           >
             ⌘K
           </button>
@@ -180,7 +269,7 @@ export default function ChatBottombar({
               type="button"
               onClick={stop}
               aria-label="Stop"
-              className="flex h-8 w-8 items-center justify-center rounded-full bg-primary text-primary-foreground transition-transform active:translate-y-px"
+              className="flex h-8 w-8 shrink-0 items-center justify-center self-end rounded-full bg-primary text-primary-foreground transition-transform active:translate-y-px"
             >
               <Square className="h-3.5 w-3.5 fill-current" />
             </button>
@@ -189,7 +278,7 @@ export default function ChatBottombar({
               type="submit"
               disabled={!input.trim() || isToolInProgress}
               aria-label="Send"
-              className="flex h-8 w-8 items-center justify-center rounded-full bg-primary text-primary-foreground transition-transform active:translate-y-px disabled:opacity-35"
+              className="flex h-8 w-8 shrink-0 items-center justify-center self-end rounded-full bg-primary text-primary-foreground transition-transform active:translate-y-px disabled:opacity-35"
             >
               <ArrowUp className="h-4 w-4" />
             </button>

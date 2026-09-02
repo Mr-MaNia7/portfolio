@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { Sparkles, X, Zap } from 'lucide-react';
+import { Sparkles, X } from 'lucide-react';
 import { motion } from 'framer-motion';
 
 import { Presentation } from '@/components/presentation';
@@ -10,6 +10,7 @@ import Skills from '@/components/skills';
 import { Contact } from '@/components/contact';
 import Resume from '@/components/resume';
 import AvailabilityCard from '@/components/AvailabilityCard';
+import { TurnBadge } from './turn-badge';
 
 interface PresetReplyProps {
   question: string;
@@ -17,6 +18,8 @@ interface PresetReplyProps {
   tool: string;
   onGetAIResponse: (question: string, tool: string) => void;
   onClose?: () => void;
+  /** Only the most recent turn offers escalation to the live AI. */
+  canEscalate?: boolean;
 }
 
 export function PresetReply({
@@ -25,6 +28,7 @@ export function PresetReply({
   tool,
   onGetAIResponse,
   onClose,
+  canEscalate = true,
 }: PresetReplyProps) {
   const [showAIOption, setShowAIOption] = useState(true);
 
@@ -56,39 +60,43 @@ export function PresetReply({
 
   return (
     <motion.div
-      initial={{ opacity: 0, y: 12 }}
+      initial={false}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.3 }}
       className="w-full"
     >
+      {/* Provenance + remove-from-history */}
+      <div className="mb-2 flex items-center justify-between">
+        <TurnBadge kind="instant" />
+        {onClose && (
+          <button
+            onClick={onClose}
+            aria-label="Remove this answer from the conversation"
+            title="Remove from conversation"
+            className="flex items-center gap-1 rounded-sm px-1.5 py-0.5 font-mono text-[10px] tracking-wide text-muted-foreground/70 transition-colors hover:bg-secondary hover:text-foreground"
+          >
+            <X className="h-3 w-3" />
+            Remove
+          </button>
+        )}
+      </div>
+
       {component ? (
         <div className="w-full">
           {component}
 
-          {showAIOption && (
+          {showAIOption && canEscalate && (
             <div className="mx-auto mt-4 flex max-w-3xl items-center justify-between gap-3 border-t border-border pt-3">
-              <span className="flex items-center gap-1.5 text-xs text-muted-foreground">
-                <Zap className="h-3.5 w-3.5 text-clay" />
-                Instant answer — no API used
+              <span className="text-xs text-muted-foreground">
+                Want the freeform version?
               </span>
-              <div className="flex items-center gap-2">
-                <button
-                  onClick={handleGetAIResponse}
-                  className="flex items-center gap-1.5 rounded-sm border border-border-strong px-3 py-1.5 text-xs text-foreground transition-colors hover:bg-secondary"
-                >
-                  <Sparkles className="h-3.5 w-3.5" />
-                  Ask the live AI
-                </button>
-                {onClose && (
-                  <button
-                    onClick={onClose}
-                    aria-label="Dismiss"
-                    className="flex h-7 w-7 items-center justify-center rounded-sm text-muted-foreground transition-colors hover:bg-secondary hover:text-foreground"
-                  >
-                    <X className="h-4 w-4" />
-                  </button>
-                )}
-              </div>
+              <button
+                onClick={handleGetAIResponse}
+                className="flex items-center gap-1.5 rounded-sm border border-border-strong px-3 py-1.5 text-xs text-foreground transition-colors hover:bg-secondary"
+              >
+                <Sparkles className="h-3.5 w-3.5 text-clay" />
+                Ask the live AI
+              </button>
             </div>
           )}
         </div>

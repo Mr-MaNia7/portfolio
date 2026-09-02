@@ -51,7 +51,10 @@ export async function POST(req: Request) {
     };
 
     const result = streamText({
-      model: google('gemini-1.5-flash'),
+      // Gemini 1.5 was retired from the API; 2.5 Flash is the current stable,
+      // fast, tool-capable model. Use 'gemini-flash-latest' to auto-track newer
+      // stable Flash releases instead of pinning.
+      model: google('gemini-2.5-flash-lite'),
       system: SYSTEM_PROMPT.content,
       messages: await convertToModelMessages(messages),
       tools,

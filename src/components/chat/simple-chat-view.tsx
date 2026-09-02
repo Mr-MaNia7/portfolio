@@ -8,6 +8,7 @@ import { getToolName, isToolUIPart, type UIMessage } from 'ai';
 import { motion } from 'framer-motion';
 import ChatMessageContent from './chat-message-content';
 import ToolRenderer from './tool-renderer';
+import { TurnBadge } from './turn-badge';
 
 interface SimplifiedChatViewProps {
   message: UIMessage;
@@ -16,20 +17,29 @@ interface SimplifiedChatViewProps {
 }
 
 const MOTION_CONFIG = {
-  initial: { opacity: 0, y: 20 },
+  // Enter animations don't fire reliably under this framer-motion + React
+  // version, which left content stuck at the `initial` (opacity 0) state — so we
+  // render directly at the resting state instead of animating in.
+  initial: false,
   animate: { opacity: 1, y: 0 },
-  exit: { opacity: 0, y: 20 },
   transition: {
     duration: 0.3,
     ease: 'easeOut',
   },
 } as const;
 
-export function SimplifiedChatView({
+/**
+ * Renders a single assistant turn inline (tools + text) so it can live inside a
+ * scrollable transcript alongside every previous turn. Unlike the old
+ * full-height single-turn view, this owns no scroll container and grows to its
+ * content — the parent transcript scrolls.
+ */
+export function AssistantTurn({
   message,
   isLoading,
   reload,
-}: SimplifiedChatViewProps) {
+  animate = true,
+}: SimplifiedChatViewProps & { animate?: boolean }) {
   if (message.role !== 'assistant') return null;
 
   // Extract completed tool calls (v5 tool parts: type 'tool-<name>', state 'output-available')
@@ -50,7 +60,6 @@ export function SimplifiedChatView({
     .map((part) => (part.type === 'text' ? part.text : ''))
     .join('');
 
-  // Check if we have meaningful text content (more than just confirmations)
   const hasTextContent = textContent.trim().length > 0;
   const hasTools = currentTool.length > 0;
 
@@ -58,40 +67,44 @@ export function SimplifiedChatView({
   const showTextContent =
     hasTextContent && (!hasTools || textContent.trim().length > 50);
 
+  // Nothing to show yet (assistant message created but no text/tools streamed).
+  if (!hasTools && !showTextContent) return null;
+
+  const Wrapper = animate ? motion.div : 'div';
+  const wrapperProps = animate ? MOTION_CONFIG : {};
+
   return (
-    <motion.div {...MOTION_CONFIG} className="flex h-full w-full flex-col px-4">
-      {/* Single scrollable container for both tool and text content */}
-      <div className="custom-scrollbar flex h-full w-full flex-col overflow-y-auto">
-        {/* Tool invocation result - displayed at the top */}
-        {hasTools && (
-          <div className="mb-4 w-full">
-            <ToolRenderer
-              toolInvocations={currentTool}
-              messageId={message.id || 'current-msg'}
-            />
-          </div>
-        )}
-
-        {/* Text content - only show if meaningful and not redundant with tools */}
-        {showTextContent && (
-          <div className="w-full">
-            <ChatBubble variant="received" className="w-full">
-              <ChatBubbleMessage className="w-full">
-                <ChatMessageContent
-                  message={message}
-                  isLast={true}
-                  isLoading={isLoading}
-                  reload={reload}
-                  skipToolRendering={true}
-                />
-              </ChatBubbleMessage>
-            </ChatBubble>
-          </div>
-        )}
-
-        {/* Add some padding at the bottom for better scrolling experience */}
-        <div className="pb-4"></div>
+    <Wrapper {...wrapperProps} className="flex w-full flex-col">
+      <div className="mb-2">
+        <TurnBadge kind="ai" />
       </div>
-    </motion.div>
+      {hasTools && (
+        <div className="mb-4 w-full">
+          <ToolRenderer
+            toolInvocations={currentTool}
+            messageId={message.id || 'current-msg'}
+          />
+        </div>
+      )}
+
+      {showTextContent && (
+        <ChatBubble variant="received" className="w-full">
+          <ChatBubbleMessage className="w-full">
+            <ChatMessageContent
+              message={message}
+              isLast={true}
+              isLoading={isLoading}
+              reload={reload}
+              skipToolRendering={true}
+            />
+          </ChatBubbleMessage>
+        </ChatBubble>
+      )}
+    </Wrapper>
   );
+}
+
+// Backwards-compatible alias — same inline turn renderer.
+export function SimplifiedChatView(props: SimplifiedChatViewProps) {
+  return <AssistantTurn {...props} />;
 }

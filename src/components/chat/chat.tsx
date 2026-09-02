@@ -1,21 +1,21 @@
 'use client';
 import { useChat } from '@ai-sdk/react';
-import { DefaultChatTransport, isToolUIPart } from 'ai';
+import { DefaultChatTransport, isToolUIPart, type UIMessage } from 'ai';
 import { AnimatePresence, motion } from 'framer-motion';
 import { useTheme } from 'next-themes';
 import { useSearchParams } from 'next/navigation';
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { toast } from 'sonner';
 
 import ChatBottombar from '@/components/chat/chat-bottombar';
 import ChatLanding from '@/components/chat/chat-landing';
-import ChatMessageContent from '@/components/chat/chat-message-content';
-import { SimplifiedChatView } from '@/components/chat/simple-chat-view';
+import { AssistantTurn } from '@/components/chat/simple-chat-view';
 import { PresetReply } from '@/components/chat/preset-reply';
 import { CommandPalette } from '@/components/chat/command-palette';
 import { TopBar } from '@/components/chat/top-bar';
 import HelperBoost from './HelperBoost';
 import { ChatBubble, ChatBubbleMessage } from '@/components/ui/chat/chat-bubble';
+import { TurnBadge } from './turn-badge';
 import { presetReplies, getConfig } from '@/lib/config-loader';
 import { buildCommands, type Command } from '@/lib/commands';
 
@@ -25,6 +25,25 @@ const MOTION_CONFIG = {
   exit: { opacity: 0, y: 16 },
   transition: { duration: 0.28, ease: 'easeOut' },
 } as const;
+
+type PresetItem = {
+  id: string;
+  // # of chat messages that existed when this was created — used to interleave
+  // instant preset answers with the AI conversation chronologically.
+  anchor: number;
+  order: number;
+  question: string;
+  reply: string;
+  tool: string;
+};
+
+type ErrorItem = { anchor: number; order: number };
+
+// A single entry in the rendered transcript.
+type TimelineItem =
+  | { key: string; kind: 'msg'; message: UIMessage }
+  | { key: string; kind: 'preset'; item: PresetItem }
+  | { key: string; kind: 'error' };
 
 const Chat = () => {
   const searchParams = useSearchParams();
@@ -38,72 +57,51 @@ const Chat = () => {
   const [loadingSubmit, setLoadingSubmit] = useState(false);
   const [paletteOpen, setPaletteOpen] = useState(false);
   const [input, setInput] = useState('');
-  const [presetReply, setPresetReply] = useState<{
-    question: string;
-    reply: string;
-    tool: string;
-  } | null>(null);
-  const [errorMessage, setErrorMessage] = useState<string | null>(null);
+  const [presetItems, setPresetItems] = useState<PresetItem[]>([]);
+  const [errorItem, setErrorItem] = useState<ErrorItem | null>(null);
 
-  const { messages, status, stop, regenerate, sendMessage } =
+  // Monotonic tie-break for entries sharing an anchor. Only ever touched inside
+  // event handlers / callbacks, never during render.
+  const orderRef = useRef(0);
+  const nextOrder = () => orderRef.current++;
+
+  const bottomRef = useRef<HTMLDivElement>(null);
+
+  const { messages, status, stop, regenerate, sendMessage, setMessages } =
     useChat({
       transport: new DefaultChatTransport({ api: '/api/chat' }),
       onFinish: () => setLoadingSubmit(false),
       onError: (error) => {
         setLoadingSubmit(false);
         console.error('Chat error:', error.message);
-        const quota =
-          error.message?.includes('quota') ||
-          error.message?.includes('exceeded') ||
-          error.message?.includes('429') ||
-          error.message?.includes('API key');
-        if (quota) {
-          setErrorMessage('quota_exhausted');
-        } else {
+        setErrorItem({ anchor: messagesRef.current.length, order: nextOrder() });
+        if (
+          !(
+            error.message?.includes('quota') ||
+            error.message?.includes('exceeded') ||
+            error.message?.includes('429') ||
+            error.message?.includes('API key')
+          )
+        ) {
           toast.error('Something went wrong. Try a quick question below.');
-          setErrorMessage('quota_exhausted');
         }
       },
     });
 
+  // Latest messages, readable from event handlers without re-creating callbacks.
+  const messagesRef = useRef(messages);
+  useEffect(() => {
+    messagesRef.current = messages;
+  }, [messages]);
+
   const isLoading = status === 'submitted' || status === 'streaming';
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) =>
+  const handleInputChange = (e: React.ChangeEvent<HTMLTextAreaElement>) =>
     setInput(e.target.value);
 
   // Hide the standalone loading bubble once the response starts streaming.
   useEffect(() => {
     if (status === 'streaming') setLoadingSubmit(false);
   }, [status]);
-
-  const { currentAIMessage, latestUserMessage, hasActiveTool } = useMemo(() => {
-    const latestAIMessageIndex = messages.findLastIndex(
-      (m) => m.role === 'assistant'
-    );
-    const latestUserMessageIndex = messages.findLastIndex(
-      (m) => m.role === 'user'
-    );
-
-    const result = {
-      currentAIMessage:
-        latestAIMessageIndex !== -1 ? messages[latestAIMessageIndex] : null,
-      latestUserMessage:
-        latestUserMessageIndex !== -1 ? messages[latestUserMessageIndex] : null,
-      hasActiveTool: false,
-    };
-
-    if (result.currentAIMessage) {
-      result.hasActiveTool =
-        result.currentAIMessage.parts?.some(
-          (part) => isToolUIPart(part) && part.state === 'output-available'
-        ) || false;
-    }
-
-    if (latestAIMessageIndex < latestUserMessageIndex) {
-      result.currentAIMessage = null;
-    }
-
-    return result;
-  }, [messages]);
 
   const isToolInProgress = messages.some(
     (m) =>
@@ -113,29 +111,96 @@ const Chat = () => {
       )
   );
 
+  // Merge messages + presets + error into one ordered transcript. A preset (or
+  // the error notice) anchored at N renders right after the Nth chat message,
+  // so instant answers and AI turns stay in the order they happened.
+  const timeline = useMemo<TimelineItem[]>(() => {
+    const extras: Array<{ anchor: number; order: number; node: TimelineItem }> =
+      [];
+    for (const p of presetItems) {
+      extras.push({
+        anchor: p.anchor,
+        order: p.order,
+        node: { key: `preset-${p.id}`, kind: 'preset', item: p },
+      });
+    }
+    if (errorItem) {
+      extras.push({
+        anchor: errorItem.anchor,
+        order: errorItem.order,
+        node: { key: 'error', kind: 'error' },
+      });
+    }
+    extras.sort((a, b) => a.order - b.order);
+
+    const items: TimelineItem[] = [];
+    for (let i = 0; i <= messages.length; i++) {
+      for (const e of extras) if (e.anchor === i) items.push(e.node);
+      if (i < messages.length) {
+        const m = messages[i];
+        items.push({ key: `msg-${m.id}`, kind: 'msg', message: m });
+      }
+    }
+    return items;
+  }, [messages, presetItems, errorItem]);
+
+  const isEmptyState = timeline.length === 0 && !loadingSubmit;
+
+  // Only the most recent turn — when it's a preset and nothing is loading after
+  // it — offers "Ask the live AI". Older presets are settled history.
+  const lastEntry = timeline[timeline.length - 1];
+  const latestPresetId =
+    !loadingSubmit && lastEntry?.kind === 'preset' ? lastEntry.item.id : null;
+
+  // Keep the newest turn in view (new turns and while streaming).
+  useEffect(() => {
+    bottomRef.current?.scrollIntoView({ behavior: 'smooth', block: 'end' });
+  }, [timeline.length, loadingSubmit]);
+  useEffect(() => {
+    if (status === 'streaming') {
+      bottomRef.current?.scrollIntoView({ behavior: 'auto', block: 'end' });
+    }
+  }, [messages, status]);
+
+  const addPreset = useCallback(
+    (question: string, reply: string, tool: string) => {
+      setErrorItem(null);
+      setPresetItems((prev) => [
+        ...prev,
+        {
+          id: `${Date.now()}-${prev.length}`,
+          anchor: messagesRef.current.length,
+          order: nextOrder(),
+          question,
+          reply,
+          tool,
+        },
+      ]);
+      setLoadingSubmit(false);
+    },
+    []
+  );
+
   const submitQuery = useCallback(
     (query: string) => {
       if (!query.trim() || isToolInProgress) return;
-      setErrorMessage(null);
+      setErrorItem(null);
       if (presetReplies[query]) {
         const preset = presetReplies[query];
-        setPresetReply({ question: query, reply: preset.reply, tool: preset.tool });
-        setLoadingSubmit(false);
+        addPreset(query, preset.reply, preset.tool);
         return;
       }
       setLoadingSubmit(true);
-      setPresetReply(null);
       sendMessage({ text: query });
     },
-    [sendMessage, isToolInProgress]
+    [sendMessage, isToolInProgress, addPreset]
   );
 
   const submitQueryToAI = useCallback(
     (query: string) => {
       if (!query.trim() || isToolInProgress) return;
-      setErrorMessage(null);
+      setErrorItem(null);
       setLoadingSubmit(true);
-      setPresetReply(null);
       sendMessage({ text: query });
     },
     [sendMessage, isToolInProgress]
@@ -143,30 +208,29 @@ const Chat = () => {
 
   const handlePresetReply = useCallback(
     (question: string, reply: string, tool: string) => {
-      setErrorMessage(null);
-      setPresetReply({ question, reply, tool });
-      setLoadingSubmit(false);
+      addPreset(question, reply, tool);
     },
-    []
+    [addPreset]
   );
 
   const handleGetAIResponse = useCallback(
     (question: string) => {
-      setPresetReply(null);
       submitQueryToAI(question);
     },
     [submitQueryToAI]
   );
 
+  // Reset the ephemeral conversation in place — no full-page reload.
   const goHome = useCallback(() => {
-    setPresetReply(null);
-    setErrorMessage(null);
+    stop();
+    setMessages([]);
+    setPresetItems([]);
+    setErrorItem(null);
+    orderRef.current = 0;
     setLoadingSubmit(false);
     setInput('');
-    // Clear the ephemeral conversation without a full reload
     window.history.replaceState(null, '', '/');
-    window.location.href = '/';
-  }, [setInput]);
+  }, [stop, setMessages]);
 
   const runCommand = useCallback(
     (cmd: Command) => {
@@ -215,7 +279,7 @@ const Chat = () => {
       setInput('');
       submitQuery(initialQuery);
     }
-  }, [initialQuery, autoSubmitted, submitQuery, setInput]);
+  }, [initialQuery, autoSubmitted, submitQuery]);
 
   const onSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -229,12 +293,8 @@ const Chat = () => {
     setLoadingSubmit(false);
   };
 
-  const isEmptyState =
-    !currentAIMessage &&
-    !latestUserMessage &&
-    !loadingSubmit &&
-    !presetReply &&
-    !errorMessage;
+  const removePreset = (id: string) =>
+    setPresetItems((prev) => prev.filter((p) => p.id !== id));
 
   return (
     <div className="relative flex h-svh flex-col overflow-hidden bg-background">
@@ -256,6 +316,7 @@ const Chat = () => {
                 key="landing"
                 className="flex min-h-full flex-1 items-center justify-center py-8"
                 {...MOTION_CONFIG}
+                initial={false}
               >
                 <ChatLanding
                   submitQuery={submitQuery}
@@ -266,63 +327,88 @@ const Chat = () => {
             ) : (
               <motion.div
                 key="conversation"
-                className="flex flex-col gap-2 py-6"
+                className="flex flex-col gap-4 py-6"
                 {...MOTION_CONFIG}
+                initial={false}
               >
-                {/* Pending question */}
-                {latestUserMessage && !currentAIMessage && !presetReply && (
-                  <div className="flex justify-end">
-                    <ChatBubble variant="sent">
-                      <ChatBubbleMessage>
-                        <ChatMessageContent
-                          message={latestUserMessage}
-                          isLast
-                          isLoading={false}
-                          reload={() => Promise.resolve(null)}
+                {timeline.map((entry) => {
+                  if (entry.kind === 'error') {
+                    return (
+                      <QuotaNotice
+                        key={entry.key}
+                        onQuick={() => {
+                          setErrorItem(null);
+                          const preset = presetReplies['How can I reach you?'];
+                          if (preset)
+                            addPreset(
+                              'How can I reach you?',
+                              preset.reply,
+                              preset.tool
+                            );
+                        }}
+                        onCommand={() => {
+                          setErrorItem(null);
+                          setPaletteOpen(true);
+                        }}
+                      />
+                    );
+                  }
+
+                  if (entry.kind === 'preset') {
+                    const p = entry.item;
+                    return (
+                      <div key={entry.key} className="flex flex-col gap-3">
+                        <UserBubble text={p.question} />
+                        <PresetReply
+                          question={p.question}
+                          reply={p.reply}
+                          tool={p.tool}
+                          canEscalate={p.id === latestPresetId}
+                          onGetAIResponse={(q) => {
+                            // Escalating replaces the instant card with the
+                            // live answer — otherwise the AI re-renders the same
+                            // tool card (and echoes the question), showing it
+                            // twice.
+                            removePreset(p.id);
+                            handleGetAIResponse(q);
+                          }}
+                          onClose={() => removePreset(p.id)}
                         />
-                      </ChatBubbleMessage>
+                      </div>
+                    );
+                  }
+
+                  // Chat message
+                  const m = entry.message;
+                  if (m.role === 'user') {
+                    const text = (m.parts ?? [])
+                      .filter((part) => part.type === 'text')
+                      .map((part) => (part.type === 'text' ? part.text : ''))
+                      .join('');
+                    return <UserBubble key={entry.key} text={text} />;
+                  }
+                  return (
+                    <AssistantTurn
+                      key={entry.key}
+                      message={m}
+                      isLoading={isLoading}
+                      reload={regenerate}
+                    />
+                  );
+                })}
+
+                {loadingSubmit && (
+                  <div className="flex flex-col">
+                    <div className="mb-2">
+                      <TurnBadge kind="ai" />
+                    </div>
+                    <ChatBubble variant="received">
+                      <ChatBubbleMessage isLoading />
                     </ChatBubble>
                   </div>
                 )}
 
-                {presetReply ? (
-                  <PresetReply
-                    question={presetReply.question}
-                    reply={presetReply.reply}
-                    tool={presetReply.tool}
-                    onGetAIResponse={handleGetAIResponse}
-                    onClose={() => setPresetReply(null)}
-                  />
-                ) : errorMessage ? (
-                  <QuotaNotice
-                    onQuick={() => {
-                      setErrorMessage(null);
-                      const preset = presetReplies['How can I reach you?'];
-                      if (preset)
-                        setPresetReply({
-                          question: 'How can I reach you?',
-                          reply: preset.reply,
-                          tool: preset.tool,
-                        });
-                    }}
-                    onCommand={() => {
-                      setErrorMessage(null);
-                      setPaletteOpen(true);
-                    }}
-                  />
-                ) : currentAIMessage ? (
-                  <SimplifiedChatView
-                    message={currentAIMessage}
-                    isLoading={isLoading}
-                    reload={regenerate}
-                  />
-                ) : (
-                  loadingSubmit && (
-                    <ChatBubble variant="received">
-                      <ChatBubbleMessage isLoading />
-                    </ChatBubble>
-                  )
-                )}
+                <div ref={bottomRef} className="h-px w-full" />
               </motion.div>
             )}
           </AnimatePresence>
@@ -355,6 +441,17 @@ const Chat = () => {
   );
 };
 
+function UserBubble({ text }: { text: string }) {
+  if (!text.trim()) return null;
+  return (
+    <div className="flex justify-end">
+      <ChatBubble variant="sent">
+        <ChatBubbleMessage>{text}</ChatBubbleMessage>
+      </ChatBubble>
+    </div>
+  );
+}
+
 function QuotaNotice({
   onQuick,
   onCommand,
@@ -363,7 +460,7 @@ function QuotaNotice({
   onCommand: () => void;
 }) {
   return (
-    <motion.div {...MOTION_CONFIG} className="py-2">
+    <motion.div {...MOTION_CONFIG} initial={false} className="py-2">
       <div className="rounded-lg border border-border bg-secondary/60 p-5">
         <div className="mb-2 flex items-center gap-2">
           <span className="status-dot" style={{ opacity: 0.9 }} />

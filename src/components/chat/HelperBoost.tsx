@@ -44,7 +44,7 @@ export default function HelperBoost({
         {CHIPS.map(({ label, q, icon: Icon }, i) => (
           <motion.button
             key={label}
-            initial={{ opacity: 0, y: 6 }}
+            initial={false}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.03 * i, duration: 0.25 }}
             onClick={() => handleClick(q)}

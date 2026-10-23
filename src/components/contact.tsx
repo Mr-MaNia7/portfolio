@@ -1,106 +1,140 @@
 'use client';
 
 import React from 'react';
-import { toast } from 'sonner';
-import {
-  ArrowUpRight,
-  Copy,
-  Mail,
-  MapPin,
-  Briefcase,
-} from 'lucide-react';
+import { ArrowUpRight, Briefcase, Mail } from 'lucide-react';
 import { Github, Linkedin, Twitter } from '@/components/ui/brand-icons';
 import { contactInfo, getConfig } from '@/lib/config-loader';
+import { useLocalTime } from '@/hooks/use-local-time';
+import { CopyEmail } from '@/components/artifact/copy-email';
 
-const SOCIAL_ICONS: Record<string, React.ComponentType<{ className?: string }>> = {
+const SOCIAL_ICONS: Record<
+  string,
+  React.ComponentType<{ className?: string }>
+> = {
   Upwork: Briefcase,
   GitHub: Github,
   LinkedIn: Linkedin,
   X: Twitter,
 };
 
+/** A readable handle for each profile URL. */
+function handleFor(name: string, url: string, upworkBadge: string) {
+  if (name === 'Upwork') return upworkBadge.split('·')[0].trim();
+  try {
+    const parts = new URL(url).pathname.split('/').filter(Boolean);
+    const last = parts[parts.length - 1] ?? '';
+    if (name === 'LinkedIn') return `in/${last}`;
+    return `@${last}`;
+  } catch {
+    return url;
+  }
+}
+
+/** Contact sheet: one dark field for the invitation, then the direct lines. */
 export function Contact() {
   const { personal, availability } = getConfig();
-
-  const copyEmail = () => {
-    navigator.clipboard
-      ?.writeText(contactInfo.email)
-      .then(() => toast.success('Email copied'))
-      .catch(() => toast.error('Could not copy'));
-  };
+  const time = useLocalTime(personal.timezone);
+  const city = personal.location.split(',')[0];
 
   return (
-    <div className="mx-auto w-full max-w-3xl py-2">
-      <div className="overflow-hidden rounded-lg border border-border">
-        {/* Header on slate — the alternating ivory ↔ near-black rhythm */}
-        <div className="bg-primary px-6 py-8 text-primary-foreground sm:px-8">
-          <span className="font-mono text-[10px] tracking-wider text-primary-foreground/50 uppercase">
-            Contact
+    <section
+      aria-label="Contact"
+      className="reveal-sheet w-full overflow-hidden rounded-lg border border-border bg-card"
+    >
+      {/* Invitation, on slate */}
+      <div className="border-b border-transparent bg-[#141413] px-5 py-7 text-[#f3f0e8] sm:px-7 sm:py-8 dark:border-border dark:bg-sunken">
+        <p className="meta flex flex-wrap items-center gap-x-2 text-[#f3f0e8]/60">
+          Contact <span className="text-[#f3f0e8]/30">{'//'}</span> contact.json
+        </p>
+        <h2 className="font-display mt-3 text-[2rem] leading-[1.05] tracking-[-0.03em] sm:text-[2.5rem]">
+          Let&apos;s build <em className="italic">something.</em>
+        </h2>
+        <p className="measure mt-3 text-[15px] leading-relaxed text-[#f3f0e8]/75">
+          {availability.open ? availability.headline + '. ' : ''}Tell me what
+          you&apos;re building and I&apos;ll come back with concrete next steps.
+        </p>
+        <p className="meta mt-5 flex flex-wrap items-center gap-x-3 gap-y-1 text-[#f3f0e8]/60">
+          <span>{personal.location}</span>
+          <span aria-hidden className="text-[#f3f0e8]/30">
+            /
           </span>
-          <h2 className="font-display mt-2 text-2xl tracking-tight sm:text-3xl">
-            Let&apos;s build something.
-          </h2>
-          <p className="mt-2 max-w-md text-sm leading-relaxed text-primary-foreground/70">
-            {availability.open ? availability.headline + '. ' : ''}Tell me what
-            you&apos;re building and I&apos;ll come back with concrete next steps.
-          </p>
-          <div className="mt-4 flex flex-wrap items-center gap-x-4 gap-y-1 text-xs text-primary-foreground/60">
-            <span className="inline-flex items-center gap-1.5">
-              <MapPin className="h-3.5 w-3.5" />
-              {personal.location}
-            </span>
-            <span className="inline-flex items-center gap-1.5">
-              {personal.timezone}
-            </span>
-          </div>
-        </div>
+          <span>
+            <span className="num text-[#f3f0e8]" suppressHydrationWarning>
+              {time?.label ?? '--:--'}
+            </span>{' '}
+            local · {personal.timezone.split('·').pop()?.trim()}
+          </span>
+        </p>
+      </div>
 
-        {/* Email */}
-        <div className="flex items-center justify-between gap-3 border-b border-border px-6 py-4 sm:px-8">
+      {/* Email — the direct line */}
+      <div
+        className="reveal flex flex-wrap items-center justify-between gap-x-4 gap-y-3 px-5 py-5 sm:px-7"
+        style={{ '--i': 1 } as React.CSSProperties}
+      >
+        <div className="min-w-0">
+          <p className="meta text-muted-foreground">Email</p>
           <a
             href={`mailto:${contactInfo.email}`}
-            className="group flex min-w-0 items-center gap-3"
+            className="font-display mt-1 block truncate text-[1.25rem] leading-snug text-foreground underline decoration-border-strong decoration-1 underline-offset-[5px] transition-colors hover:decoration-clay sm:text-[1.5rem]"
           >
-            <Mail className="h-4 w-4 shrink-0 text-clay" />
-            <span className="truncate text-[15px] font-medium text-foreground group-hover:text-clay">
-              {contactInfo.email}
-            </span>
+            {contactInfo.email}
           </a>
-          <button
-            onClick={copyEmail}
-            aria-label="Copy email"
-            className="flex shrink-0 items-center gap-1.5 rounded-sm border border-border px-2.5 py-1.5 text-xs text-muted-foreground transition-colors hover:border-border-strong hover:text-foreground"
-          >
-            <Copy className="h-3.5 w-3.5" />
-            Copy
-          </button>
         </div>
+        <div className="flex shrink-0 gap-2">
+          <CopyEmail email={contactInfo.email} label="Copy" />
+          <a
+            href={`mailto:${contactInfo.email}`}
+            className="btn-ink h-9 px-3.5 text-[13px]"
+          >
+            <Mail className="h-3.5 w-3.5" aria-hidden />
+            Write
+          </a>
+        </div>
+      </div>
 
-        {/* Socials */}
-        <div className="grid grid-cols-1 sm:grid-cols-2">
-          {contactInfo.socials.map((social, i) => {
-            const Icon = SOCIAL_ICONS[social.name] ?? ArrowUpRight;
-            return (
+      {/* Profiles */}
+      <ul className="border-t border-border" aria-label="Profiles">
+        {contactInfo.socials.map((social, i) => {
+          const Icon = SOCIAL_ICONS[social.name] ?? ArrowUpRight;
+          return (
+            <li
+              key={social.name}
+              className="reveal border-b border-border-subtle last:border-b-0"
+              style={{ '--i': i + 2 } as React.CSSProperties}
+            >
               <a
-                key={social.name}
                 href={social.url}
                 target="_blank"
                 rel="noopener noreferrer"
-                className={`group flex items-center justify-between gap-3 px-6 py-4 transition-colors hover:bg-secondary sm:px-8 ${
-                  i % 2 === 0 ? 'sm:border-r' : ''
-                } border-border ${i < contactInfo.socials.length - (contactInfo.socials.length % 2 === 0 ? 2 : 1) ? 'border-b' : ''}`}
+                className="group flex items-center gap-4 px-5 py-3.5 transition-colors duration-200 hover:bg-sunken sm:px-7"
               >
-                <span className="flex items-center gap-3">
-                  <Icon className="h-4 w-4 text-muted-foreground group-hover:text-foreground" />
-                  <span className="text-sm text-foreground">{social.name}</span>
+                <Icon className="h-4 w-4 shrink-0 text-muted-foreground transition-colors group-hover:text-foreground" />
+                <span className="w-20 shrink-0 text-[14px] font-medium text-foreground">
+                  {social.name}
                 </span>
-                <ArrowUpRight className="h-4 w-4 text-muted-foreground transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5 group-hover:text-clay" />
+                <span className="num min-w-0 flex-1 truncate text-[12.5px] text-muted-foreground">
+                  {handleFor(social.name, social.url, personal.upworkBadge)}
+                </span>
+                <ArrowUpRight
+                  aria-hidden
+                  className="h-4 w-4 shrink-0 text-muted-foreground transition-[color,transform] duration-200 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 group-hover:text-clay"
+                />
+                <span className="sr-only">(opens in a new tab)</span>
               </a>
-            );
-          })}
-        </div>
-      </div>
-    </div>
+            </li>
+          );
+        })}
+      </ul>
+
+      <p className="meta border-t border-border bg-sunken px-5 py-3 text-muted-foreground sm:px-7">
+        {time
+          ? time.isWorkingHours
+            ? `It's ${time.label} in ${city} — I'm at the desk.`
+            : `It's ${time.label} in ${city} — I'll reply first thing.`
+          : `Replies from ${city}.`}
+      </p>
+    </section>
   );
 }
 

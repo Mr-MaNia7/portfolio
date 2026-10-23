@@ -23,7 +23,7 @@ export function ThemeToggle({ className = '' }: { className?: string }) {
           : 'Toggle theme'
       }
       onClick={() => setTheme(isDark ? 'light' : 'dark')}
-      className={`flex h-8 w-8 items-center justify-center rounded-sm border border-border text-muted-foreground transition-colors hover:border-border-strong hover:text-foreground ${className}`}
+      className={`press flex h-8 w-8 items-center justify-center rounded-md text-muted-foreground hover:bg-secondary hover:text-foreground ${className}`}
     >
       {mounted ? (
         isDark ? (

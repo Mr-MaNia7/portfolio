@@ -1,35 +1,18 @@
 'use client';
 
-import { motion } from 'framer-motion';
-import {
-  Briefcase,
-  Command,
-  FileText,
-  FolderGit2,
-  Layers,
-  Mail,
-  Sparkles,
-  User,
-} from 'lucide-react';
-import Image from 'next/image';
-import React from 'react';
+import { ArrowRight, ArrowUpRight } from 'lucide-react';
+import React, { type CSSProperties } from 'react';
 
+import { pad2 } from '@/components/artifact/artifact';
 import { presetReplies, getConfig } from '@/lib/config-loader';
+import type { Command } from '@/lib/commands';
 
 interface ChatLandingProps {
   submitQuery: (query: string) => void;
   handlePresetReply?: (question: string, reply: string, tool: string) => void;
   onOpenCommand?: () => void;
+  commands: Command[];
 }
-
-const SUGGESTIONS = [
-  { q: 'Who are you?', slash: '/about', icon: User },
-  { q: 'What projects are you most proud of?', slash: '/projects', icon: FolderGit2 },
-  { q: 'What are your skills?', slash: '/skills', icon: Layers },
-  { q: 'Are you available for work?', slash: '/hire', icon: Briefcase },
-  { q: 'Can I see your résumé?', slash: '/resume', icon: FileText },
-  { q: 'How can I reach you?', slash: '/contact', icon: Mail },
-];
 
 // Free-form prompts with no preset — clicking one answers live via the AI, so
 // visitors discover that this is a real conversation, not a fixed FAQ.
@@ -39,25 +22,36 @@ const LIVE_EXAMPLES = [
   'Why should I hire you over another senior engineer?',
 ];
 
-const container = {
-  hidden: { opacity: 0 },
-  visible: { opacity: 1, transition: { staggerChildren: 0.06 } },
-};
-const item = {
-  hidden: { opacity: 0, y: 14 },
-  visible: {
-    opacity: 1,
-    y: 0,
-    transition: { duration: 0.5, ease: [0.19, 1, 0.22, 1] as [number, number, number, number] },
-  },
-};
-
 const ChatLanding: React.FC<ChatLandingProps> = ({
   submitQuery,
   handlePresetReply,
   onOpenCommand,
+  commands,
 }) => {
-  const { personal, stats, availability } = getConfig();
+  const config = getConfig();
+  const { personal, stats, availability } = config;
+
+  // A one-line, factual subtitle for each index card, derived from the config.
+  const facts: Record<string, string> = (() => {
+    const years = config.experience
+      .flatMap((e) => e.duration.match(/\d{4}/g) ?? [])
+      .map(Number);
+    const since = years.length ? Math.min(...years) : null;
+    const skillCount = Object.values(config.skills).flat().length;
+    const disciplines = Object.values(config.skills).filter(
+      (s) => s.length
+    ).length;
+    return {
+      about: `${personal.location.split(',')[0]} · ${personal.timezone.split('·').pop()?.trim()}`,
+      projects: `${config.projects.length} case studies`,
+      skills: `${skillCount} tools · ${disciplines} disciplines`,
+      resume: `${config.experience.length} roles${since ? ` · ${since}–now` : ''}`,
+      availability: availability.types.join(' · '),
+      contact: 'Email · Upwork · GitHub',
+    };
+  })();
+
+  const index = commands.filter((c) => c.group === 'Ask');
 
   const ask = (q: string) => {
     const preset = presetReplies[q as keyof typeof presetReplies];
@@ -68,114 +62,143 @@ const ChatLanding: React.FC<ChatLandingProps> = ({
     }
   };
 
+  const [firstName] = personal.shortName.split(' ');
+
   return (
-    <motion.div
-      className="mx-auto w-full max-w-2xl py-6"
-      variants={container}
-      initial={false}
-      animate="visible"
-    >
-      {/* Identity */}
-      <motion.div variants={item} className="flex items-center gap-4">
-        <span className="relative h-14 w-14 shrink-0 overflow-hidden rounded-full border border-border-strong">
-          <Image
-            src={personal.avatar}
-            alt={personal.name}
-            fill
-            sizes="56px"
-            className="object-cover"
-          />
-        </span>
-        <div className="min-w-0">
-          {availability.open && (
-            <span className="mb-1 inline-flex items-center gap-1.5 rounded-sm border border-border px-2 py-0.5 text-[11px] font-medium text-muted-foreground">
-              <span className="status-dot" />
-              {availability.headline}
-            </span>
-          )}
-        </div>
-      </motion.div>
+    <div className="mx-auto w-full py-10 sm:py-14">
+      {/* Status */}
+      {availability.open && (
+        <p
+          className="reveal meta flex items-center gap-2 text-ink-soft"
+          style={{ '--i': 0 } as CSSProperties}
+        >
+          <span className="status-dot" aria-hidden />
+          {availability.headline}
+        </p>
+      )}
 
-      {/* Headline */}
-      <motion.h1
-        variants={item}
-        className="font-display mt-6 text-[2rem] leading-[1.1] tracking-tight text-foreground sm:text-[2.75rem]"
+      {/* Greeting */}
+      <h1
+        className="reveal font-display mt-5 text-[2.875rem] leading-[0.98] tracking-[-0.035em] text-foreground sm:text-[4rem]"
+        style={{ '--i': 1 } as CSSProperties}
       >
-        I&apos;m {personal.shortName}. I design and ship{' '}
-        <span className="text-clay">web platforms</span> and{' '}
-        <span className="italic">LLM features</span>, end to end.
-      </motion.h1>
+        Hello, I&apos;m{' '}
+        <em className="italic tracking-[-0.03em]">{firstName}.</em>
+      </h1>
 
-      <motion.p
-        variants={item}
-        className="mt-4 max-w-xl text-[15px] leading-relaxed text-muted-foreground"
+      <p
+        className="reveal font-display measure mt-5 text-[1.3125rem] leading-[1.38] tracking-[-0.012em] text-ink-soft sm:text-[1.5rem]"
+        style={{ '--i': 2 } as CSSProperties}
       >
-        Senior full-stack engineer from {personal.location}, Top Rated Plus on Upwork.
-        This page is a conversation — ask it anything about my work, or pick a
-        thread below.
-      </motion.p>
+        {personal.tagline}
+      </p>
 
-      {/* Stats */}
-      <motion.div
-        variants={item}
-        className="mt-8 grid grid-cols-2 gap-px overflow-hidden rounded-lg border border-border bg-border sm:grid-cols-4"
+      {/* Telemetry */}
+      <dl
+        className="reveal mt-9 grid grid-cols-2 gap-px border-y border-border bg-border-subtle sm:grid-cols-4"
+        style={{ '--i': 3 } as CSSProperties}
       >
         {stats.map((s) => (
-          <div key={s.label} className="bg-background px-4 py-3.5">
-            <div className="font-display text-xl text-foreground">{s.value}</div>
-            <div className="mt-0.5 text-[11px] leading-tight text-muted-foreground">
+          <div
+            key={s.label}
+            className="flex flex-col gap-1.5 bg-background py-4 pr-3 pl-4 max-sm:odd:pl-0 sm:first:pl-0"
+          >
+            <dt className="text-[12px] leading-snug text-muted-foreground">
               {s.label}
-            </div>
+            </dt>
+            <dd className="num order-first text-[1.375rem] leading-none text-foreground">
+              {s.value}
+            </dd>
           </div>
         ))}
-      </motion.div>
+      </dl>
 
-      {/* Suggestions */}
-      <motion.div variants={item} className="mt-8">
-        <div className="mb-2 flex items-center justify-between">
-          <span className="font-mono text-[10px] tracking-wider text-muted-foreground uppercase">
-            Start here
-          </span>
+      {/* Index */}
+      <section aria-labelledby="index-heading" className="mt-10">
+        <div
+          className="reveal mb-3 flex items-baseline justify-between gap-4"
+          style={{ '--i': 4 } as CSSProperties}
+        >
+          <h2 id="index-heading" className="meta text-muted-foreground">
+            Index <span className="text-border-strong">/</span>{' '}
+            <span className="num">{pad2(index.length)}</span> entries
+          </h2>
           <button
             onClick={onOpenCommand}
-            className="flex items-center gap-1.5 font-mono text-[11px] text-muted-foreground transition-colors hover:text-foreground"
+            className="press flex items-center gap-1.5 rounded-sm text-[12px] text-muted-foreground hover:text-foreground"
           >
-            <Command className="h-3 w-3" /> ⌘K for everything
+            Every command <kbd className="kbd">⌘K</kbd>
           </button>
         </div>
-        <div className="grid grid-cols-1 gap-px overflow-hidden rounded-lg border border-border bg-border sm:grid-cols-2">
-          {SUGGESTIONS.map(({ q, slash, icon: Icon }) => (
-            <button
-              key={q}
-              onClick={() => ask(q)}
-              className="group flex items-center gap-3 bg-background px-4 py-3 text-left transition-colors hover:bg-secondary"
-            >
-              <Icon className="h-4 w-4 shrink-0 text-muted-foreground transition-colors group-hover:text-clay" />
-              <span className="flex-1 truncate text-sm text-foreground">{q}</span>
-              <span className="font-mono text-[11px] text-muted-foreground/60">
-                {slash}
-              </span>
-            </button>
-          ))}
-        </div>
 
-        {/* Free-form: proves it's a live conversation, not a fixed FAQ */}
-        <div className="mt-3 flex flex-wrap items-center gap-2">
-          <span className="inline-flex items-center gap-1.5 font-mono text-[10px] tracking-wider text-muted-foreground uppercase">
-            <Sparkles className="h-3 w-3 text-clay" /> Or ask live
-          </span>
-          {LIVE_EXAMPLES.map((q) => (
-            <button
-              key={q}
-              onClick={() => submitQuery(q)}
-              className="rounded-sm border border-border bg-background px-2.5 py-1 text-left text-[12px] text-muted-foreground transition-colors hover:border-border-strong hover:text-foreground"
+        <ol className="grid grid-cols-2 gap-px overflow-hidden rounded-lg border border-border bg-border lg:grid-cols-3">
+          {index.map((cmd, i) => (
+            <li
+              key={cmd.id}
+              className="reveal flex"
+              style={{ '--i': 5 + i } as CSSProperties}
             >
-              {q}
-            </button>
+              <button
+                onClick={() => ask(cmd.payload || cmd.label)}
+                className="group flex min-h-[8.5rem] w-full flex-col justify-between gap-4 bg-card p-4 text-left transition-colors duration-200 hover:bg-background focus-visible:z-10 focus-visible:outline-offset-[-2px] sm:p-5"
+              >
+                <span className="flex w-full items-center justify-between gap-2">
+                  <span className="num text-[11px] text-muted-foreground">
+                    {pad2(i + 1)}
+                  </span>
+                  <span className="meta normal-case tracking-normal text-clay-ink">
+                    {cmd.slash}
+                  </span>
+                </span>
+                <span className="font-display text-[1.0625rem] leading-[1.22] text-foreground sm:text-[1.1875rem]">
+                  {cmd.label}
+                </span>
+                <span className="flex w-full items-center justify-between gap-2 text-[12px] text-muted-foreground">
+                  <span className="truncate">{facts[cmd.id] ?? cmd.hint}</span>
+                  <ArrowUpRight
+                    aria-hidden
+                    className="h-3.5 w-3.5 shrink-0 -translate-x-1 opacity-0 transition-[opacity,transform] duration-200 group-hover:translate-x-0 group-hover:opacity-100 group-hover:text-clay"
+                  />
+                </span>
+              </button>
+            </li>
           ))}
-        </div>
-      </motion.div>
-    </motion.div>
+        </ol>
+      </section>
+
+      {/* Free-form: proves it's a live conversation, not a fixed FAQ */}
+      <section
+        aria-labelledby="live-heading"
+        className="reveal mt-8"
+        style={{ '--i': 11 } as CSSProperties}
+      >
+        <h2
+          id="live-heading"
+          className="meta mb-1 flex items-center gap-2 text-muted-foreground"
+        >
+          Or ask the live model
+        </h2>
+        <ul>
+          {LIVE_EXAMPLES.map((q) => (
+            <li
+              key={q}
+              className="border-b border-border-subtle last:border-b-0"
+            >
+              <button
+                onClick={() => submitQuery(q)}
+                className="group flex w-full items-center gap-3 py-2.5 text-left text-[14px] text-ink-soft transition-colors duration-200 hover:text-foreground"
+              >
+                <ArrowRight
+                  aria-hidden
+                  className="h-3.5 w-3.5 shrink-0 text-border-strong transition-[color,transform] duration-200 group-hover:translate-x-0.5 group-hover:text-clay"
+                />
+                <span className="flex-1">{q}</span>
+              </button>
+            </li>
+          ))}
+        </ul>
+      </section>
+    </div>
   );
 };
 

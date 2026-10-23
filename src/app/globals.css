@@ -4,82 +4,29 @@
 
 /*
   ────────────────────────────────────────────────────────────────
-  Real Anthropic typefaces (DESIGN.md dual-typeface system)
-  Anthropic Sans (UI chrome) · Anthropic Serif (display/editorial) ·
-  Anthropic Mono (code). These are licensed faces — drop the .woff2
-  files into /public/fonts/ (see public/fonts/README.md). Until then
-  the stacks fall back to Inter / Newsreader / JetBrains, then system.
-  local() lets an installed copy resolve without a bundled file.
-  ────────────────────────────────────────────────────────────────
-*/
-@font-face {
-  font-family: "Anthropic Sans";
-  src: local("Anthropic Sans"), url("/fonts/AnthropicSans-Regular.woff2") format("woff2");
-  font-weight: 400;
-  font-style: normal;
-  font-display: swap;
-}
-@font-face {
-  font-family: "Anthropic Sans";
-  src: local("Anthropic Sans Medium"), url("/fonts/AnthropicSans-Medium.woff2") format("woff2");
-  font-weight: 500;
-  font-style: normal;
-  font-display: swap;
-}
-@font-face {
-  font-family: "Anthropic Sans";
-  src: local("Anthropic Sans SemiBold"), url("/fonts/AnthropicSans-SemiBold.woff2") format("woff2");
-  font-weight: 600;
-  font-style: normal;
-  font-display: swap;
-}
-@font-face {
-  font-family: "Anthropic Sans";
-  src: local("Anthropic Sans Bold"), url("/fonts/AnthropicSans-Bold.woff2") format("woff2");
-  font-weight: 700;
-  font-style: normal;
-  font-display: swap;
-}
-@font-face {
-  font-family: "Anthropic Serif";
-  src: local("Anthropic Serif"), url("/fonts/AnthropicSerif-Regular.woff2") format("woff2");
-  font-weight: 400;
-  font-style: normal;
-  font-display: swap;
-}
-@font-face {
-  font-family: "Anthropic Serif";
-  src: local("Anthropic Serif Italic"), url("/fonts/AnthropicSerif-Italic.woff2") format("woff2");
-  font-weight: 400;
-  font-style: italic;
-  font-display: swap;
-}
-@font-face {
-  font-family: "Anthropic Mono";
-  src: local("Anthropic Mono"), url("/fonts/AnthropicMono-Regular.woff2") format("woff2");
-  font-weight: 400;
-  font-style: normal;
-  font-display: swap;
-}
+  Research journal × tactile editorial artifacts
+  Warm ivory parchment · deep warm obsidian · one terracotta/clay accent.
+  Surfaces separate by small warm luminance steps and 1px hairlines —
+  never by drop-shadows or glow. Shadows exist only on things that truly
+  float (command menu, popovers, dialogs, toasts).
 
-/*
-  ────────────────────────────────────────────────────────────────
-  Anthropic Design System (DESIGN.md)
-  Warm ivory parchment · near-black slate ink · a single clay accent.
-  Soft rounded geometry (4 → 24px → pill), gentle layered elevation,
-  dual typeface (Sans for chrome, Serif at display scale). Emphasis
-  from typography, high contrast, and generous whitespace.
+  Faces (next/font): Newsreader for display, Inter for running text,
+  JetBrains Mono for metadata, commands and figures.
+
+  Radius roles: chip/kbd 4px · control 8px · artifact sheet 12px.
   ────────────────────────────────────────────────────────────────
 */
 
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
+  --color-ink-soft: var(--ink-soft);
 
   --color-card: var(--card);
   --color-card-foreground: var(--card-foreground);
   --color-popover: var(--popover);
   --color-popover-foreground: var(--popover-foreground);
+  --color-sunken: var(--sunken);
 
   --color-primary: var(--primary);
   --color-primary-foreground: var(--primary-foreground);
@@ -91,6 +38,7 @@
   --color-accent-foreground: var(--accent-foreground);
 
   --color-clay: var(--clay);
+  --color-clay-ink: var(--clay-ink);
   --color-clay-strong: var(--clay-strong);
   --color-clay-foreground: var(--clay-foreground);
   --color-clay-soft: var(--clay-soft);
@@ -103,97 +51,107 @@
   --color-warning: var(--warning);
 
   --color-border: var(--border);
+  --color-border-subtle: var(--border-subtle);
   --color-border-strong: var(--border-strong);
   --color-input: var(--input);
   --color-ring: var(--ring);
 
-  --font-sans: "Anthropic Sans", var(--font-inter), Arial, ui-sans-serif, system-ui, sans-serif;
-  --font-serif: "Anthropic Serif", var(--font-newsreader), Georgia, ui-serif, serif;
-  --font-mono: "Anthropic Mono", var(--font-jetbrains), ui-monospace, "SF Mono", monospace;
+  --font-sans: var(--font-inter), ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
+  --font-serif: var(--font-newsreader), Georgia, "Times New Roman", ui-serif, serif;
+  --font-mono: var(--font-jetbrains), ui-monospace, "SF Mono", Menlo, monospace;
 
-  /* DESIGN.md radius roles: subtle · control · card · large surface */
-  --radius-sm: 0.25rem;  /* radius-small  — subtle corner        */
-  --radius-md: 0.5rem;   /* radius-main   — control corner        */
-  --radius-lg: 1rem;     /* radius-large  — card corner           */
-  --radius-xl: 1.5rem;   /* radius-xl     — large surface corner  */
+  --radius-sm: 0.25rem; /* chip · kbd            */
+  --radius-md: 0.5rem;  /* control               */
+  --radius-lg: 0.75rem; /* artifact sheet · card  */
+  --radius-xl: 1rem;    /* dialog                */
 
-  /* Gentle layered elevation (DESIGN.md card-elevation) */
-  --shadow-card: 0 1px 2px rgba(20, 20, 19, 0.04), 0 2px 8px rgba(20, 20, 19, 0.05);
-  --shadow-card-hover: 0 2px 4px rgba(20, 20, 19, 0.05), 0 8px 24px rgba(20, 20, 19, 0.07);
+  --ease-out-expo: cubic-bezier(0.22, 1, 0.36, 1);
+
+  /* Floating layers only (menus, dialogs, toasts) — never on resting cards. */
+  --shadow-float: 0 1px 0 0 var(--border-subtle), 0 16px 40px -16px rgba(20, 18, 15, 0.22);
 }
 
 :root {
-  /* Warm ivory parchment (ivory-light) — never pure white */
+  /* Ground: warm ivory parchment — never pure white */
   --background: #faf9f5;
   --foreground: #141413;
+  /* Secondary running text: still near-ink, never washed-out grey */
+  --ink-soft: #3d3b35;
 
-  /* Card surface: a hair lighter than the ground, lifted by border + shadow.
-     Deliberately warm, never pure #ffffff. */
-  --card: #fffdf8;
+  /* Card: one warm luminance step above the ground */
+  --card: #fdfcf8;
   --card-foreground: #141413;
-  --popover: #fffdf8;
+  --popover: #fdfcf8;
   --popover-foreground: #141413;
+  /* Sunken: inset wells, code, user turns */
+  --sunken: #f2efe7;
 
-  /* Near-black slate as the dominant ink */
   --primary: #141413;
   --primary-foreground: #faf9f5;
 
-  /* Warm sand for inset surfaces (ivory-medium) */
-  --secondary: #f0eee6;
+  --secondary: #f0ede4;
   --secondary-foreground: #201f1d;
-  --muted: #f0eee6;
-  --muted-foreground: #6b6960;
-  --accent: #f0eee6;
+  --muted: #f0ede4;
+  --muted-foreground: #6b6960; /* 5.3:1 on ground */
+  --accent: #f0ede4;
   --accent-foreground: #201f1d;
 
-  /* The single earthy clay accent (DESIGN.md accent #c6613f, held in reserve).
-     clay-highlight is the softer companion tone for large accent moments. */
+  /* Clay — held in reserve for the one action that matters.
+     clay-ink is the AA-safe clay for small text (6.1:1 on ground). */
   --clay: #c6613f;
+  --clay-ink: #a54a2a;
   --clay-strong: #a54a2a;
   --clay-highlight: #d97757;
-  --clay-foreground: #ffffff;
-  --clay-soft: #f3e6de;
+  --clay-foreground: #fffdf8;
+  --clay-soft: #f5e7df;
 
-  /* Warm decorative surface / footer accent */
   --oat: #e3dacc;
 
   --destructive: #b4402e;
   --success: #4f7a3f;
   --warning: #b5812a;
 
-  /* Cloud stone tones for dividers and borders */
-  --border: #e3dacc;
-  --border-strong: #b0aea5;
-  --input: #d6d2c4;
-  --ring: #141413;
+  /* Hairlines: subtle (inner dividers) · default · strong (controls) */
+  --border-subtle: #ebe6db;
+  --border: #e0d9cb;
+  --border-strong: #b8b2a5;
+  --input: #d6d0c2;
+  --ring: #c6613f;
+
+  --grain-opacity: 0.045;
+  --grain-blend: multiply;
 
   --radius: 0.5rem;
 }
 
 .dark {
-  --background: #141312;
-  --foreground: #f5f3ec;
+  /* Deep warm obsidian — tuned, not inverted */
+  --background: #161412;
+  --foreground: #ede9df;
+  --ink-soft: #cbc6b9;
 
-  --card: #201e1a;
-  --card-foreground: #f5f3ec;
+  --card: #1c1a17;
+  --card-foreground: #ede9df;
   --popover: #201e1a;
-  --popover-foreground: #f5f3ec;
+  --popover-foreground: #ede9df;
+  --sunken: #11100e;
 
-  --primary: #f5f3ec;
-  --primary-foreground: #141312;
+  --primary: #ede9df;
+  --primary-foreground: #161412;
 
-  --secondary: #262420;
-  --secondary-foreground: #f5f3ec;
-  --muted: #262420;
-  --muted-foreground: #a8a49a;
-  --accent: #2b2925;
-  --accent-foreground: #f5f3ec;
+  --secondary: #24211d;
+  --secondary-foreground: #ede9df;
+  --muted: #24211d;
+  --muted-foreground: #a29d91; /* 7:1 on ground */
+  --accent: #2a2722;
+  --accent-foreground: #ede9df;
 
   --clay: #d97757;
-  --clay-strong: #e2917a;
-  --clay-highlight: #e2917a;
-  --clay-foreground: #141312;
-  --clay-soft: #3a2a21;
+  --clay-ink: #e8957a;
+  --clay-strong: #e8957a;
+  --clay-highlight: #e8957a;
+  --clay-foreground: #161412;
+  --clay-soft: #33241c;
 
   --oat: #3a352c;
 
@@ -201,10 +159,14 @@
   --success: #86b06f;
   --warning: #d6ab5f;
 
-  --border: #302d28;
-  --border-strong: #423e37;
-  --input: #383530;
-  --ring: #f5f3ec;
+  --border-subtle: #262320;
+  --border: #322e29;
+  --border-strong: #4a453d;
+  --input: #3a3630;
+  --ring: #d97757;
+
+  --grain-opacity: 0.06;
+  --grain-blend: screen;
 }
 
 @layer base {
@@ -215,112 +177,245 @@
   html {
     -webkit-text-size-adjust: 100%;
     text-rendering: optimizeLegibility;
+    color-scheme: light;
+  }
+  html.dark {
+    color-scheme: dark;
   }
 
   body {
     @apply bg-background text-foreground;
-    font-feature-settings: "cv02", "cv03", "cv04", "cv11";
+    font-feature-settings: "cv11", "ss01", "ss03";
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
   }
 
-  ::selection {
-    background: var(--clay);
-    color: var(--clay-foreground);
+  /* Paper grain: a fixed, non-interactive fractal-noise layer printed over the
+     page (below floating layers). Texture, not decoration. */
+  body::after {
+    content: "";
+    position: fixed;
+    inset: 0;
+    z-index: 60;
+    pointer-events: none;
+    opacity: var(--grain-opacity);
+    mix-blend-mode: var(--grain-blend);
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 0.5 0 0 0 0 0.45 0 0 0 0 0.4 0 0 0 1 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
   }
 
-  /* Keyboard focus — a crisp slate ring, no glow */
+  ::selection {
+    background: color-mix(in oklab, var(--clay) 26%, transparent);
+    color: var(--foreground);
+  }
+
+  /* Keyboard focus — a crisp clay ring, no glow */
   :focus-visible {
     outline: 2px solid var(--ring);
     outline-offset: 2px;
+    border-radius: 2px;
   }
 
   h1, h2, h3, h4 {
     text-wrap: balance;
   }
 
-  p {
+  p, li, dd {
     text-wrap: pretty;
+  }
+
+  kbd {
+    font-family: var(--font-jetbrains), ui-monospace, monospace;
+  }
+}
+
+/* ───────── Editorial utilities ───────── */
+
+/* Display serif: Newsreader with optical sizing and tight tracking */
+@utility font-display {
+  font-family: var(--font-newsreader), Georgia, ui-serif, serif;
+  font-optical-sizing: auto;
+  font-weight: 400;
+  letter-spacing: -0.022em;
+}
+
+/* Monospace figures: stats, dates, counts — always aligned */
+@utility num {
+  font-family: var(--font-jetbrains), ui-monospace, monospace;
+  font-variant-numeric: tabular-nums slashed-zero;
+  font-feature-settings: "zero" 1;
+  letter-spacing: -0.01em;
+}
+
+/* Metadata line: mono, uppercase, tracked — the journal's marginalia */
+@utility meta {
+  font-family: var(--font-jetbrains), ui-monospace, monospace;
+  font-size: 11px;
+  line-height: 1.4;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  font-variant-numeric: tabular-nums;
+}
+
+/* Comfortable reading measure */
+@utility measure {
+  max-width: 65ch;
+}
+
+/* Optical margin alignment: quotes and bullets hang into the margin (Safari honours it) */
+@utility hang {
+  hanging-punctuation: first allow-end last;
+}
+
+@utility scrollbar-subtle {
+  scrollbar-width: thin;
+  scrollbar-color: var(--border-strong) transparent;
+  &::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+  }
+  &::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  &::-webkit-scrollbar-thumb {
+    background-color: var(--border);
+    border-radius: 9999px;
+  }
+  &:hover::-webkit-scrollbar-thumb {
+    background-color: var(--border-strong);
+  }
+}
+
+@utility scrollbar-none {
+  scrollbar-width: none;
+  &::-webkit-scrollbar {
+    display: none;
+  }
+}
+
+/* Kept for existing callers */
+@utility custom-scrollbar {
+  scrollbar-width: thin;
+  scrollbar-color: var(--border-strong) transparent;
+}
+
+/* Tactile press: every control sinks a pixel */
+@utility press {
+  transition-property: transform, background-color, border-color, color, opacity;
+  transition-duration: 160ms;
+  transition-timing-function: var(--ease-out-expo);
+  &:active:not(:disabled) {
+    transform: translateY(1px);
   }
 }
 
 @layer components {
-  /*
-    Soft rounded geometry (DESIGN.md): the primary CTA is a fully-rounded
-    pill with gentle elevation — consistent curvature, no sharp corners.
-  */
+  /* Primary action: flat ink key, 8px control radius */
+  .btn-ink,
   .btn-claude {
     display: inline-flex;
     align-items: center;
     justify-content: center;
     gap: 0.5rem;
-    border-radius: 100vw;
+    border-radius: var(--radius-md);
     background: var(--primary);
     color: var(--primary-foreground);
     font-weight: 500;
-    letter-spacing: -0.01em;
-    box-shadow: var(--shadow-card);
-    transition: transform 0.12s ease, background 0.15s ease, box-shadow 0.15s ease, opacity 0.15s ease;
+    letter-spacing: -0.005em;
+    transition: transform 160ms var(--ease-out-expo), background-color 160ms var(--ease-out-expo);
   }
+  .btn-ink:hover,
   .btn-claude:hover {
-    background: color-mix(in oklab, var(--primary) 88%, var(--clay));
-    box-shadow: var(--shadow-card-hover);
+    background: color-mix(in oklab, var(--primary) 86%, var(--clay));
   }
+  .btn-ink:active,
   .btn-claude:active {
     transform: translateY(1px);
   }
 
+  /* The one clay action per screen */
   .btn-clay {
     display: inline-flex;
     align-items: center;
     justify-content: center;
     gap: 0.5rem;
-    border-radius: 100vw;
+    border-radius: var(--radius-md);
     background: var(--clay);
     color: var(--clay-foreground);
     font-weight: 500;
-    letter-spacing: -0.01em;
-    box-shadow: var(--shadow-card);
-    transition: transform 0.12s ease, background 0.15s ease, box-shadow 0.15s ease;
+    letter-spacing: -0.005em;
+    transition: transform 160ms var(--ease-out-expo), background-color 160ms var(--ease-out-expo);
   }
   .btn-clay:hover {
     background: var(--clay-strong);
-    box-shadow: var(--shadow-card-hover);
   }
   .btn-clay:active {
     transform: translateY(1px);
   }
 
-  /* A hairline rule in the warm border tone */
-  .hairline {
-    border-color: var(--border);
+  /* Hairline secondary action */
+  .btn-line {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    border-radius: var(--radius-md);
+    border: 1px solid var(--border-strong);
+    background: transparent;
+    color: var(--foreground);
+    font-weight: 500;
+    letter-spacing: -0.005em;
+    transition: transform 160ms var(--ease-out-expo), background-color 160ms var(--ease-out-expo), border-color 160ms var(--ease-out-expo);
+  }
+  .btn-line:hover {
+    background: var(--secondary);
+    border-color: color-mix(in oklab, var(--border-strong) 70%, var(--foreground));
+  }
+  .btn-line:active {
+    transform: translateY(1px);
   }
 
-  /* Gentle layered elevation for cards and raised surfaces */
-  .elevation-card {
-    box-shadow: var(--shadow-card);
-  }
-  .elevation-card-hover:hover {
-    box-shadow: var(--shadow-card-hover);
+  /* Keyboard key */
+  .kbd {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 1.25rem;
+    height: 1.25rem;
+    padding: 0 0.3rem;
+    border-radius: var(--radius-sm);
+    border: 1px solid var(--border);
+    border-bottom-width: 2px;
+    background: var(--card);
+    color: var(--muted-foreground);
+    font-family: var(--font-jetbrains), ui-monospace, monospace;
+    font-size: 11px;
+    line-height: 1;
   }
 
+  /* Tag: a mono stack/spec chip */
+  .tag {
+    display: inline-flex;
+    align-items: center;
+    height: 1.375rem;
+    padding: 0 0.45rem;
+    border-radius: var(--radius-sm);
+    border: 1px solid var(--border-subtle);
+    background: var(--sunken);
+    color: var(--ink-soft);
+    font-family: var(--font-jetbrains), ui-monospace, monospace;
+    font-size: 11px;
+    letter-spacing: -0.01em;
+    white-space: nowrap;
+  }
 }
 
-/* Display serif for editorial moments.
-   Uses the real next/font variable directly — @theme inline tokens are
-   not emitted to :root, so var(--font-serif) would be undefined here. */
-.font-display {
-  font-family: "Anthropic Serif", var(--font-newsreader), Georgia, ui-serif, serif;
-  font-weight: 430;
-  letter-spacing: -0.02em;
-}
-
-/* Live status dot — a quiet clay pulse */
+/* Live status dot — a quiet ping */
 .status-dot {
   position: relative;
   display: inline-flex;
-  height: 0.5rem;
-  width: 0.5rem;
+  height: 0.4375rem;
+  width: 0.4375rem;
+  flex-shrink: 0;
 }
 .status-dot::before {
   content: "";
@@ -328,42 +423,23 @@
   inset: 0;
   border-radius: 9999px;
   background: var(--success);
-  opacity: 0.65;
-  animation: status-ping 1.8s cubic-bezier(0, 0, 0.2, 1) infinite;
+  opacity: 0.55;
+  animation: status-ping 2.2s cubic-bezier(0, 0, 0.2, 1) infinite;
 }
 .status-dot::after {
   content: "";
   position: relative;
   display: inline-flex;
-  height: 0.5rem;
-  width: 0.5rem;
+  height: 100%;
+  width: 100%;
   border-radius: 9999px;
   background: var(--success);
 }
 @keyframes status-ping {
   75%, 100% {
-    transform: scale(2);
+    transform: scale(2.2);
     opacity: 0;
   }
-}
-
-.custom-scrollbar {
-  scrollbar-width: thin;
-  scrollbar-color: var(--border-strong) transparent;
-}
-.custom-scrollbar::-webkit-scrollbar {
-  width: 5px;
-  height: 5px;
-}
-.custom-scrollbar::-webkit-scrollbar-track {
-  background: transparent;
-}
-.custom-scrollbar::-webkit-scrollbar-thumb {
-  background-color: var(--border-strong);
-  border-radius: 9999px;
-}
-.custom-scrollbar::-webkit-scrollbar-thumb:hover {
-  background-color: var(--muted-foreground);
 }
 
 /* Ensure code blocks can scroll horizontally */
@@ -373,27 +449,104 @@ pre {
   overflow-x: auto;
 }
 
-/* Subtle rising-in animation used across cards */
-@keyframes claude-rise {
+/*
+  Reveal: pages laid down on a desk. Opacity + 6px rise, ease-out-expo.
+  Stagger by setting --i on each child (0, 1, 2…). CSS-driven so it is
+  SSR-safe and never leaves content stuck invisible if JS stalls.
+*/
+@keyframes reveal {
   from {
     opacity: 0;
-    transform: translateY(8px);
+    transform: translateY(6px);
   }
   to {
     opacity: 1;
-    transform: translateY(0);
+    transform: none;
   }
 }
+@keyframes reveal-sheet {
+  from {
+    opacity: 0;
+    transform: translateY(8px) scale(0.985);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+@keyframes fade {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+.reveal {
+  animation: reveal 240ms var(--ease-out-expo) both;
+  animation-delay: calc(var(--i, 0) * 45ms);
+}
+.reveal-sheet {
+  animation: reveal-sheet 280ms var(--ease-out-expo) both;
+  animation-delay: calc(var(--i, 0) * 60ms);
+  transform-origin: 50% 0;
+}
+/* Legacy alias */
 .animate-rise {
-  animation: claude-rise 0.5s cubic-bezier(0.19, 1, 0.22, 1) both;
+  animation: reveal 240ms var(--ease-out-expo) both;
+}
+
+/* Composing indicator: three ink squares breathing in sequence */
+@keyframes breathe {
+  0%, 100% { opacity: 0.25; }
+  50% { opacity: 1; }
+}
+.composing span {
+  display: inline-block;
+  width: 5px;
+  height: 5px;
+  border-radius: 1px;
+  background: var(--clay);
+  animation: breathe 1.1s ease-in-out infinite;
+}
+.composing span:nth-child(2) { animation-delay: 0.15s; }
+.composing span:nth-child(3) { animation-delay: 0.3s; }
+
+/* Indeterminate hairline progress, for a running tool */
+@keyframes scan {
+  from { transform: translateX(-100%); }
+  to { transform: translateX(250%); }
+}
+.scan-line {
+  position: relative;
+  overflow: hidden;
+}
+.scan-line::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  height: 1px;
+  width: 40%;
+  background: var(--clay);
+  animation: scan 1.2s var(--ease-out-expo) infinite;
 }
 
 @media (prefers-reduced-motion: reduce) {
+  .reveal,
+  .reveal-sheet,
+  .animate-rise {
+    animation: fade 1ms both;
+  }
+  .status-dot::before,
+  .scan-line::after {
+    animation: none;
+  }
+  .composing span {
+    animation: none;
+    opacity: 0.7;
+  }
   *,
   *::before,
   *::after {
-    animation-duration: 0.001ms !important;
-    animation-iteration-count: 1 !important;
-    transition-duration: 0.001ms !important;
+    scroll-behavior: auto !important;
+    transition-duration: 1ms !important;
   }
 }

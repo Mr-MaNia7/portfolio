@@ -5,7 +5,7 @@ import Chat from '@/components/chat/chat';
 
 export default function Home() {
   return (
-    <Suspense fallback={<div>Loading chat...</div>}>
+    <Suspense fallback={<div className="h-svh bg-background" />}>
       <Chat />
     </Suspense>
   );

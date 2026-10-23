@@ -1,33 +1,23 @@
 'use client';
 
-import { motion } from 'framer-motion';
-import {
-  Briefcase,
-  FileText,
-  FolderGit2,
-  Layers,
-  Mail,
-  User,
-} from 'lucide-react';
 import { presetReplies } from '@/lib/config-loader';
+import type { Command } from '@/lib/commands';
 
 interface HelperBoostProps {
   submitQuery?: (query: string) => void;
   handlePresetReply?: (question: string, reply: string, tool: string) => void;
+  commands: Command[];
 }
 
-const CHIPS = [
-  { label: 'About', q: 'Who are you?', icon: User },
-  { label: 'Projects', q: 'What projects are you most proud of?', icon: FolderGit2 },
-  { label: 'Skills', q: 'What are your skills?', icon: Layers },
-  { label: 'Résumé', q: 'Can I see your résumé?', icon: FileText },
-  { label: 'Hire me', q: 'Are you available for work?', icon: Briefcase },
-  { label: 'Contact', q: 'How can I reach you?', icon: Mail },
-];
-
+/**
+ * Quick jumps shown above the composer once a conversation is under way — the
+ * same six instant answers as the landing index, spelled as their slash commands
+ * so visitors learn the shortcut while they click.
+ */
 export default function HelperBoost({
   submitQuery,
   handlePresetReply,
+  commands,
 }: HelperBoostProps) {
   const handleClick = (q: string) => {
     const preset = presetReplies[q as keyof typeof presetReplies];
@@ -38,23 +28,31 @@ export default function HelperBoost({
     }
   };
 
+  const chips = commands.filter((c) => c.group === 'Ask');
+
   return (
-    <div className="custom-scrollbar w-full overflow-x-auto">
-      <div className="flex w-max min-w-full items-center justify-start gap-2 pb-1 sm:justify-center">
-        {CHIPS.map(({ label, q, icon: Icon }, i) => (
-          <motion.button
-            key={label}
-            initial={false}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.03 * i, duration: 0.25 }}
-            onClick={() => handleClick(q)}
-            className="flex shrink-0 items-center gap-2 rounded-sm border border-border bg-card px-3 py-1.5 text-[13px] text-foreground/80 transition-colors hover:border-border-strong hover:bg-secondary hover:text-foreground"
+    <nav
+      aria-label="Quick answers"
+      className="scrollbar-none w-full overflow-x-auto"
+    >
+      <ul className="flex w-max min-w-full items-center gap-1.5">
+        {chips.map((cmd, i) => (
+          <li
+            key={cmd.id}
+            className="reveal"
+            style={{ '--i': i } as React.CSSProperties}
           >
-            <Icon className="h-3.5 w-3.5 text-muted-foreground" />
-            {label}
-          </motion.button>
+            <button
+              onClick={() => handleClick(cmd.payload || cmd.label)}
+              title={cmd.label}
+              className="press num flex h-7 shrink-0 items-center rounded-md border border-border bg-card px-2.5 text-[12px] text-ink-soft hover:border-border-strong hover:text-foreground"
+            >
+              <span className="text-clay-ink">/</span>
+              {cmd.slash?.slice(1)}
+            </button>
+          </li>
         ))}
-      </div>
-    </div>
+      </ul>
+    </nav>
   );
 }

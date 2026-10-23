@@ -18,5 +18,4 @@
     <circle cx="-150" cy="40" r="9" fill="#C15F3C" opacity="0.8"/>
     <circle cx="-90" cy="120" r="9" fill="#FAF9F6" opacity="0.5"/>
   </g>
-  <text x="60" y="560" font-family="Georgia, serif" font-size="220" font-weight="400" fill="#FAF9F6" opacity="0.05">03</text>
 </svg>

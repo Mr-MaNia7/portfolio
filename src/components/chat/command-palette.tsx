@@ -36,6 +36,8 @@ const ICONS: Record<string, React.ComponentType<{ className?: string }>> = {
   theme: MoonStar,
 };
 
+const EASE = [0.22, 1, 0.36, 1] as const;
+
 interface CommandPaletteProps {
   commands: Command[];
   open: boolean;
@@ -53,14 +55,16 @@ export function CommandPalette({
   const [active, setActive] = useState(0);
   const inputRef = useRef<HTMLInputElement>(null);
   const listRef = useRef<HTMLDivElement>(null);
+  const returnFocusRef = useRef<HTMLElement | null>(null);
 
   const filtered = useMemo(() => {
     const q = query.trim().toLowerCase();
     if (!q) return commands;
     return commands.filter((c) => {
-      const hay = `${c.label} ${c.hint ?? ''} ${c.slash ?? ''} ${c.keywords.join(
-        ' '
-      )}`.toLowerCase();
+      const hay =
+        `${c.label} ${c.hint ?? ''} ${c.slash ?? ''} ${c.keywords.join(
+          ' '
+        )}`.toLowerCase();
       return hay.includes(q);
     });
   }, [commands, query]);
@@ -82,11 +86,14 @@ export function CommandPalette({
 
   useEffect(() => {
     if (open) {
+      returnFocusRef.current = document.activeElement as HTMLElement | null;
       setQuery('');
       setActive(0);
-      const t = setTimeout(() => inputRef.current?.focus(), 40);
+      const t = setTimeout(() => inputRef.current?.focus(), 30);
       return () => clearTimeout(t);
     }
+    // Hand focus back to whatever opened the menu.
+    returnFocusRef.current?.focus?.();
   }, [open]);
 
   useEffect(() => {
@@ -101,14 +108,20 @@ export function CommandPalette({
         onOpenChange(false);
       } else if (e.key === 'ArrowDown') {
         e.preventDefault();
-        setActive((a) => Math.min(a + 1, flat.length - 1));
+        setActive((a) => (flat.length ? (a + 1) % flat.length : 0));
       } else if (e.key === 'ArrowUp') {
         e.preventDefault();
-        setActive((a) => Math.max(a - 1, 0));
+        setActive((a) =>
+          flat.length ? (a - 1 + flat.length) % flat.length : 0
+        );
       } else if (e.key === 'Enter') {
         e.preventDefault();
         const cmd = flat[active];
         if (cmd) onRun(cmd);
+      } else if (e.key === 'Tab') {
+        // Keep focus inside the dialog: the search field is its only stop.
+        e.preventDefault();
+        inputRef.current?.focus();
       }
     };
     window.addEventListener('keydown', onKey);
@@ -121,6 +134,7 @@ export function CommandPalette({
   }, [active]);
 
   let runningIndex = -1;
+  const activeId = flat[active] ? `cmd-${flat[active].id}` : undefined;
 
   return (
     <AnimatePresence>
@@ -129,45 +143,61 @@ export function CommandPalette({
           className="fixed inset-0 z-[120] flex items-start justify-center px-4 pt-[12vh]"
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
-          exit={{ opacity: 0 }}
-          transition={{ duration: 0.15 }}
+          exit={{ opacity: 0, transition: { duration: 0.14 } }}
+          transition={{ duration: 0.16 }}
         >
           <div
-            className="absolute inset-0 bg-foreground/25 backdrop-blur-[2px]"
+            className="absolute inset-0 bg-[#141413]/30 dark:bg-black/55"
             onClick={() => onOpenChange(false)}
+            aria-hidden
           />
           <motion.div
-            initial={{ opacity: 0, y: -8, scale: 0.98 }}
+            initial={{ opacity: 0, y: 6, scale: 0.97 }}
             animate={{ opacity: 1, y: 0, scale: 1 }}
-            exit={{ opacity: 0, y: -8, scale: 0.98 }}
-            transition={{ duration: 0.18, ease: [0.19, 1, 0.22, 1] as [number, number, number, number] }}
-            className="relative w-full max-w-xl overflow-hidden rounded-lg border border-border-strong bg-popover"
+            exit={{
+              opacity: 0,
+              y: 4,
+              scale: 0.985,
+              transition: { duration: 0.14 },
+            }}
+            transition={{ duration: 0.2, ease: EASE }}
+            style={{ transformOrigin: '50% 0%' }}
+            className="relative w-full max-w-xl overflow-hidden rounded-lg border border-border-strong bg-popover shadow-[var(--shadow-float)]"
             role="dialog"
             aria-modal="true"
             aria-label="Command menu"
           >
             {/* Search */}
             <div className="flex items-center gap-3 border-b border-border px-4">
-              <Search className="h-4 w-4 text-muted-foreground" />
+              <Search
+                className="h-4 w-4 shrink-0 text-muted-foreground"
+                aria-hidden
+              />
               <input
                 ref={inputRef}
                 value={query}
                 onChange={(e) => setQuery(e.target.value)}
                 placeholder="Ask a question or jump to…"
-                className="h-12 w-full bg-transparent text-sm text-foreground placeholder:text-muted-foreground focus:outline-none"
+                role="combobox"
+                aria-expanded="true"
+                aria-controls="cmd-listbox"
+                aria-activedescendant={activeId}
+                aria-autocomplete="list"
+                className="h-[3.25rem] w-full bg-transparent text-[15px] text-foreground placeholder:text-muted-foreground focus:outline-none focus-visible:outline-none"
               />
-              <kbd className="hidden rounded-sm border border-border px-1.5 py-0.5 font-mono text-[10px] text-muted-foreground sm:block">
-                ESC
-              </kbd>
+              <kbd className="kbd hidden sm:inline-flex">esc</kbd>
             </div>
 
             {/* Results */}
             <div
               ref={listRef}
-              className="custom-scrollbar max-h-[52vh] overflow-y-auto p-1.5"
+              id="cmd-listbox"
+              role="listbox"
+              aria-label="Commands"
+              className="scrollbar-subtle max-h-[52vh] overflow-y-auto p-1.5"
             >
               {flat.length === 0 && (
-                <div className="px-3 py-8 text-center text-sm text-muted-foreground">
+                <div className="px-3 py-10 text-center text-sm text-muted-foreground">
                   Nothing matches “{query}”. Try{' '}
                   <span className="text-foreground">projects</span> or{' '}
                   <span className="text-foreground">contact</span>.
@@ -175,8 +205,13 @@ export function CommandPalette({
               )}
 
               {groups.map(({ group, items }) => (
-                <div key={group} className="mb-1">
-                  <div className="px-3 pt-2 pb-1 font-mono text-[10px] tracking-wider text-muted-foreground uppercase">
+                <div
+                  key={group}
+                  role="group"
+                  aria-label={group}
+                  className="mb-1 last:mb-0"
+                >
+                  <div className="meta px-3 pt-2.5 pb-1.5 text-muted-foreground">
                     {group}
                   </div>
                   {items.map((cmd) => {
@@ -185,33 +220,37 @@ export function CommandPalette({
                     const Icon = ICONS[cmd.icon] ?? CommandIcon;
                     const isActive = index === active;
                     return (
-                      <button
+                      <div
                         key={cmd.id}
+                        id={`cmd-${cmd.id}`}
+                        role="option"
+                        aria-selected={isActive}
                         data-index={index}
-                        onMouseEnter={() => setActive(index)}
+                        onMouseMove={() => setActive(index)}
                         onClick={() => onRun(cmd)}
-                        className={`flex w-full items-center gap-3 rounded-sm px-3 py-2 text-left text-sm transition-colors ${
+                        className={`flex cursor-pointer items-center gap-3 rounded-md px-3 py-2 text-[14px] transition-colors duration-150 ${
                           isActive
-                            ? 'bg-secondary text-foreground'
-                            : 'text-foreground/80'
+                            ? 'bg-secondary text-foreground shadow-[inset_2px_0_0_var(--clay)]'
+                            : 'text-ink-soft'
                         }`}
                       >
-                        <Icon className="h-4 w-4 shrink-0 text-muted-foreground" />
-                        <span className="flex-1 truncate">{cmd.label}</span>
+                        <Icon
+                          className={`h-4 w-4 shrink-0 ${isActive ? 'text-clay' : 'text-muted-foreground'}`}
+                        />
+                        <span className="min-w-0 flex-1 truncate">
+                          {cmd.label}
+                        </span>
                         {cmd.hint && (
-                          <span className="hidden shrink-0 truncate text-xs text-muted-foreground sm:block">
+                          <span className="hidden max-w-[12rem] shrink-0 truncate text-[12px] text-muted-foreground sm:block">
                             {cmd.hint}
                           </span>
                         )}
                         {cmd.slash && (
-                          <span className="shrink-0 font-mono text-[11px] text-muted-foreground/70">
+                          <span className="num w-[4.75rem] shrink-0 text-right text-[12px] text-muted-foreground">
                             {cmd.slash}
                           </span>
                         )}
-                        {isActive && (
-                          <CornerDownLeft className="h-3.5 w-3.5 shrink-0 text-muted-foreground" />
-                        )}
-                      </button>
+                      </div>
                     );
                   })}
                 </div>
@@ -219,20 +258,19 @@ export function CommandPalette({
             </div>
 
             {/* Footer */}
-            <div className="flex items-center justify-between border-t border-border px-4 py-2 text-[11px] text-muted-foreground">
-              <span className="flex items-center gap-1.5">
-                <CommandIcon className="h-3 w-3" />
-                <span className="font-mono">Abdulkarim · command menu</span>
-              </span>
-              <span className="hidden items-center gap-3 sm:flex">
+            <div className="flex items-center justify-between border-t border-border-subtle px-4 py-2.5 text-muted-foreground">
+              <span className="meta">Command menu</span>
+              <span className="hidden items-center gap-3 text-[12px] sm:flex">
                 <span className="flex items-center gap-1">
-                  <kbd className="rounded-sm border border-border px-1 font-mono">↑</kbd>
-                  <kbd className="rounded-sm border border-border px-1 font-mono">↓</kbd>
-                  navigate
+                  <kbd className="kbd">↑</kbd>
+                  <kbd className="kbd">↓</kbd>
+                  move
                 </span>
                 <span className="flex items-center gap-1">
-                  <kbd className="rounded-sm border border-border px-1 font-mono">↵</kbd>
-                  select
+                  <kbd className="kbd">
+                    <CornerDownLeft className="h-3 w-3" />
+                  </kbd>
+                  run
                 </span>
               </span>
             </div>

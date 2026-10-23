@@ -5,96 +5,58 @@ import { Presentation } from '../presentation';
 import AllProjects from '../projects/AllProjects';
 import Resume from '../resume';
 import Skills from '../skills';
+import { Artifact, ArtifactHeader } from '../artifact/artifact';
 
 interface ToolRendererProps {
   toolInvocations: any[];
   messageId: string;
 }
 
-export default function ToolRenderer({
-  toolInvocations,
-  messageId,
-}: ToolRendererProps) {
+/** Maps a tool name to its bespoke artifact. Shared by live and instant turns. */
+export function renderToolArtifact(toolName: string) {
+  switch (toolName) {
+    case 'getProjects':
+      return <AllProjects />;
+    case 'getPresentation':
+      return <Presentation />;
+    case 'getResume':
+      return <Resume />;
+    case 'getContact':
+      return <Contact />;
+    case 'getSkills':
+      return <Skills />;
+    case 'getInternship':
+      return <AvailabilityCard />;
+    default:
+      return null;
+  }
+}
+
+export default function ToolRenderer({ toolInvocations }: ToolRendererProps) {
   return (
-    <div className="w-full transition-all duration-300">
+    <div className="w-full">
       {toolInvocations.map((tool) => {
         const { toolCallId, toolName } = tool;
+        const artifact = renderToolArtifact(toolName);
+        if (artifact) return <div key={toolCallId}>{artifact}</div>;
 
-        // Return specialized components based on tool name
-        switch (toolName) {
-          case 'getProjects':
-            return (
-              <div
-                key={toolCallId}
-                className="w-full overflow-hidden rounded-lg"
-              >
-                <AllProjects />
-              </div>
-            );
-
-          case 'getPresentation':
-            return (
-              <div
-                key={toolCallId}
-                className="w-full overflow-hidden rounded-lg"
-              >
-                <Presentation />
-              </div>
-            );
-
-          case 'getResume':
-            return (
-              <div key={toolCallId} className="w-full rounded-lg">
-                <Resume />
-              </div>
-            );
-
-          case 'getContact':
-            return (
-              <div key={toolCallId} className="w-full rounded-lg">
-                <Contact />
-              </div>
-            );
-
-          case 'getSkills':
-            return (
-              <div key={toolCallId} className="w-full rounded-lg">
-                <Skills />
-              </div>
-            );
-
-          case 'getInternship':
-            return (
-              <div key={toolCallId} className="w-full rounded-lg">
-                <AvailabilityCard />
-              </div>
-            );
-
-          // Default renderer for other tools
-          default:
-            return (
-              <div
-                key={toolCallId}
-                className="bg-secondary/10 w-full rounded-lg p-4"
-              >
-                <div className="mb-2 flex items-center justify-between">
-                  <h3 className="text-lg font-medium">{toolName}</h3>
-                  <span className="rounded-full bg-green-100 px-2 py-0.5 text-xs text-green-800 dark:bg-green-900 dark:text-green-100">
-                    Tool Result
-                  </span>
-                </div>
-                <div className="mt-2">
-                  {typeof tool.result === 'object' ? (
-                    <pre className="bg-secondary/20 overflow-x-auto rounded p-3 text-sm">
-                      {JSON.stringify(tool.result, null, 2)}
-                    </pre>
-                  ) : (
-                    <p>{String(tool.result)}</p>
-                  )}
-                </div>
-              </div>
-            );
-        }
+        // Default renderer for other tools: the raw result, set as a document.
+        return (
+          <Artifact key={toolCallId} label={toolName}>
+            <ArtifactHeader kicker="Tool result" title={toolName} />
+            <div className="border-t border-border-subtle px-5 py-4 sm:px-7">
+              {typeof tool.result === 'object' ? (
+                <pre className="scrollbar-subtle overflow-x-auto rounded-md bg-sunken p-3 font-mono text-[13px]">
+                  {JSON.stringify(tool.result, null, 2)}
+                </pre>
+              ) : (
+                <p className="text-[15px] text-foreground">
+                  {String(tool.result)}
+                </p>
+              )}
+            </div>
+          </Artifact>
+        );
       })}
     </div>
   );

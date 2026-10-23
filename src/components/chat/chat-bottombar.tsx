@@ -35,6 +35,16 @@ const EXAMPLES = [
 
 const MAX_TEXTAREA_HEIGHT = 160; // ~6 lines
 
+const EASE = [0.22, 1, 0.36, 1] as const;
+
+const KIND_LABEL: Record<Command['kind'], string> = {
+  ask: 'Ask',
+  link: 'Open',
+  copy: 'Copy',
+  resume: 'File',
+  theme: 'Toggle',
+};
+
 export default function ChatBottombar({
   input,
   handleInputChange,
@@ -66,7 +76,7 @@ export default function ChatBottombar({
           c.label.toLowerCase().includes(q)
         );
       })
-      .slice(0, 6);
+      .slice(0, 7);
   }, [isSlash, input, commands]);
 
   const showSlash = isSlash && slashMatches.length > 0;
@@ -74,7 +84,8 @@ export default function ChatBottombar({
   // A suggestion is offered only while the field is empty and idle — so Tab is
   // never intercepted mid-typing, and the ghost text can't be mistaken for
   // something the user actually entered.
-  const suggestionActive = input.length === 0 && !isToolInProgress && !showSlash;
+  const suggestionActive =
+    input.length === 0 && !isToolInProgress && !showSlash;
 
   useEffect(() => setActive(0), [input]);
 
@@ -91,7 +102,7 @@ export default function ChatBottombar({
     if (!suggestionActive) return;
     const id = setInterval(
       () => setExampleIdx((i) => (i + 1) % EXAMPLES.length),
-      3800
+      4200
     );
     return () => clearInterval(id);
   }, [suggestionActive]);
@@ -146,20 +157,24 @@ export default function ChatBottombar({
     if (showSlash) {
       if (e.key === 'ArrowDown') {
         e.preventDefault();
-        setActive((a) => Math.min(a + 1, slashMatches.length - 1));
+        setActive((a) => (a + 1) % slashMatches.length);
         return;
       }
       if (e.key === 'ArrowUp') {
         e.preventDefault();
-        setActive((a) => Math.max(a - 1, 0));
+        setActive((a) => (a - 1 + slashMatches.length) % slashMatches.length);
         return;
       }
-      if (e.key === 'Enter' && !e.shiftKey && !e.nativeEvent.isComposing) {
+      if (
+        (e.key === 'Enter' || (e.key === 'Tab' && !e.shiftKey)) &&
+        !e.nativeEvent.isComposing
+      ) {
         e.preventDefault();
         runSlash(slashMatches[active]);
         return;
       }
       if (e.key === 'Escape') {
+        e.preventDefault();
         clearInput();
         return;
       }
@@ -182,107 +197,212 @@ export default function ChatBottombar({
     inputRef.current?.focus();
   }, []);
 
+  const mode = isLoading
+    ? { label: 'Streaming', tone: 'text-clay-ink' }
+    : isToolInProgress
+      ? { label: 'Running tool', tone: 'text-clay-ink' }
+      : isSlash
+        ? { label: 'Command', tone: 'text-foreground' }
+        : { label: 'Live model', tone: 'text-muted-foreground' };
+
+  const canSend = !!input.trim() && !isToolInProgress && !isSlash;
+
   return (
     <div className="relative w-full">
       {/* Slash-command menu */}
       <AnimatePresence>
         {showSlash && (
           <motion.div
-            initial={{ opacity: 0, y: 8 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: 8 }}
-            transition={{ duration: 0.14 }}
-            className="absolute bottom-[calc(100%+8px)] left-0 z-30 w-full overflow-hidden rounded-lg border border-border-strong bg-popover"
+            initial={{ opacity: 0, y: 6, scale: 0.985 }}
+            animate={{ opacity: 1, y: 0, scale: 1 }}
+            exit={{ opacity: 0, y: 4, transition: { duration: 0.12 } }}
+            transition={{ duration: 0.18, ease: EASE }}
+            style={{ transformOrigin: '50% 100%' }}
+            className="absolute bottom-[calc(100%+8px)] left-0 z-30 w-full overflow-hidden rounded-lg border border-border-strong bg-popover shadow-[var(--shadow-float)]"
           >
-            <div className="border-b border-border px-3 py-1.5 font-mono text-[10px] tracking-wider text-muted-foreground uppercase">
-              Commands
+            <div className="flex items-center justify-between border-b border-border-subtle px-3.5 py-2">
+              <span className="meta text-muted-foreground">Commands</span>
+              <span className="meta hidden items-center gap-2 text-muted-foreground sm:flex">
+                <span>↑↓ move</span>
+                <span>↵ run</span>
+                <span>esc clear</span>
+              </span>
             </div>
-            <div className="p-1">
-              {slashMatches.map((cmd, i) => (
-                <button
-                  key={cmd.id}
-                  type="button"
-                  onMouseEnter={() => setActive(i)}
-                  onClick={() => runSlash(cmd)}
-                  className={`flex w-full items-center gap-3 rounded-sm px-3 py-2 text-left text-sm transition-colors ${
-                    i === active ? 'bg-secondary text-foreground' : 'text-foreground/80'
-                  }`}
-                >
-                  <span className="font-mono text-xs text-clay">{cmd.slash}</span>
-                  <span className="flex-1 truncate">{cmd.label}</span>
-                  {i === active && (
-                    <CornerDownLeft className="h-3.5 w-3.5 text-muted-foreground" />
-                  )}
-                </button>
-              ))}
-            </div>
+            <ul
+              id="slash-listbox"
+              role="listbox"
+              aria-label="Slash commands"
+              className="p-1"
+            >
+              {slashMatches.map((cmd, i) => {
+                const selected = i === active;
+                return (
+                  <li
+                    key={cmd.id}
+                    id={`slash-opt-${cmd.id}`}
+                    role="option"
+                    aria-selected={selected}
+                    onMouseEnter={() => setActive(i)}
+                    onMouseDown={(e) => e.preventDefault()}
+                    onClick={() => runSlash(cmd)}
+                    className={`flex cursor-pointer items-center gap-3 rounded-md px-3 py-2 text-[14px] transition-colors duration-150 ${
+                      selected
+                        ? 'bg-secondary text-foreground shadow-[inset_2px_0_0_var(--clay)]'
+                        : 'text-ink-soft'
+                    }`}
+                  >
+                    <span className="num w-[5.5rem] shrink-0 text-[12.5px] text-clay-ink">
+                      {cmd.slash}
+                    </span>
+                    <span className="min-w-0 flex-1 truncate">{cmd.label}</span>
+                    {cmd.hint && (
+                      <span className="hidden max-w-[11rem] shrink-0 truncate text-[12px] text-muted-foreground sm:block">
+                        {cmd.hint}
+                      </span>
+                    )}
+                    <span className="meta w-10 shrink-0 text-right text-muted-foreground">
+                      {selected ? (
+                        <CornerDownLeft className="ml-auto h-3.5 w-3.5" />
+                      ) : (
+                        KIND_LABEL[cmd.kind]
+                      )}
+                    </span>
+                  </li>
+                );
+              })}
+            </ul>
           </motion.div>
         )}
       </AnimatePresence>
 
       <form onSubmit={handleSubmit} className="w-full">
-        <div className="group flex items-end gap-2 rounded-lg border border-input bg-card px-3 py-2 transition-colors focus-within:border-border-strong">
-          <span
-            aria-hidden
-            className="select-none py-1 pl-0.5 font-mono text-sm text-clay"
-          >
-            ›
-          </span>
-          <textarea
-            ref={inputRef}
-            rows={1}
-            value={input}
-            onChange={handleInputChange}
-            onKeyDown={handleKeyDown}
-            placeholder={
-              isToolInProgress ? 'One moment…' : currentExample
-            }
-            aria-label="Ask a question"
-            className="custom-scrollbar max-h-40 w-full resize-none self-center bg-transparent py-1 text-[15px] leading-relaxed text-foreground placeholder:text-muted-foreground focus:outline-none"
-            disabled={isToolInProgress}
-          />
-
-          {/* Accept-suggestion hint — tappable, so mobile (no Tab key) can use it too */}
-          {suggestionActive && (
-            <button
-              type="button"
-              onClick={acceptSuggestion}
-              aria-label={`Use example question: ${currentExample}`}
-              title="Fill this question"
-              className="mb-1 flex shrink-0 items-center gap-1 self-end rounded-sm border border-border px-1.5 py-0.5 font-mono text-[10px] text-muted-foreground transition-colors hover:border-border-strong hover:text-foreground"
+        <div className="rounded-lg border border-border-strong bg-card transition-[border-color,box-shadow] duration-200 focus-within:border-clay">
+          {/* Input row */}
+          <div className="relative flex items-start gap-2.5 px-4 pt-3.5 pb-2">
+            <span
+              aria-hidden
+              className="num select-none pt-[3px] text-[14px] leading-6 text-clay"
             >
-              ⇥ Tab
-            </button>
-          )}
+              ›
+            </span>
+            <div className="relative min-w-0 flex-1">
+              {/* Ghost suggestion — an overlay so it never wraps the field */}
+              {suggestionActive && (
+                <span
+                  key={exampleIdx}
+                  aria-hidden
+                  className="reveal pointer-events-none absolute inset-x-0 top-1 truncate text-[15px] leading-6 text-muted-foreground"
+                >
+                  {currentExample}
+                </span>
+              )}
+              {input.length === 0 && isToolInProgress && (
+                <span
+                  aria-hidden
+                  className="pointer-events-none absolute inset-x-0 top-1 text-[15px] leading-6 text-muted-foreground"
+                >
+                  One moment…
+                </span>
+              )}
+              <textarea
+                ref={inputRef}
+                rows={1}
+                value={input}
+                onChange={handleInputChange}
+                onKeyDown={handleKeyDown}
+                aria-label="Ask a question, or type / for commands"
+                aria-describedby="composer-hint"
+                role="combobox"
+                aria-autocomplete="list"
+                aria-expanded={showSlash}
+                aria-controls={showSlash ? 'slash-listbox' : undefined}
+                aria-activedescendant={
+                  showSlash
+                    ? `slash-opt-${slashMatches[active]?.id}`
+                    : undefined
+                }
+                className="scrollbar-subtle relative block max-h-40 w-full resize-none bg-transparent py-1 text-[15px] leading-6 text-foreground focus:outline-none focus-visible:outline-none disabled:cursor-not-allowed"
+                disabled={isToolInProgress}
+              />
+            </div>
+          </div>
 
-          <button
-            type="button"
-            onClick={onOpenCommand}
-            aria-label="Open command menu"
-            className="mb-1 hidden items-center gap-1 self-end rounded-sm border border-border px-1.5 py-0.5 font-mono text-[10px] text-muted-foreground transition-colors hover:text-foreground sm:flex"
-          >
-            ⌘K
-          </button>
+          {/* Instrument rail */}
+          <div className="flex items-center justify-between gap-3 border-t border-border-subtle py-1.5 pr-1.5 pl-4">
+            <div
+              id="composer-hint"
+              className="meta flex min-w-0 items-center gap-3 text-muted-foreground"
+            >
+              <span
+                className={`flex shrink-0 items-center gap-1.5 ${mode.tone}`}
+              >
+                <span
+                  aria-hidden
+                  className={`h-1.5 w-1.5 rounded-full ${
+                    isLoading || isToolInProgress
+                      ? 'motion-safe:animate-pulse bg-clay'
+                      : isSlash
+                        ? 'bg-foreground'
+                        : 'bg-success'
+                  }`}
+                />
+                {mode.label}
+              </span>
+              <span
+                aria-hidden
+                className="hidden h-3 w-px bg-border sm:block"
+              />
+              <span className="hidden truncate normal-case tracking-normal sm:inline">
+                <span className="text-foreground">/</span> commands
+              </span>
+              {suggestionActive && (
+                <button
+                  type="button"
+                  onClick={acceptSuggestion}
+                  aria-label={`Use example question: ${currentExample}`}
+                  className="press flex shrink-0 items-center gap-1 rounded-sm normal-case tracking-normal hover:text-foreground"
+                >
+                  <kbd className="kbd">Tab</kbd>
+                  <span className="hidden sm:inline">use example</span>
+                  <span className="sm:hidden">example</span>
+                </button>
+              )}
+            </div>
 
-          {isLoading ? (
-            <button
-              type="button"
-              onClick={stop}
-              aria-label="Stop"
-              className="flex h-8 w-8 shrink-0 items-center justify-center self-end rounded-full bg-primary text-primary-foreground transition-transform active:translate-y-px"
-            >
-              <Square className="h-3.5 w-3.5 fill-current" />
-            </button>
-          ) : (
-            <button
-              type="submit"
-              disabled={!input.trim() || isToolInProgress}
-              aria-label="Send"
-              className="flex h-8 w-8 shrink-0 items-center justify-center self-end rounded-full bg-primary text-primary-foreground transition-transform active:translate-y-px disabled:opacity-35"
-            >
-              <ArrowUp className="h-4 w-4" />
-            </button>
-          )}
+            <div className="flex shrink-0 items-center gap-1.5">
+              <button
+                type="button"
+                onClick={onOpenCommand}
+                aria-label="Open command menu"
+                className="press hidden h-8 items-center rounded-md px-1.5 text-muted-foreground hover:bg-secondary hover:text-foreground sm:flex"
+              >
+                <kbd className="kbd">⌘K</kbd>
+              </button>
+
+              {isLoading ? (
+                <button
+                  type="button"
+                  onClick={stop}
+                  aria-label="Stop generating"
+                  className="btn-ink h-8 px-3 text-[13px]"
+                >
+                  <Square className="h-3 w-3 fill-current" />
+                  <span className="hidden sm:inline">Stop</span>
+                </button>
+              ) : (
+                <button
+                  type="submit"
+                  disabled={!canSend}
+                  aria-label="Send"
+                  className="btn-ink h-8 px-3 text-[13px] disabled:pointer-events-none disabled:bg-secondary disabled:text-muted-foreground"
+                >
+                  <span className="hidden sm:inline">Send</span>
+                  <ArrowUp className="h-3.5 w-3.5 sm:hidden" />
+                  <CornerDownLeft className="hidden h-3.5 w-3.5 sm:block" />
+                </button>
+              )}
+            </div>
+          </div>
         </div>
       </form>
     </div>

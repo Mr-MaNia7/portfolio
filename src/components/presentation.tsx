@@ -1,90 +1,116 @@
 'use client';
 
-import { motion } from 'framer-motion';
 import Image from 'next/image';
 import React from 'react';
-import { MapPin } from 'lucide-react';
-import { profileInfo } from '@/lib/config-loader';
+import { getConfig, profileInfo } from '@/lib/config-loader';
 import { UpworkBadge } from '@/components/ui/upwork-badge';
+import {
+  Artifact,
+  ArtifactHeader,
+  ArtifactSection,
+} from '@/components/artifact/artifact';
 
-const TAGS = [
-  'Next.js / NestJS',
-  'LLM · RLHF',
-  'System design',
-  'TypeScript & Python',
-  'Top Rated Plus',
-];
-
+/** "About" dossier: portrait, the bio set as an essay, and a facts ledger. */
 export function Presentation() {
   const profile = profileInfo;
+  const { personal, education, stats, availability } = getConfig();
+  const [lede, ...rest] = profile.description.split(/\n{2,}/).filter(Boolean);
+
+  const facts: Array<{ term: string; detail: React.ReactNode }> = [
+    {
+      term: 'Based in',
+      detail: (
+        <>
+          {personal.location}
+          <span className="num ml-2 text-[12px] text-muted-foreground">
+            {personal.timezone}
+          </span>
+        </>
+      ),
+    },
+    {
+      term: 'Standing',
+      detail: <UpworkBadge className="!text-[14px] !text-foreground" />,
+    },
+    {
+      term: 'Education',
+      detail: `${education.degree}${education.stream ? ` (${education.stream})` : ''} — ${education.institution}`,
+    },
+    { term: 'Engagements', detail: availability.types.join(' · ') },
+  ];
 
   return (
-    <div className="mx-auto w-full max-w-3xl py-2">
-      <div className="grid grid-cols-1 gap-6 sm:grid-cols-[200px_1fr] sm:gap-8">
-        {/* Portrait */}
-        <motion.div
-          initial={{ opacity: 0, scale: 0.96 }}
-          animate={{ opacity: 1, scale: 1 }}
-          transition={{ duration: 0.6, ease: [0.19, 1, 0.22, 1] as [number, number, number, number] }}
-          className="relative mx-auto aspect-square w-40 overflow-hidden rounded-lg border border-border-strong sm:mx-0 sm:w-full"
-        >
-          <Image
-            src={profile.src}
-            alt={profile.name}
-            fill
-            sizes="200px"
-            className="object-cover"
-          />
-        </motion.div>
+    <Artifact label="About">
+      <ArtifactHeader
+        kicker={
+          <>
+            About <span className="text-border-strong">{'//'}</span> about.md
+          </>
+        }
+        title={profile.name}
+        standfirst={profile.title}
+        aside={
+          <div className="relative h-20 w-20 overflow-hidden rounded-md border border-border sm:h-24 sm:w-24">
+            <Image
+              src={profile.src}
+              alt={profile.name}
+              fill
+              sizes="96px"
+              className="object-cover"
+            />
+          </div>
+        }
+      />
 
-        {/* Text */}
-        <div className="flex flex-col">
-          <motion.div
-            initial={{ opacity: 0, y: 12 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5 }}
+      <ArtifactSection index={1}>
+        <p className="font-display hang measure text-[1.25rem] leading-[1.45] text-foreground sm:text-[1.375rem]">
+          {lede}
+        </p>
+        {rest.map((para) => (
+          <p
+            key={para.slice(0, 24)}
+            className="measure mt-4 text-[15px] leading-[1.7] text-ink-soft"
           >
-            <h1 className="font-display text-2xl leading-tight tracking-tight text-foreground sm:text-3xl">
-              {profile.name}
-            </h1>
-            <p className="mt-1.5 text-sm text-foreground/70">{profile.title}</p>
-            <div className="mt-2 flex flex-wrap items-center gap-x-3 gap-y-1 text-[13px] text-muted-foreground">
-              <span className="inline-flex items-center gap-1">
-                <MapPin className="h-3.5 w-3.5" />
-                {profile.location}
-              </span>
-              <span className="text-border-strong">·</span>
-              <UpworkBadge />
+            {para}
+          </p>
+        ))}
+      </ArtifactSection>
+
+      <ArtifactSection label="At a glance" index={2}>
+        <dl className="divide-y divide-border-subtle">
+          {facts.map(({ term, detail }) => (
+            <div
+              key={term}
+              className="grid gap-1 py-2.5 first:pt-0 last:pb-0 sm:grid-cols-[9rem_1fr] sm:gap-6"
+            >
+              <dt className="meta pt-[3px] text-muted-foreground">{term}</dt>
+              <dd className="text-[14.5px] leading-relaxed text-foreground">
+                {detail}
+              </dd>
             </div>
-          </motion.div>
+          ))}
+        </dl>
+      </ArtifactSection>
 
-          <motion.p
-            initial={{ opacity: 0, y: 12 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5, delay: 0.1 }}
-            className="mt-5 text-[15px] leading-relaxed whitespace-pre-line text-foreground/90"
+      <dl
+        className="reveal grid grid-cols-2 gap-px border-t border-border-subtle bg-border-subtle sm:grid-cols-4"
+        style={{ '--i': 3 } as React.CSSProperties}
+      >
+        {stats.map((s) => (
+          <div
+            key={s.label}
+            className="flex flex-col gap-1.5 bg-sunken px-5 py-4 sm:px-7"
           >
-            {profile.description}
-          </motion.p>
-
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ delay: 0.35, duration: 0.5 }}
-            className="mt-5 flex flex-wrap gap-1.5"
-          >
-            {TAGS.map((tag) => (
-              <span
-                key={tag}
-                className="rounded-sm border border-border bg-secondary/60 px-2.5 py-1 text-xs text-foreground/75"
-              >
-                {tag}
-              </span>
-            ))}
-          </motion.div>
-        </div>
-      </div>
-    </div>
+            <dt className="text-[12px] leading-snug text-muted-foreground">
+              {s.label}
+            </dt>
+            <dd className="num order-first text-[1.25rem] leading-none text-foreground">
+              {s.value}
+            </dd>
+          </div>
+        ))}
+      </dl>
+    </Artifact>
   );
 }
 

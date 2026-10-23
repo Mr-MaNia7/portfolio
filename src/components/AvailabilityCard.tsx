@@ -1,116 +1,163 @@
 'use client';
 
-import { motion } from 'framer-motion';
-import { Clock, Globe, Layers, Zap, ArrowUpRight } from 'lucide-react';
-import Image from 'next/image';
+import React from 'react';
+import { ArrowUpRight } from 'lucide-react';
 import { getConfig } from '@/lib/config-loader';
+import { useLocalTime } from '@/hooks/use-local-time';
+import { UpworkBadge } from '@/components/ui/upwork-badge';
+import {
+  Artifact,
+  ArtifactHeader,
+  ArtifactSection,
+  pad2,
+} from '@/components/artifact/artifact';
+import { CopyEmail } from '@/components/artifact/copy-email';
 
+/** Commission dossier: standing, terms of engagement, focus, and one way in. */
 const AvailabilityCard = () => {
-  const { personal, availability, social } = getConfig();
+  const { personal, availability, social, stats } = getConfig();
+  const time = useLocalTime(availability.timezone);
+  const city = personal.location.split(',')[0];
 
-  const meta = [
-    { icon: Zap, label: 'Engagements', value: availability.types.join(' · ') },
-    { icon: Globe, label: 'Mode', value: `${availability.workMode} · ${availability.location}` },
-    { icon: Clock, label: 'Start', value: `${availability.startDate} · ${availability.timezone}` },
+  const terms: Array<{ term: string; detail: React.ReactNode }> = [
+    { term: 'Engagements', detail: availability.types.join(' · ') },
+    {
+      term: 'Mode',
+      detail: `${availability.workMode} — ${availability.location}`,
+    },
+    { term: 'Start', detail: availability.startDate },
+    {
+      term: 'Local time',
+      detail: (
+        <span className="flex flex-wrap items-baseline gap-x-2">
+          <span className="num" suppressHydrationWarning>
+            {time?.label ?? '--:--'}
+          </span>
+          <span className="text-muted-foreground">
+            in {city}, {availability.timezone}
+            {time &&
+              (time.isWorkingHours
+                ? ' — at the desk now'
+                : ' — replies first thing tomorrow')}
+          </span>
+        </span>
+      ),
+    },
   ];
 
   return (
-    <motion.div
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.45 }}
-      className="mx-auto w-full max-w-3xl py-2"
-    >
-      <div className="overflow-hidden rounded-lg border border-border">
-        {/* Header */}
-        <div className="flex items-center justify-between gap-4 border-b border-border px-6 py-5">
-          <div className="flex items-center gap-3">
-            <span className="relative h-11 w-11 overflow-hidden rounded-full border border-border-strong">
-              <Image
-                src={personal.avatar}
-                alt={personal.name}
-                fill
-                sizes="44px"
-                className="object-cover"
-              />
-            </span>
-            <div>
-              <h2 className="text-[15px] font-semibold text-foreground">
-                {personal.name}
-              </h2>
-              <p className="text-xs text-muted-foreground">
-                {availability.headline}
-              </p>
-            </div>
-          </div>
-          <span className="flex items-center gap-1.5 rounded-sm border border-border px-2.5 py-1 text-[11px] font-medium text-muted-foreground">
-            <span className="status-dot" />
-            Available
+    <Artifact label="Availability">
+      <ArtifactHeader
+        kicker={
+          <span className="flex items-center gap-2">
+            {availability.open && <span className="status-dot" aria-hidden />}
+            {availability.open
+              ? 'Accepting engagements'
+              : 'Not taking new work'}
+            <span className="text-border-strong">{'//'}</span> availability.json
           </span>
-        </div>
+        }
+        title={availability.open ? 'Commission a build.' : 'Currently booked.'}
+        standfirst={availability.headline + '. ' + availability.workStyle}
+      />
 
-        {/* Meta grid */}
-        <div className="grid grid-cols-1 divide-y divide-border sm:grid-cols-3 sm:divide-x sm:divide-y-0">
-          {meta.map(({ icon: Icon, label, value }) => (
-            <div key={label} className="px-6 py-4">
-              <div className="mb-1 flex items-center gap-1.5 text-[11px] tracking-wide text-muted-foreground uppercase">
-                <Icon className="h-3.5 w-3.5" />
-                {label}
-              </div>
-              <p className="text-sm text-foreground">{value}</p>
+      {/* Standing */}
+      <div
+        className="reveal border-t border-border"
+        style={{ '--i': 1 } as React.CSSProperties}
+      >
+        <div className="flex flex-wrap items-center justify-between gap-3 bg-sunken px-5 py-3 sm:px-7">
+          <UpworkBadge
+            className="!text-[13px] !text-foreground"
+            iconClassName="h-5 w-auto"
+          />
+          <span className="meta text-muted-foreground">Verified on Upwork</span>
+        </div>
+        <dl className="grid grid-cols-2 gap-px border-t border-border-subtle bg-border-subtle sm:grid-cols-4">
+          {stats.map((s) => (
+            <div
+              key={s.label}
+              className="flex flex-col gap-1.5 bg-card px-5 py-4 sm:px-7"
+            >
+              <dt className="text-[12px] leading-snug text-muted-foreground">
+                {s.label}
+              </dt>
+              <dd className="num order-first text-[1.375rem] leading-none text-foreground">
+                {s.value}
+              </dd>
             </div>
           ))}
-        </div>
+        </dl>
+      </div>
 
-        {/* Focus areas */}
-        <div className="border-t border-border px-6 py-5">
-          <div className="mb-3 flex items-center gap-1.5 text-[11px] tracking-wide text-muted-foreground uppercase">
-            <Layers className="h-3.5 w-3.5" /> Where I add the most value
-          </div>
-          <div className="flex flex-wrap gap-1.5">
-            {availability.focusAreas.map((area) => (
-              <span
-                key={area}
-                className="rounded-sm border border-border bg-secondary/50 px-2.5 py-1 text-xs text-foreground/80"
-              >
+      <ArtifactSection label="Terms" index={2}>
+        <dl className="divide-y divide-border-subtle">
+          {terms.map(({ term, detail }) => (
+            <div
+              key={term}
+              className="grid gap-1 py-2.5 first:pt-0 last:pb-0 sm:grid-cols-[9rem_1fr] sm:gap-6"
+            >
+              <dt className="meta pt-[3px] text-muted-foreground">{term}</dt>
+              <dd className="text-[14.5px] leading-relaxed text-foreground">
+                {detail}
+              </dd>
+            </div>
+          ))}
+        </dl>
+      </ArtifactSection>
+
+      <ArtifactSection label="Where I add the most value" index={3}>
+        <ol>
+          {availability.focusAreas.map((area, i) => (
+            <li
+              key={area}
+              className="flex items-baseline gap-4 border-b border-border-subtle py-2.5 first:pt-0 last:border-b-0 last:pb-0"
+            >
+              <span className="num text-[11px] text-clay-ink">
+                {pad2(i + 1)}
+              </span>
+              <span className="font-display text-[1.125rem] leading-snug text-foreground">
                 {area}
               </span>
-            ))}
-          </div>
-        </div>
+            </li>
+          ))}
+        </ol>
+      </ArtifactSection>
 
-        {/* How I work */}
-        <div className="border-t border-border px-6 py-5">
-          <p className="text-sm leading-relaxed text-foreground/85">
-            {availability.workStyle}
-          </p>
-          <p className="mt-2 text-sm leading-relaxed text-muted-foreground">
-            {availability.goals}
-          </p>
-          <p className="mt-3 text-[13px] text-muted-foreground italic">
-            {availability.note}
-          </p>
-        </div>
+      <ArtifactSection index={4}>
+        <p className="measure text-[15px] leading-[1.7] text-ink-soft">
+          {availability.goals}
+        </p>
+        <p className="font-display measure mt-3 text-[15px] leading-relaxed text-muted-foreground italic">
+          {availability.note}
+        </p>
+      </ArtifactSection>
 
-        {/* CTA */}
-        <div className="flex flex-wrap gap-2 border-t border-border px-6 py-5">
-          <a href={`mailto:${personal.email}`} className="btn-claude h-9 px-4 text-sm">
-            {personal.email}
+      {/* Call to action */}
+      <div
+        className="reveal flex flex-wrap items-center gap-2 border-t border-border bg-sunken px-5 py-4 sm:px-7"
+        style={{ '--i': 5 } as React.CSSProperties}
+      >
+        {social.upwork && (
+          <a
+            href={social.upwork}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="btn-clay h-9 px-4 text-[13px]"
+          >
+            Hire on Upwork
+            <ArrowUpRight className="h-4 w-4" aria-hidden />
           </a>
-          {social.upwork && (
-            <a
-              href={social.upwork}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="inline-flex h-9 items-center gap-1.5 rounded-sm border border-border-strong px-4 text-sm text-foreground transition-colors hover:bg-secondary"
-            >
-              Hire on Upwork
-              <ArrowUpRight className="h-4 w-4" />
-            </a>
-          )}
-        </div>
+        )}
+        <CopyEmail email={personal.email} />
+        <a
+          href={`mailto:${personal.email}`}
+          className="num ml-auto hidden truncate text-[12.5px] text-muted-foreground underline decoration-border-strong underline-offset-4 transition-colors hover:text-foreground hover:decoration-clay sm:block"
+        >
+          {personal.email}
+        </a>
       </div>
-    </motion.div>
+    </Artifact>
   );
 };
 

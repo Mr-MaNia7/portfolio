@@ -1,10 +1,21 @@
 'use client';
 import { useChat } from '@ai-sdk/react';
 import { DefaultChatTransport, isToolUIPart, type UIMessage } from 'ai';
-import { AnimatePresence, motion } from 'framer-motion';
+import {
+  AnimatePresence,
+  MotionConfig,
+  motion,
+  useReducedMotion,
+} from 'framer-motion';
 import { useTheme } from 'next-themes';
 import { useSearchParams } from 'next/navigation';
-import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import React, {
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from 'react';
 import { toast } from 'sonner';
 
 import ChatBottombar from '@/components/chat/chat-bottombar';
@@ -14,16 +25,16 @@ import { PresetReply } from '@/components/chat/preset-reply';
 import { CommandPalette } from '@/components/chat/command-palette';
 import { TopBar } from '@/components/chat/top-bar';
 import HelperBoost from './HelperBoost';
-import { ChatBubble, ChatBubbleMessage } from '@/components/ui/chat/chat-bubble';
-import { TurnBadge } from './turn-badge';
+import { TurnHeader } from './turn-badge';
 import { presetReplies, getConfig } from '@/lib/config-loader';
 import { buildCommands, type Command } from '@/lib/commands';
 
+// Landing ⇄ conversation swap. Exit only — entrances are CSS `.reveal`.
 const MOTION_CONFIG = {
-  initial: { opacity: 0, y: 16 },
+  initial: false,
   animate: { opacity: 1, y: 0 },
-  exit: { opacity: 0, y: 16 },
-  transition: { duration: 0.28, ease: 'easeOut' },
+  exit: { opacity: 0, y: -6 },
+  transition: { duration: 0.18, ease: [0.22, 1, 0.36, 1] },
 } as const;
 
 type PresetItem = {
@@ -66,6 +77,7 @@ const Chat = () => {
   const nextOrder = () => orderRef.current++;
 
   const bottomRef = useRef<HTMLDivElement>(null);
+  const reduceMotion = useReducedMotion();
 
   const { messages, status, stop, regenerate, sendMessage, setMessages } =
     useChat({
@@ -74,15 +86,16 @@ const Chat = () => {
       onError: (error) => {
         setLoadingSubmit(false);
         console.error('Chat error:', error.message);
-        setErrorItem({ anchor: messagesRef.current.length, order: nextOrder() });
-        if (
-          !(
-            error.message?.includes('quota') ||
-            error.message?.includes('exceeded') ||
-            error.message?.includes('429') ||
-            error.message?.includes('API key')
-          )
-        ) {
+        setErrorItem({
+          anchor: messagesRef.current.length,
+          order: nextOrder(),
+        });
+        if (!(
+          error.message?.includes('quota') ||
+          error.message?.includes('exceeded') ||
+          error.message?.includes('429') ||
+          error.message?.includes('API key')
+        )) {
           toast.error('Something went wrong. Try a quick question below.');
         }
       },
@@ -154,8 +167,11 @@ const Chat = () => {
 
   // Keep the newest turn in view (new turns and while streaming).
   useEffect(() => {
-    bottomRef.current?.scrollIntoView({ behavior: 'smooth', block: 'end' });
-  }, [timeline.length, loadingSubmit]);
+    bottomRef.current?.scrollIntoView({
+      behavior: reduceMotion ? 'auto' : 'smooth',
+      block: 'end',
+    });
+  }, [timeline.length, loadingSubmit, reduceMotion]);
   useEffect(() => {
     if (status === 'streaming') {
       bottomRef.current?.scrollIntoView({ behavior: 'auto', block: 'end' });
@@ -297,157 +313,184 @@ const Chat = () => {
     setPresetItems((prev) => prev.filter((p) => p.id !== id));
 
   return (
-    <div className="relative flex h-svh flex-col overflow-hidden bg-background">
-      <CommandPalette
-        commands={commands}
-        open={paletteOpen}
-        onOpenChange={setPaletteOpen}
-        onRun={runCommand}
-      />
+    <MotionConfig reducedMotion="user">
+      <div className="relative flex h-svh flex-col overflow-hidden bg-background">
+        <CommandPalette
+          commands={commands}
+          open={paletteOpen}
+          onOpenChange={setPaletteOpen}
+          onRun={runCommand}
+        />
 
-      <TopBar onOpenCommand={() => setPaletteOpen(true)} onHome={goHome} />
+        <TopBar onOpenCommand={() => setPaletteOpen(true)} onHome={goHome} />
 
-      {/* Scrollable content */}
-      <div className="custom-scrollbar flex-1 overflow-y-auto">
-        <div className="mx-auto flex min-h-full max-w-3xl flex-col px-4">
-          <AnimatePresence mode="wait">
-            {isEmptyState ? (
-              <motion.div
-                key="landing"
-                className="flex min-h-full flex-1 items-center justify-center py-8"
-                {...MOTION_CONFIG}
-                initial={false}
-              >
-                <ChatLanding
+        {/* Scrollable content */}
+        <div className="scrollbar-subtle flex-1 overflow-y-auto">
+          <div className="mx-auto flex min-h-full max-w-3xl flex-col px-4 sm:px-6">
+            <AnimatePresence mode="wait">
+              {isEmptyState ? (
+                <motion.div
+                  key="landing"
+                  className="flex min-h-full flex-1 items-center"
+                  {...MOTION_CONFIG}
+                >
+                  <ChatLanding
+                    submitQuery={submitQuery}
+                    handlePresetReply={handlePresetReply}
+                    onOpenCommand={() => setPaletteOpen(true)}
+                    commands={commands}
+                  />
+                </motion.div>
+              ) : (
+                <motion.div
+                  key="conversation"
+                  className="flex flex-col gap-10 pt-8 pb-10"
+                  {...MOTION_CONFIG}
+                >
+                  <AnimatePresence initial={false}>
+                    {timeline.map((entry) => {
+                      if (entry.kind === 'error') {
+                        return (
+                          <QuotaNotice
+                            key={entry.key}
+                            onQuick={() => {
+                              setErrorItem(null);
+                              const preset =
+                                presetReplies['How can I reach you?'];
+                              if (preset)
+                                addPreset(
+                                  'How can I reach you?',
+                                  preset.reply,
+                                  preset.tool
+                                );
+                            }}
+                            onCommand={() => {
+                              setErrorItem(null);
+                              setPaletteOpen(true);
+                            }}
+                          />
+                        );
+                      }
+
+                      if (entry.kind === 'preset') {
+                        const p = entry.item;
+                        return (
+                          <motion.div
+                            key={entry.key}
+                            className="flex flex-col gap-5"
+                            initial={false}
+                            exit={{
+                              opacity: 0,
+                              y: -4,
+                              transition: { duration: 0.15 },
+                            }}
+                          >
+                            <UserBubble text={p.question} />
+                            <PresetReply
+                              question={p.question}
+                              reply={p.reply}
+                              tool={p.tool}
+                              canEscalate={p.id === latestPresetId}
+                              onGetAIResponse={(q) => {
+                                // Escalating replaces the instant card with the
+                                // live answer — otherwise the AI re-renders the same
+                                // tool card (and echoes the question), showing it
+                                // twice.
+                                removePreset(p.id);
+                                handleGetAIResponse(q);
+                              }}
+                              onClose={() => removePreset(p.id)}
+                            />
+                          </motion.div>
+                        );
+                      }
+
+                      // Chat message
+                      const m = entry.message;
+                      if (m.role === 'user') {
+                        const text = (m.parts ?? [])
+                          .filter((part) => part.type === 'text')
+                          .map((part) =>
+                            part.type === 'text' ? part.text : ''
+                          )
+                          .join('');
+                        return <UserBubble key={entry.key} text={text} />;
+                      }
+                      return (
+                        <AssistantTurn
+                          key={entry.key}
+                          message={m}
+                          isLoading={isLoading}
+                          reload={regenerate}
+                        />
+                      );
+                    })}
+                  </AnimatePresence>
+
+                  {loadingSubmit && (
+                    <div className="reveal flex flex-col gap-3" role="status">
+                      <TurnHeader kind="ai" />
+                      <div className="flex items-center gap-2.5 py-1">
+                        <span
+                          className="composing flex items-center gap-1"
+                          aria-hidden
+                        >
+                          <span />
+                          <span />
+                          <span />
+                        </span>
+                        <span className="meta text-muted-foreground">
+                          Composing
+                        </span>
+                      </div>
+                    </div>
+                  )}
+
+                  <div ref={bottomRef} className="h-px w-full" />
+                </motion.div>
+              )}
+            </AnimatePresence>
+          </div>
+        </div>
+
+        {/* Composer */}
+        <div className="relative z-30 shrink-0 bg-background pb-[env(safe-area-inset-bottom)]">
+          <div className="mx-auto w-full max-w-3xl px-4 pt-2 pb-4 sm:px-6">
+            <div className="flex flex-col gap-2.5">
+              {!isEmptyState && (
+                <HelperBoost
                   submitQuery={submitQuery}
                   handlePresetReply={handlePresetReply}
-                  onOpenCommand={() => setPaletteOpen(true)}
+                  commands={commands}
                 />
-              </motion.div>
-            ) : (
-              <motion.div
-                key="conversation"
-                className="flex flex-col gap-4 py-6"
-                {...MOTION_CONFIG}
-                initial={false}
-              >
-                {timeline.map((entry) => {
-                  if (entry.kind === 'error') {
-                    return (
-                      <QuotaNotice
-                        key={entry.key}
-                        onQuick={() => {
-                          setErrorItem(null);
-                          const preset = presetReplies['How can I reach you?'];
-                          if (preset)
-                            addPreset(
-                              'How can I reach you?',
-                              preset.reply,
-                              preset.tool
-                            );
-                        }}
-                        onCommand={() => {
-                          setErrorItem(null);
-                          setPaletteOpen(true);
-                        }}
-                      />
-                    );
-                  }
-
-                  if (entry.kind === 'preset') {
-                    const p = entry.item;
-                    return (
-                      <div key={entry.key} className="flex flex-col gap-3">
-                        <UserBubble text={p.question} />
-                        <PresetReply
-                          question={p.question}
-                          reply={p.reply}
-                          tool={p.tool}
-                          canEscalate={p.id === latestPresetId}
-                          onGetAIResponse={(q) => {
-                            // Escalating replaces the instant card with the
-                            // live answer — otherwise the AI re-renders the same
-                            // tool card (and echoes the question), showing it
-                            // twice.
-                            removePreset(p.id);
-                            handleGetAIResponse(q);
-                          }}
-                          onClose={() => removePreset(p.id)}
-                        />
-                      </div>
-                    );
-                  }
-
-                  // Chat message
-                  const m = entry.message;
-                  if (m.role === 'user') {
-                    const text = (m.parts ?? [])
-                      .filter((part) => part.type === 'text')
-                      .map((part) => (part.type === 'text' ? part.text : ''))
-                      .join('');
-                    return <UserBubble key={entry.key} text={text} />;
-                  }
-                  return (
-                    <AssistantTurn
-                      key={entry.key}
-                      message={m}
-                      isLoading={isLoading}
-                      reload={regenerate}
-                    />
-                  );
-                })}
-
-                {loadingSubmit && (
-                  <div className="flex flex-col">
-                    <div className="mb-2">
-                      <TurnBadge kind="ai" />
-                    </div>
-                    <ChatBubble variant="received">
-                      <ChatBubbleMessage isLoading />
-                    </ChatBubble>
-                  </div>
-                )}
-
-                <div ref={bottomRef} className="h-px w-full" />
-              </motion.div>
-            )}
-          </AnimatePresence>
-        </div>
-      </div>
-
-      {/* Composer */}
-      <div className="border-t border-border bg-background/85 backdrop-blur-md">
-        <div className="mx-auto w-full max-w-3xl px-4 pt-3 pb-4">
-          <div className="flex flex-col items-center gap-3">
-            <HelperBoost
-              submitQuery={submitQuery}
-              handlePresetReply={handlePresetReply}
-            />
-            <ChatBottombar
-              input={input}
-              handleInputChange={handleInputChange}
-              handleSubmit={onSubmit}
-              isLoading={isLoading}
-              stop={handleStop}
-              isToolInProgress={isToolInProgress}
-              commands={commands}
-              onRunCommand={runCommand}
-              onOpenCommand={() => setPaletteOpen(true)}
-            />
+              )}
+              <ChatBottombar
+                input={input}
+                handleInputChange={handleInputChange}
+                handleSubmit={onSubmit}
+                isLoading={isLoading}
+                stop={handleStop}
+                isToolInProgress={isToolInProgress}
+                commands={commands}
+                onRunCommand={runCommand}
+                onOpenCommand={() => setPaletteOpen(true)}
+              />
+            </div>
           </div>
         </div>
       </div>
-    </div>
+    </MotionConfig>
   );
 };
 
 function UserBubble({ text }: { text: string }) {
   if (!text.trim()) return null;
   return (
-    <div className="flex justify-end">
-      <ChatBubble variant="sent">
-        <ChatBubbleMessage>{text}</ChatBubbleMessage>
-      </ChatBubble>
+    <div className="reveal flex justify-end">
+      <p className="max-w-[85%] rounded-lg rounded-br-sm border border-border-subtle bg-sunken px-4 py-2.5 text-[15px] leading-relaxed break-words whitespace-pre-wrap text-foreground">
+        <span className="sr-only">You asked: </span>
+        {text}
+      </p>
     </div>
   );
 }
@@ -460,32 +503,37 @@ function QuotaNotice({
   onCommand: () => void;
 }) {
   return (
-    <motion.div {...MOTION_CONFIG} initial={false} className="py-2">
-      <div className="rounded-lg border border-border bg-secondary/60 p-5">
-        <div className="mb-2 flex items-center gap-2">
-          <span className="status-dot" style={{ opacity: 0.9 }} />
-          <h3 className="text-sm font-semibold text-foreground">
-            The live model is resting
-          </h3>
+    <div className="reveal" role="alert">
+      <div className="rounded-lg border border-border bg-card">
+        <div className="flex items-center gap-2 border-b border-border-subtle px-5 py-2.5">
+          <span aria-hidden className="h-1.5 w-1.5 rounded-full bg-warning" />
+          <span className="meta text-muted-foreground">
+            Live model · rate-limited
+          </span>
         </div>
-        <p className="text-sm leading-relaxed text-muted-foreground">
-          Free-form AI answers are momentarily unavailable (rate limits on the
-          hosted model). Everything else still works instantly — the quick
-          questions and the ⌘K menu answer from curated content with no API call.
-        </p>
-        <div className="mt-4 flex flex-wrap gap-2">
-          <button onClick={onQuick} className="btn-claude h-9 px-4 text-sm">
-            How to reach me
-          </button>
-          <button
-            onClick={onCommand}
-            className="rounded-sm border border-border-strong px-4 py-2 text-sm text-foreground transition-colors hover:bg-secondary"
-          >
-            Open ⌘K menu
-          </button>
+        <div className="px-5 py-4">
+          <h3 className="font-display text-[1.25rem] leading-tight text-foreground">
+            The live model is resting.
+          </h3>
+          <p className="measure mt-1.5 text-[14px] leading-relaxed text-ink-soft">
+            Free-form AI answers are momentarily unavailable (rate limits on the
+            hosted model). Everything else still works instantly — the quick
+            answers and the ⌘K menu read from curated notes, no API call.
+          </p>
+          <div className="mt-4 flex flex-wrap gap-2">
+            <button onClick={onQuick} className="btn-ink h-9 px-4 text-[13px]">
+              How to reach me
+            </button>
+            <button
+              onClick={onCommand}
+              className="btn-line h-9 px-4 text-[13px]"
+            >
+              Open the ⌘K menu
+            </button>
+          </div>
         </div>
       </div>
-    </motion.div>
+    </div>
   );
 }
 

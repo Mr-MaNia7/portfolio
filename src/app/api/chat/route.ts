@@ -4,7 +4,6 @@ import { convertToModelMessages, stepCountIs, streamText } from 'ai';
 import { SYSTEM_PROMPT } from './prompt';
 import { getContact } from './tools/getContact';
 import { getInternship } from './tools/getIntership';
-import { getPresentation } from './tools/getPresentation';
 import { getProjects } from './tools/getProjects';
 import { getResume } from './tools/getResume';
 import { getSkills } from './tools/getSkills';
@@ -40,10 +39,12 @@ export async function POST(req: Request) {
       return new Response('Missing API key', { status: 500 });
     }
 
-    // Add tools
+    // Add tools. Note: getPresentation (the "about" identity card) is
+    // intentionally NOT exposed to the live model — that card is the /about
+    // preset's job. When the live AI is asked "who are you", it should give a
+    // real, generated prose answer rather than re-rendering the curated card.
     const tools = {
       getProjects,
-      getPresentation,
       getResume,
       getContact,
       getSkills,

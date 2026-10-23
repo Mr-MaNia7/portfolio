@@ -14,5 +14,4 @@
     <circle cx="0" cy="0" r="34" stroke="#C15F3C" stroke-width="2" fill="none" opacity="0.5"/>
     <circle cx="0" cy="0" r="60" stroke="#C15F3C" stroke-width="2" fill="none" opacity="0.25"/>
   </g>
-  <text x="60" y="560" font-family="Georgia, serif" font-size="220" font-weight="400" fill="#FAF9F6" opacity="0.05">02</text>
 </svg>

@@ -18,6 +18,8 @@ const newsreader = Newsreader({
   variable: '--font-newsreader',
   display: 'swap',
   style: ['normal', 'italic'],
+  // Optical sizing: tighter, higher-contrast cuts at display sizes.
+  axes: ['opsz'],
 });
 
 const jetbrainsMono = JetBrains_Mono({
@@ -94,8 +96,8 @@ export const viewport: Viewport = {
   initialScale: 1,
   maximumScale: 1,
   themeColor: [
-    { media: '(prefers-color-scheme: light)', color: '#faf9f6' },
-    { media: '(prefers-color-scheme: dark)', color: '#141312' },
+    { media: '(prefers-color-scheme: light)', color: '#faf9f5' },
+    { media: '(prefers-color-scheme: dark)', color: '#161412' },
   ],
 };
 

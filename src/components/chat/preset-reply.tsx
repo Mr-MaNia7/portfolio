@@ -2,15 +2,9 @@
 
 import { useState } from 'react';
 import { Sparkles, X } from 'lucide-react';
-import { motion } from 'framer-motion';
 
-import { Presentation } from '@/components/presentation';
-import AllProjects from '@/components/projects/AllProjects';
-import Skills from '@/components/skills';
-import { Contact } from '@/components/contact';
-import Resume from '@/components/resume';
-import AvailabilityCard from '@/components/AvailabilityCard';
-import { TurnBadge } from './turn-badge';
+import { renderToolArtifact } from './tool-renderer';
+import { ToolPill, TurnHeader } from './turn-badge';
 
 interface PresetReplyProps {
   question: string;
@@ -37,74 +31,61 @@ export function PresetReply({
     onGetAIResponse(question, tool);
   };
 
-  const renderComponent = () => {
-    switch (tool) {
-      case 'getPresentation':
-        return <Presentation />;
-      case 'getProjects':
-        return <AllProjects />;
-      case 'getSkills':
-        return <Skills />;
-      case 'getContact':
-        return <Contact />;
-      case 'getResume':
-        return <Resume />;
-      case 'getInternship':
-        return <AvailabilityCard />;
-      default:
-        return null;
-    }
-  };
-
-  const component = renderComponent();
+  const component = renderToolArtifact(tool);
 
   return (
-    <motion.div
-      initial={false}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.3 }}
-      className="w-full"
+    <article
+      className="reveal flex w-full flex-col gap-3"
+      aria-label="Instant answer"
     >
       {/* Provenance + remove-from-history */}
-      <div className="mb-2 flex items-center justify-between">
-        <TurnBadge kind="instant" />
-        {onClose && (
-          <button
-            onClick={onClose}
-            aria-label="Remove this answer from the conversation"
-            title="Remove from conversation"
-            className="flex items-center gap-1 rounded-sm px-1.5 py-0.5 font-mono text-[10px] tracking-wide text-muted-foreground/70 transition-colors hover:bg-secondary hover:text-foreground"
-          >
-            <X className="h-3 w-3" />
-            Remove
-          </button>
-        )}
-      </div>
+      <TurnHeader
+        kind="instant"
+        action={
+          onClose && (
+            <button
+              onClick={onClose}
+              aria-label="Remove this answer from the conversation"
+              title="Remove from conversation"
+              className="press flex h-7 items-center gap-1 rounded-md px-2 text-[12px] text-muted-foreground hover:bg-secondary hover:text-foreground"
+            >
+              <X className="h-3.5 w-3.5" />
+              <span className="hidden sm:inline">Remove</span>
+            </button>
+          )
+        }
+      />
 
       {component ? (
-        <div className="w-full">
+        <div className="flex w-full flex-col gap-2.5">
+          <div>
+            <ToolPill tool={tool} state="cached" />
+          </div>
           {component}
 
           {showAIOption && canEscalate && (
-            <div className="mx-auto mt-4 flex max-w-3xl items-center justify-between gap-3 border-t border-border pt-3">
-              <span className="text-xs text-muted-foreground">
-                Want the freeform version?
-              </span>
+            <div
+              className="reveal flex flex-wrap items-center justify-between gap-x-4 gap-y-2 pt-1"
+              style={{ '--i': 4 } as React.CSSProperties}
+            >
+              <p className="text-[13px] text-muted-foreground">
+                Curated answer, shown instantly. Want it in my own words?
+              </p>
               <button
                 onClick={handleGetAIResponse}
-                className="flex items-center gap-1.5 rounded-sm border border-border-strong px-3 py-1.5 text-xs text-foreground transition-colors hover:bg-secondary"
+                className="btn-line h-8 px-3 text-[13px]"
               >
-                <Sparkles className="h-3.5 w-3.5 text-clay" />
+                <Sparkles className="h-3.5 w-3.5 text-clay" aria-hidden />
                 Ask the live AI
               </button>
             </div>
           )}
         </div>
       ) : (
-        <div className="mx-auto max-w-3xl rounded-lg border border-border bg-secondary/40 p-5 text-sm text-foreground/85">
+        <div className="measure rounded-lg border border-border bg-card p-5 text-[15px] leading-relaxed text-foreground">
           {reply}
         </div>
       )}
-    </motion.div>
+    </article>
   );
 }

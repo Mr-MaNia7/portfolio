@@ -11,5 +11,4 @@
     <rect x="156" y="0" width="34" height="200" fill="#C15F3C"/>
     <path d="M17 130 L69 96 L121 60 L173 18" stroke="#C15F3C" stroke-width="3" fill="none" opacity="0.5"/>
   </g>
-  <text x="60" y="560" font-family="Georgia, serif" font-size="220" font-weight="400" fill="#FAF9F6" opacity="0.05">01</text>
 </svg>

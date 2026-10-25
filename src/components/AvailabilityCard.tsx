@@ -15,7 +15,7 @@ import { CopyEmail } from '@/components/artifact/copy-email';
 
 /** Commission dossier: standing, terms of engagement, focus, and one way in. */
 const AvailabilityCard = () => {
-  const { personal, availability, social, stats } = getConfig();
+  const { personal, availability, social, stats, agency } = getConfig();
   const time = useLocalTime(availability.timezone);
   const city = personal.location.split(',')[0];
 
@@ -151,10 +151,13 @@ const AvailabilityCard = () => {
         )}
         <CopyEmail email={personal.email} />
         <a
-          href={`mailto:${personal.email}`}
-          className="num ml-auto hidden truncate text-[12.5px] text-muted-foreground underline decoration-border-strong underline-offset-4 transition-colors hover:text-foreground hover:decoration-clay sm:block"
+          href={agency.url}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="ml-auto flex items-center gap-1 text-[13px] text-ink-soft underline decoration-border-strong underline-offset-4 transition-colors hover:text-foreground hover:decoration-clay"
         >
-          {personal.email}
+          Need a team? {agency.name}
+          <ArrowUpRight className="h-3.5 w-3.5" aria-hidden />
         </a>
       </div>
     </Artifact>

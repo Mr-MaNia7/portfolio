@@ -121,3 +121,13 @@ Placeholders are in place and clearly flagged in `portfolio-config.json` and the
 - [ ] Commit this work on the branch.
 - [ ] Deploy to Vercel (set the two env vars).
 - [ ] Optionally: generate a starter résumé PDF from the experience data.
+
+---
+
+## 11. Backlog — deferred by Abdulkarim (Oct 2026)
+
+- [ ] **Cal.com booking link** — add a "Book a call" path to the hire sheet (`src/components/chat/hire-sheet.tsx`) once the link is ready.
+- [ ] **"Scope my project" signature demo** — visitor describes a project, the twin returns a brief card, one click sends it by email/Upwork.
+- [ ] **Palette / brand rebrand** — move away from the Claude ivory-and-clay look; show 2–3 swatch directions before changing tokens in `globals.css`.
+- [ ] **Real headshot** — drop it in `/public` and point `personal.photo` (and optionally `personal.avatar`) at it; `headshot-placeholder.svg` is the stand-in.
+- [ ] **X / Twitter handle** — `social.twitter` is empty, so X is hidden everywhere.

@@ -1,6 +1,6 @@
 import type { PortfolioConfig } from '@/types/portfolio';
 
-export type CommandKind = 'ask' | 'link' | 'copy' | 'theme' | 'resume';
+export type CommandKind = 'ask' | 'link' | 'copy' | 'theme' | 'resume' | 'hire';
 
 export interface Command {
   id: string;
@@ -20,7 +20,7 @@ export interface Command {
  * `ask` payloads must match preset-reply keys exactly for instant answers.
  */
 export function buildCommands(config: PortfolioConfig): Command[] {
-  const { social, personal } = config;
+  const { social, personal, agency } = config;
 
   const ask: Command[] = [
     {
@@ -57,6 +57,17 @@ export function buildCommands(config: PortfolioConfig): Command[] {
       icon: 'layers',
     },
     {
+      id: 'reviews',
+      label: 'What do clients say about you?',
+      hint: 'Verbatim Upwork reviews',
+      slash: '/reviews',
+      keywords: ['reviews', 'testimonials', 'clients', 'feedback', 'rating', 'upwork'],
+      group: 'Ask',
+      kind: 'ask',
+      payload: 'What do clients say about you?',
+      icon: 'quote',
+    },
+    {
       id: 'resume',
       label: 'Can I see your résumé?',
       hint: 'Experience & download',
@@ -71,8 +82,8 @@ export function buildCommands(config: PortfolioConfig): Command[] {
       id: 'availability',
       label: 'Are you available for work?',
       hint: 'Freelance & contract',
-      slash: '/hire',
-      keywords: ['hire', 'available', 'availability', 'work', 'freelance', 'rate'],
+      slash: '/availability',
+      keywords: ['available', 'availability', 'work', 'freelance', 'contract', 'rate'],
       group: 'Ask',
       kind: 'ask',
       payload: 'Are you available for work?',
@@ -89,6 +100,17 @@ export function buildCommands(config: PortfolioConfig): Command[] {
       payload: 'How can I reach you?',
       icon: 'mail',
     },
+    {
+      id: 'hobbies',
+      label: 'What do you do outside of code?',
+      hint: 'Chess & football',
+      slash: '/hobbies',
+      keywords: ['hobbies', 'fun', 'chess', 'football', 'soccer', 'outside', 'personal'],
+      group: 'Ask',
+      kind: 'ask',
+      payload: 'What do you do outside of code?',
+      icon: 'chess',
+    },
   ];
 
   const links: Command[] = [
@@ -102,6 +124,17 @@ export function buildCommands(config: PortfolioConfig): Command[] {
       kind: 'link' as const,
       payload: social.upwork,
       icon: 'external',
+    },
+    agency.url && {
+      id: 'agency',
+      label: `${agency.name} — need a team?`,
+      hint: 'The agency I founded',
+      slash: '/team',
+      keywords: ['team', 'agency', 'eaglix', 'company', 'big', 'project'],
+      group: 'Elsewhere' as const,
+      kind: 'link' as const,
+      payload: agency.url,
+      icon: 'users',
     },
     social.github && {
       id: 'github',
@@ -136,6 +169,16 @@ export function buildCommands(config: PortfolioConfig): Command[] {
   ].filter(Boolean) as Command[];
 
   const actions: Command[] = [
+    {
+      id: 'hire',
+      label: 'Hire me',
+      hint: 'Upwork, email or a team',
+      slash: '/hire',
+      keywords: ['hire', 'book', 'call', 'start', 'project', 'contract', 'work together'],
+      group: 'Actions',
+      kind: 'hire',
+      icon: 'briefcase',
+    },
     {
       id: 'copy-email',
       label: 'Copy email address',

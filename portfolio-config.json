@@ -3,17 +3,24 @@
     "name": "Abdulkarim G. Mohammed",
     "shortName": "Abdulkarim",
     "initials": "AG",
-    "title": "Senior Full-Stack Engineer & AI/LLM Specialist",
-    "tagline": "I design and ship production-grade web platforms and LLM-powered features end to end — from system architecture to deployment.",
+    "title": "Senior Full-Stack & AI Platform Engineer",
+    "headline": "I build AI products that hold up in production.",
+    "tagline": "Senior full-stack engineer. I take products from multi-tenant backends and multi-region infrastructure all the way to the voice agents on the other end of the call.",
     "location": "Addis Ababa, Ethiopia",
     "timezone": "EAT · UTC+3",
-    "email": "abdulkarimgmohammed@gmail.com",
+    "email": "hello@abdulkarimg.com",
     "handle": "@abdulkarimgmohammed",
     "upworkBadge": "Top Rated Plus · 100% Job Success",
     "upworkBadgeImage": "https://www.upworkmrr.com/badges/top-rated-plus-badge.svg",
-    "bio": "I'm Abdulkarim — a senior full-stack engineer based in Addis Ababa with 5+ years shipping software for clients around the world. I'm Top Rated Plus on Upwork with a 100% Job Success score — $60K+ earned across 26 jobs and 5,000+ hours — and I've built everything from fintech banking backends to AI-assisted call-management systems.\n\nThese days I work where web engineering meets applied AI: designing Next.js, NestJS, and Supabase platforms, wiring up LLM features and AI agents with LangChain, LangGraph, and CrewAI, and training and evaluating frontier models — RLHF, prompt engineering, side-by-side comparison — including LLM-training work for Google via Turing. I care about clean architecture, measurable impact, and code that survives contact with real users.\n\nI also published research on hate-speech detection for Afan Oromo, a low-resource language, reaching 90%+ accuracy — because I like hard problems that matter.",
+    "bio": "I'm Abdulkarim, a senior full-stack engineer based in Addis Ababa, shipping software for clients around the world for 5+ years. On Upwork I'm Top Rated Plus with a 100% Job Success score: $60K+ earned across 26 jobs.\n\nSince June 2025 I've been building AIVI, a platform of AI voice agents and CRM for lending, insurance and contact centers. I was brought in to make the backend properly multi-tenant on Supabase, and my scope kept growing from there. Today I work across the backend, frontend, DevOps, security and SOC 2: multi-region cells, a micro-frontend platform, voice-guided co-browsing, and a reinforcement-learning policy that learns from call quality. That's 500+ merged PRs so far.\n\nBefore that I rebuilt Svetness's legacy system as Supabase microservices with a Next.js front end, led the frontend of Aladia's learning platform, trained frontier LLMs for Google through Turing, and built a real-time call-center platform for Canal+. I also founded Eaglix Tech, an agency that brings Ethiopian engineers to enterprise software and AI work.\n\nOff the clock you'll find me at the chessboard or in central midfield.",
+    "currently": {
+      "role": "Software Engineer",
+      "company": "AIVI",
+      "url": "https://aivi.io"
+    },
     "avatar": "/avatar.svg",
-    "fallbackAvatar": "/avatar.svg"
+    "fallbackAvatar": "/avatar.svg",
+    "photo": "/headshot-placeholder.svg"
   },
   "stats": [
     { "value": "$60K+", "label": "Earned on Upwork" },
@@ -23,36 +30,107 @@
   ],
   "availability": {
     "open": true,
-    "headline": "Available for freelance & contract work",
-    "types": ["Freelance", "Contract", "Fractional lead"],
+    "headline": "Available for contract work, part-time or full-time",
+    "types": ["Contract · part-time", "Contract · full-time", "Team builds via Eaglix Tech"],
     "workMode": "Remote",
-    "location": "Addis Ababa, Ethiopia — working across US & EU hours",
+    "location": "Addis Ababa, Ethiopia — overlapping US & EU hours",
     "timezone": "EAT · UTC+3",
     "startDate": "Immediately",
     "focusAreas": [
-      "Full-stack web platforms (Next.js / NestJS)",
-      "LLM & AI feature development",
-      "Model training & evaluation (RLHF)",
-      "Backend & API architecture",
-      "Technical leadership & mentoring"
+      "AI products and voice agents, end to end",
+      "Multi-tenant SaaS on Supabase and Postgres",
+      "Cloud platform: Kubernetes, Terraform, multi-region",
+      "Security hardening and SOC 2 readiness",
+      "Next.js product frontends and micro-frontends"
     ],
-    "workStyle": "Senior, autonomous, and communicative. I scope tightly, ship in reviewable slices, and hand back clean, documented, tested code.",
-    "goals": "I'm looking for teams building ambitious products where I can own meaningful surface area — web platforms, AI features, or both — and raise the bar on quality as we go.",
-    "note": "Top Rated Plus on Upwork (100% Job Success, $25/hr) — happy to start the engagement there or work directly. Typical response time: 0–4 hours."
+    "workStyle": "Senior and autonomous. I scope tightly, ship in small reviewable PRs, and leave clean, tested, documented code behind.",
+    "goals": "I'm looking for teams building ambitious products where I can own real surface area: the platform, the AI, or both.",
+    "note": "Top Rated Plus on Upwork (100% Job Success) — happy to start the engagement there or work directly. Typical response time: 0–4 hours."
+  },
+  "agency": {
+    "name": "Eaglix Tech",
+    "role": "Founder",
+    "url": "https://www.eaglix.dev",
+    "pitch": "Need more than one engineer? Eaglix Tech is the agency I founded. It connects Ethiopian software engineers with enterprise clients and takes on team-sized builds in software and AI automation.",
+    "points": [
+      "Full teams for bigger builds",
+      "Software engineering and AI automation",
+      "1,339 Upwork hours · 100% Job Success"
+    ]
   },
   "experience": [
     {
+      "company": "AIVI",
+      "position": "Software Engineer: Platform & Full-Stack",
+      "type": "Contract · full-time",
+      "duration": "Jun 2025 — Present",
+      "location": "Remote · aivi.io",
+      "description": "AIVI builds AI voice agents and CRM for lending, insurance and contact centers. I joined through my agency, Eaglix Tech, on a 45-day trial to make the Supabase backend properly multi-tenant, moved to full-time, and my scope kept growing. Today I work across the backend, frontend, DevOps, security and SOC 2, in TypeScript, Python and Go.",
+      "highlights": [
+        "Multi-region cells: dedicated, highly available services per region, with ownership-aware request routing at the edge",
+        "Micro-frontend platform: an internal proxy, one auth layer and shared packages across apps",
+        "Voice-guided co-browsing: a widget the voice agent drives to walk callers through complex multi-page forms, authenticated by an on-screen PIN",
+        "A reinforcement-learning decision policy trained nightly on call-quality rewards, rolled out in shadow mode",
+        "SOC 2 compliance and security hardening",
+        "Observability with OpenTelemetry, autoscaling, and load-tested concurrent voice calls",
+        "500+ merged PRs · ~1,500 commits"
+      ],
+      "technologies": ["TypeScript", "Python", "Go", "Supabase", "PostgreSQL", "Next.js", "Kubernetes", "Terraform", "OpenTelemetry", "KEDA"]
+    },
+    {
+      "company": "Eaglix Tech",
+      "position": "Founder",
+      "type": "Agency",
+      "duration": "2025 — Present",
+      "location": "Addis Ababa · eaglix.dev",
+      "description": "The agency I founded to connect Ethiopian software engineers with enterprise clients: freelance software development and AI automation, from a single engineer to a full team for larger builds. 1,339 hours delivered on Upwork with a 100% Job Success score.",
+      "highlights": [
+        "Team-sized builds in software and AI automation",
+        "1,339 Upwork hours · 100% Job Success · Top Rated",
+        "Staffed my AIVI engagement"
+      ],
+      "technologies": ["Next.js", "NestJS", "Supabase", "Python", "AI agents"]
+    },
+    {
+      "company": "Svetness",
+      "position": "System Designer & Full-Stack Engineer",
+      "type": "Contract",
+      "duration": "Dec 2025 — Jan 2026",
+      "location": "Remote · svetness.com",
+      "description": "Svetness runs in-home personal training across the US. I redesigned their legacy system and rebuilt it as a Supabase microservice backend with a Next.js front end, then built a unified communication layer — SMS, calls and email, with two-way sync on every channel — feeding one operational dashboard.",
+      "highlights": [
+        "Legacy system redesigned and rebuilt as Supabase microservices",
+        "Unified SMS, call and email layer with two-way sync on every channel",
+        "One operational dashboard for the whole team",
+        "5.0★ client rating"
+      ],
+      "technologies": ["Supabase", "PostgreSQL", "Edge Functions", "Next.js", "TypeScript"]
+    },
+    {
+      "company": "Aladia",
+      "position": "Senior Frontend Engineer",
+      "type": "Contract",
+      "duration": "Nov 2024 — Apr 2025",
+      "location": "Remote · aladia.io",
+      "description": "Aladia is a learning platform for building and finding academies — courses, live classes, chat and community in one workspace. I turned Figma designs into a production Nuxt/Vue frontend, integrated the AI chatbot, and shipped on Google Cloud.",
+      "highlights": [
+        "Figma to production Nuxt/Vue frontend",
+        "AI chatbot integration",
+        "1,285 hours · 5.0★ client rating"
+      ],
+      "technologies": ["Nuxt.js", "Vue.js", "TypeScript", "Figma", "Google Cloud"]
+    },
+    {
       "company": "Upwork",
-      "position": "Senior Full-Stack Engineer",
+      "position": "Freelance Full-Stack & AI Engineer",
       "type": "Freelance",
       "duration": "2022 — Present",
       "location": "Remote · Global clients",
-      "description": "Top Rated Plus freelancer (100% Job Success) delivering web, backend, data, and AI projects for international clients across e-learning, e-commerce, telecom, and AI. I own the full lifecycle — discovery, architecture, implementation, and handoff — on long-term retained engagements. $60K+ earned across 26 jobs and 5,000+ hours.",
+      "description": "Top Rated Plus (100% Job Success) across 26 jobs: AI agents, SaaS MVPs, data tooling and backend work for clients worldwide, including repeat clients. I own the full lifecycle — discovery, architecture, build and handoff.",
       "highlights": [
         "Top Rated Plus — 100% Job Success across 26 jobs",
-        "$60K+ earned · 5,000+ hours · 0–4 hour response time",
-        "Long-term client retention with repeat and would-rehire clients",
-        "End-to-end ownership from system design to deployment"
+        "$60K+ earned · 0–4 hour response time",
+        "Repeat and would-rehire clients"
       ],
       "technologies": ["Next.js", "NestJS", "Nuxt.js", "Python", "TypeScript", "Supabase", "PostgreSQL", "GCP", "AWS"]
     },
@@ -60,21 +138,21 @@
       "company": "Google (via Turing)",
       "position": "Expert LLM Trainer & AI Data Specialist",
       "type": "Contract",
-      "duration": "2024",
+      "duration": "Mar 2024 — Aug 2024",
       "location": "Remote",
-      "description": "Trained and evaluated frontier large language models for Google through Turing, using RLHF, prompt engineering, and side-by-side model comparison across code and reasoning tasks. Designed evaluation rubrics and ran large-scale data cleaning and annotation to improve model quality — spanning React, Next.js, Python, Django, Flask, and Rust.",
+      "description": "Trained and evaluated frontier large language models for Google through Turing, using RLHF, prompt engineering, and side-by-side model comparison across code and reasoning tasks in React, Next.js, Python, Django, Flask and Rust.",
       "highlights": [
         "RLHF and reward-signal data for frontier models",
         "Side-by-side model comparison and evaluation rubrics",
         "High-quality data annotation and cleaning at scale"
       ],
-      "technologies": ["RLHF", "Prompt Engineering", "LLM Evaluation", "Python", "Rust", "Django", "Data Annotation"]
+      "technologies": ["RLHF", "Prompt Engineering", "LLM Evaluation", "Python", "Rust", "Django"]
     },
     {
       "company": "EWA Services",
       "position": "Backend Engineer — FINN Banking App",
       "type": "Contract",
-      "duration": "2023 — Present",
+      "duration": "2023 · 8 months",
       "location": "Remote",
       "description": "Built the backend for FINN, a consumer banking application: secure authentication, accounts, and transaction APIs on Node.js and TypeScript with Firebase and GCP, integrated with an Angular client.",
       "highlights": [
@@ -126,6 +204,7 @@
     },
     "achievements": [
       "Top Rated Plus on Upwork — 100% Job Success, $60K+ earned across 26 jobs",
+      "500+ merged PRs on AIVI's production platform",
       "Published NLP research on a low-resource language (90%+ accuracy)",
       "GPA 3.8 / 4.0 — BSc Software Engineering, AI stream",
       "200+ competitive-programming problems solved (LeetCode / mania7)",
@@ -134,16 +213,183 @@
     ]
   },
   "skills": {
-    "languages": ["TypeScript", "Python", "JavaScript", "Go", "SQL", "Dart", "Java"],
-    "frontend": ["React", "Next.js", "Angular", "Vue.js", "Tailwind CSS", "Redux", "Framer Motion", "D3.js"],
-    "backend": ["Node.js", "NestJS", "Supabase", "Express.js", "Django", "FastAPI", "GraphQL", "REST APIs", "WebSockets", "Microservices"],
-    "ai_llm": ["LangChain", "LangGraph", "CrewAI", "AutoGen", "RAG pipelines", "RLHF", "Prompt Engineering", "OpenAI / Gemini / Claude APIs", "Model evaluation", "Vector databases"],
-    "data_ml": ["PyTorch", "scikit-learn", "Pandas", "NumPy", "NLP", "ETL pipelines", "Data annotation"],
-    "cloud_devops": ["AWS", "GCP", "Docker", "CI/CD · GitHub Actions", "Nginx", "PM2", "Linux", "Vercel"],
-    "databases": ["Supabase", "PostgreSQL", "MongoDB", "MySQL", "Redis", "Firebase"],
-    "practices": ["System design & architecture", "Technical leadership & mentoring", "Code review", "Testing — unit / integration / E2E", "Agile delivery", "API design", "Performance optimization", "Security best practices"]
+    "intro": "I don't collect frameworks. These are the things I build for clients, the proof that I've shipped them, and the tools I reach for.",
+    "languages": [
+      { "name": "TypeScript", "usage": "Daily", "note": "Product frontends, Node services, Edge Functions" },
+      { "name": "Python", "usage": "Daily", "note": "AI and ML services, RL training, data work" },
+      { "name": "Go", "usage": "Weekly", "note": "High-throughput platform services" },
+      { "name": "SQL", "usage": "Daily", "note": "Postgres schemas, RLS policies, migrations" }
+    ],
+    "capabilities": [
+      {
+        "id": "voice-ai",
+        "name": "Voice AI & AI agents",
+        "summary": "I build AI that does real work on real calls: the voice agents, the tools they drive, and the guardrails around them.",
+        "proof": [
+          "AIVI: the platform behind AI voice agents for lending, insurance and contact centers",
+          "A co-browsing widget the voice agent drives to walk callers through multi-page forms, verified by an on-screen PIN",
+          "Canal+ ATCOM: a real-time call-center platform with VOIP and IVR"
+        ],
+        "shippedAt": ["AIVI", "Canal+"],
+        "tools": ["Voice AI", "LLM agents", "LangGraph", "LangChain", "RAG", "Prompt engineering", "Asterisk / VOIP", "WebSockets"]
+      },
+      {
+        "id": "multi-tenant",
+        "name": "Multi-tenant SaaS backends",
+        "summary": "I design backends where every row knows its tenant, so one platform can safely serve many customers.",
+        "proof": [
+          "AIVI: brought in to make the Supabase backend properly multi-tenant",
+          "Svetness: a legacy system rebuilt as Supabase microservices",
+          "FINN: auth, accounts and transaction APIs for a banking app"
+        ],
+        "shippedAt": ["AIVI", "Svetness", "EWA Services"],
+        "tools": ["Supabase", "PostgreSQL", "Row-Level Security", "Edge Functions", "Node.js", "NestJS", "REST & GraphQL", "Redis"]
+      },
+      {
+        "id": "platform",
+        "name": "Multi-region cloud platform",
+        "summary": "I run the infrastructure under the product: regions, clusters and pipelines, written as code and boring to deploy.",
+        "proof": [
+          "AIVI: multi-region cells — dedicated, highly available services per region",
+          "Ownership-aware request routing at the edge",
+          "Infrastructure as code and CI/CD for every service"
+        ],
+        "shippedAt": ["AIVI"],
+        "tools": ["Kubernetes", "Terraform", "Docker", "GitHub Actions", "AWS", "GCP", "Vercel"]
+      },
+      {
+        "id": "reliability",
+        "name": "Observability & scale",
+        "summary": "I trace, alert and load-test before customers find the edges, and let the platform scale on real demand.",
+        "proof": [
+          "AIVI: OpenTelemetry tracing and alerting across services",
+          "Load tests for concurrent voice calls",
+          "Autoscaling on real demand signals"
+        ],
+        "shippedAt": ["AIVI"],
+        "tools": ["OpenTelemetry", "Tracing & alerting", "Load testing", "KEDA autoscaling"]
+      },
+      {
+        "id": "security",
+        "name": "Security & SOC 2",
+        "summary": "I harden systems so enterprise buyers can say yes: compliance controls, secrets that never leak, and data that stays with its tenant.",
+        "proof": [
+          "AIVI: SOC 2 compliance and security hardening",
+          "Secret scanning in CI",
+          "Postgres row-level security for tenant isolation"
+        ],
+        "shippedAt": ["AIVI"],
+        "tools": ["SOC 2", "Secret scanning", "Row-Level Security", "Auth & session design", "Dependency patching"]
+      },
+      {
+        "id": "frontend",
+        "name": "Product frontends & micro-frontends",
+        "summary": "I turn Figma into fast production frontends, and split big ones into apps that teams can ship independently.",
+        "proof": [
+          "AIVI: a micro-frontend platform with an internal proxy, one auth layer and shared packages",
+          "Aladia: Figma to a production Nuxt/Vue learning platform over 1,285 hours",
+          "Svetness: the Next.js operations app and dashboard"
+        ],
+        "shippedAt": ["AIVI", "Aladia", "Svetness"],
+        "tools": ["Next.js", "React", "Nuxt", "Vue", "TypeScript", "Tailwind CSS", "Micro-frontends", "Figma"]
+      },
+      {
+        "id": "comms",
+        "name": "Real-time communications",
+        "summary": "I connect the channels a business actually talks on, and keep every one of them in sync.",
+        "proof": [
+          "Svetness: SMS, calls and email unified with two-way sync on every channel",
+          "One operational dashboard with each client's full conversation history",
+          "ATCOM: live call-center dashboards over WebSockets"
+        ],
+        "shippedAt": ["Svetness", "Canal+"],
+        "tools": ["SMS, voice & email", "Two-way sync", "Webhooks", "WebSockets", "Event-driven services"]
+      },
+      {
+        "id": "ml",
+        "name": "ML, RL & LLM quality",
+        "summary": "I make models measurably better: reward signals, evaluations, and policies that learn from production.",
+        "proof": [
+          "AIVI: a reinforcement-learning decision policy trained nightly on call-quality rewards, rolled out in shadow mode",
+          "Google via Turing: RLHF and side-by-side evaluation of frontier models",
+          "Published Afan Oromo hate-speech detection research, 90%+ accuracy"
+        ],
+        "shippedAt": ["AIVI", "Google (via Turing)"],
+        "tools": ["Reinforcement learning", "RLHF", "DSPy", "LLM evals", "PyTorch", "scikit-learn", "NLP"]
+      }
+    ]
   },
   "projects": [
+    {
+      "title": "AIVI — Multi-Region AI Voice Platform",
+      "category": "AI · Platform",
+      "role": "Software Engineer: Platform & Full-Stack",
+      "client": "AIVI",
+      "description": "The platform behind AIVI's AI voice agents for lending, insurance and contact centers. I came in to make the Supabase backend multi-tenant, and now work across the whole stack: multi-region cells with ownership-aware routing at the edge, a micro-frontend platform behind one auth layer, a co-browsing widget the voice agent drives to guide callers through complex forms, a reinforcement-learning policy trained nightly on call quality, and the security and SOC 2 work that lets enterprises buy it.",
+      "techStack": ["TypeScript", "Python", "Go", "Supabase", "PostgreSQL", "Next.js", "Kubernetes", "Terraform", "OpenTelemetry"],
+      "date": "2025 — Present",
+      "status": "Live",
+      "featured": true,
+      "flagship": true,
+      "highlights": [
+        "Multi-region cells with ownership-aware routing at the edge",
+        "Micro-frontend platform: internal proxy, one auth layer, shared packages",
+        "Voice-guided co-browsing, authenticated by an on-screen PIN",
+        "Reinforcement-learning policy trained nightly on call-quality rewards, in shadow mode",
+        "SOC 2 compliance and security hardening",
+        "OpenTelemetry, autoscaling and load-tested concurrent voice calls"
+      ],
+      "metrics": ["500+ merged PRs", "~1,500 commits", "5.0★ client rating"],
+      "cover": "/covers/aivi.png",
+      "links": [{ "name": "aivi.io", "url": "https://aivi.io" }],
+      "images": []
+    },
+    {
+      "title": "Svetness — Legacy Rebuild & Unified Comms",
+      "category": "SaaS · Systems design",
+      "role": "System Designer & Full-Stack Engineer",
+      "client": "Svetness",
+      "description": "Svetness runs in-home personal training across the US. I redesigned their legacy system and rebuilt it as a Supabase microservice backend with a Next.js front end. Then I built a unified communication layer — SMS, calls and email, with two-way sync on every channel — feeding one operational dashboard, so every client's conversation history lives in one place.",
+      "techStack": ["Supabase", "PostgreSQL", "Edge Functions", "Next.js", "TypeScript"],
+      "date": "2025 — 2026",
+      "status": "Delivered",
+      "featured": true,
+      "highlights": [
+        "Legacy system redesigned as Supabase microservices",
+        "SMS, calls and email with two-way sync on every channel",
+        "One operational dashboard for the whole team"
+      ],
+      "metrics": ["5.0★ client rating", "3 channels, one dashboard"],
+      "cover": "/covers/svetness.png",
+      "links": [{ "name": "svetness.com", "url": "https://svetness.com" }],
+      "images": []
+    },
+    {
+      "title": "Aladia — Build Your Academy. Find Your Academy.",
+      "category": "EdTech · Frontend",
+      "role": "Senior Frontend Engineer",
+      "client": "Aladia",
+      "description": "Aladia is where academies are built and found: one workspace for courses, live classes, chat and community, plus a marketplace where learners find them. I led frontend engineering on Nuxt/Vue — turning Figma designs into the production workspace and integrating the AI chatbot — deployed on Google Cloud.",
+      "techStack": ["Nuxt.js", "Vue.js", "TypeScript", "AI Chatbot", "Figma", "Google Cloud"],
+      "date": "2024 — 2025",
+      "status": "Live",
+      "featured": true,
+      "highlights": [
+        "Course workspace, live classes, chat and community",
+        "Course marketplace for learners",
+        "AI chatbot integration",
+        "Figma-to-production frontend leadership"
+      ],
+      "metrics": ["5.0★ client rating", "1,285 hours", "Live at aladia.io"],
+      "cover": "/covers/aladia.jpg",
+      "links": [{ "name": "aladia.io", "url": "https://aladia.io" }],
+      "images": [
+        { "src": "/projects/aladia/corso.jpg", "alt": "Aladia course page: video lessons, chapters and course details" },
+        { "src": "/projects/aladia/marketplace.jpg", "alt": "Aladia marketplace, where learners find courses and academies" },
+        { "src": "/projects/aladia/chat.jpg", "alt": "Aladia chat inside the learning workspace" },
+        { "src": "/projects/aladia/calendario.jpg", "alt": "Aladia calendar with live classes and lessons" }
+      ]
+    },
     {
       "title": "Alertix AI — Amazon Listing Monitoring",
       "category": "SaaS · AI",
@@ -161,46 +407,6 @@
       ],
       "metrics": ["5.0★ — “Would gladly rehire.”"],
       "cover": "/covers/saas.svg",
-      "links": [],
-      "images": []
-    },
-    {
-      "title": "Aladia — E-Learning Workspace",
-      "category": "EdTech · Frontend",
-      "role": "Senior Frontend Engineer",
-      "client": "Aladia",
-      "description": "An all-in-one B2B and B2C e-learning workspace bringing events, courses, chats, and collaborative spaces into one place. I led frontend engineering on a Nuxt.js/Vue.js stack, building the interactive workspace UI from Figma designs and integrating an AI chatbot, deployed on Google Cloud Platform.",
-      "techStack": ["Nuxt.js", "Vue.js", "AI Chatbot", "Figma", "Google Cloud Platform"],
-      "date": "2024 — 2025",
-      "status": "Live",
-      "featured": true,
-      "highlights": [
-        "All-in-one workspace: events, courses, chat, collaboration",
-        "AI chatbot integration",
-        "Figma-to-production frontend leadership"
-      ],
-      "metrics": ["5.0★ engagement", "Live at aladia.io"],
-      "cover": "/covers/edtech.svg",
-      "links": [{ "name": "Live site", "url": "https://aladia.io" }],
-      "images": []
-    },
-    {
-      "title": "FINN — Mobile Banking Platform",
-      "category": "Fintech · Backend",
-      "role": "Backend Engineer",
-      "client": "EWA Services",
-      "description": "Backend for a consumer banking application: secure authentication, accounts, and transaction APIs built on Node.js and TypeScript with Firebase and GCP, integrated with an Angular client. Focused on correctness, security, and clean API contracts for a product handling real money.",
-      "techStack": ["Node.js", "TypeScript", "NestJS", "Firebase", "GCP", "Angular", "PostgreSQL"],
-      "date": "2023 — Present",
-      "status": "Production",
-      "featured": true,
-      "highlights": [
-        "Secure auth, accounts, and transaction flows",
-        "REST APIs consumed by an Angular mobile client",
-        "Firebase + GCP cloud infrastructure"
-      ],
-      "metrics": ["Live banking product", "Security-first architecture"],
-      "cover": "/covers/fintech.svg",
       "links": [],
       "images": []
     },
@@ -226,14 +432,34 @@
       "images": []
     },
     {
+      "title": "FINN — Mobile Banking Platform",
+      "category": "Fintech · Backend",
+      "role": "Backend Engineer",
+      "client": "EWA Services",
+      "description": "Backend for a consumer banking application: secure authentication, accounts, and transaction APIs built on Node.js and TypeScript with Firebase and GCP, integrated with an Angular client. Focused on correctness, security, and clean API contracts for a product handling real money.",
+      "techStack": ["Node.js", "TypeScript", "NestJS", "Firebase", "GCP", "Angular", "PostgreSQL"],
+      "date": "2023",
+      "status": "Delivered",
+      "featured": true,
+      "highlights": [
+        "Secure auth, accounts, and transaction flows",
+        "REST APIs consumed by an Angular mobile client",
+        "Firebase + GCP cloud infrastructure"
+      ],
+      "metrics": ["Live banking product", "Security-first architecture"],
+      "cover": "/covers/fintech.svg",
+      "links": [],
+      "images": []
+    },
+    {
       "title": "LLM Training & Evaluation",
       "category": "AI · LLM",
       "role": "LLM Trainer",
-      "client": "Turing",
-      "description": "Fine-tuning and evaluating frontier LLMs, including Google's Gemini, using RLHF, prompt engineering, and side-by-side model comparison. I design evaluation rubrics and run large-scale data cleaning and annotation to push model quality and reduce failure modes.",
+      "client": "Google (via Turing)",
+      "description": "Six months training and evaluating frontier LLMs for Google through Turing, using RLHF, prompt engineering, and side-by-side model comparison. I designed evaluation rubrics and ran large-scale data cleaning and annotation to push model quality and reduce failure modes.",
       "techStack": ["RLHF", "Prompt Engineering", "LLM Evaluation", "Python", "Data Annotation"],
-      "date": "2024 — Present",
-      "status": "Ongoing",
+      "date": "2024",
+      "status": "Delivered",
       "featured": true,
       "highlights": [
         "RLHF and reward-signal authoring for frontier models",
@@ -287,15 +513,15 @@
       "title": "This Portfolio — Conversational AI Site",
       "category": "AI · Web",
       "role": "Designer & Engineer",
-      "description": "The site you're on. A Claude-style conversational portfolio: ask it anything about my work and it answers with rich, structured cards. Built with Next.js 15, React 19, the Vercel AI SDK, a command palette, and slash commands — designed to feel like a developer tool, not a résumé.",
-      "techStack": ["Next.js 15", "React 19", "TypeScript", "Vercel AI SDK", "Tailwind CSS", "Framer Motion"],
+      "description": "The site you're on: a conversational portfolio you can scan in seconds or interrogate in depth. Ask it anything about my work and it answers in my voice with rich, structured cards. Curated answers load instantly with no API call; free-form questions go to a live model with tool calls.",
+      "techStack": ["Next.js 16", "React 19", "TypeScript", "Vercel AI SDK", "Tailwind CSS", "Gemini"],
       "date": "2026",
       "status": "Live",
       "featured": true,
       "highlights": [
-        "Conversational, tool-driven UI",
+        "Conversational, tool-driven UI with instant curated answers",
         "⌘K command palette and slash commands",
-        "Claude research-journal design system"
+        "Résumé PDF generated from the same config as the site"
       ],
       "metrics": ["You're looking at it"],
       "cover": "/covers/portfolio.svg",
@@ -303,17 +529,102 @@
       "images": []
     }
   ],
+  "reviews": {
+    "rating": "5.0",
+    "summary": "Top Rated Plus · 100% Job Success across 26 jobs on Upwork",
+    "ratings": [
+      { "client": "AIVI", "rating": 5, "detail": "Platform & AI orchestration · 2025–26" },
+      { "client": "Svetness", "rating": 5, "detail": "System redesign · Dec 2025 – Jan 2026" },
+      { "client": "Aladia", "rating": 5, "detail": "Frontend · 1,285 hours · 2024–25" }
+    ],
+    "quotes": [
+      {
+        "text": "Abdulkarim delivered an exceptional proposal. He thought to include necessary aspects not explicitly stated in the job spec such as persistence, multi-provider LLM support, error handling and logging. He was professional, responsive, and exceeded expectations. I would absolutely recommend him for novel AI system development projects.",
+        "author": "Upwork client",
+        "engagement": "AI system design",
+        "date": "Jun 2025",
+        "rating": 5,
+        "verified": "Upwork review"
+      },
+      {
+        "text": "Highly skilled and reliable. Strong AI implementation skills and great problem-solving approach. Would gladly rehire.",
+        "author": "Upwork client",
+        "engagement": "Full-stack AI engineering",
+        "date": "May – Dec 2025",
+        "rating": 5,
+        "verified": "Upwork review"
+      },
+      {
+        "text": "Collaborating with Abdulkarim has been fantastic. His skills in data analytics, web scraping, and web development were impressive. He seamlessly integrated AI/ML into our projects, delivering high-quality results that truly elevated our work. It felt like having a dedicated team member. For data-driven projects and web applications, partnering with Abdulkarim is a realistic game-changer.",
+        "author": "Leul M.",
+        "role": "Senior System Developer",
+        "engagement": "Call management system",
+        "date": "Oct 2023",
+        "verified": "Upwork testimonial"
+      },
+      {
+        "text": "Abdulkarim's web dev consultation skills are awesome. Second time working with him, and it's been very good. His advice is on point, and his AI expertise in LLMs adds that extra spice. Communication's smooth, and I'm loving our collab. Highly recommend him especially for AI stuff.",
+        "author": "Upwork client",
+        "engagement": "Web development consultation",
+        "date": "Feb – May 2024",
+        "rating": 5,
+        "verified": "Upwork review"
+      },
+      {
+        "text": "Abdulkarim is an amazing full stack and AI developer with great skills and communication - will hire him again!",
+        "author": "Upwork client",
+        "engagement": "Full-stack & AI development",
+        "date": "Jun 2024",
+        "rating": 5,
+        "verified": "Upwork review"
+      },
+      {
+        "text": "Abdulkarim was excellent—professional, prompt, and delivered high-quality work. Highly recommended!",
+        "author": "Upwork client",
+        "engagement": "Open-source platform setup",
+        "date": "Nov 2024",
+        "rating": 5,
+        "verified": "Upwork review"
+      }
+    ],
+    "endorsements": [
+      { "label": "Committed to Quality", "count": 7 },
+      { "label": "Clear Communicator", "count": 5 },
+      { "label": "Collaborative", "count": 3 },
+      { "label": "Reliable", "count": 3 },
+      { "label": "Professional", "count": 2 }
+    ],
+    "source": {
+      "name": "Upwork",
+      "url": "https://www.upwork.com/freelancers/~01dc65c291b2936bc3"
+    }
+  },
+  "hobbies": {
+    "intro": "When I'm not shipping, I'm usually thinking a few moves ahead — on a board or on a pitch.",
+    "chess": {
+      "username": "ibnuusina",
+      "url": "https://www.chess.com/member/ibnuusina",
+      "fallback": { "peakRapid": 1359, "rapidGames": 614, "league": "Champion" }
+    },
+    "football": {
+      "position": "Central midfielder",
+      "positionShort": "CM",
+      "note": "I play in the middle of the park: read the game, win it back, keep it moving. Same job as engineering, honestly.",
+      "clubs": ["Manchester United", "Real Madrid"],
+      "idol": { "name": "Cristiano Ronaldo", "note": "The GOAT. Not up for debate." }
+    }
+  },
   "social": {
     "upwork": "https://www.upwork.com/freelancers/~01dc65c291b2936bc3",
     "github": "https://github.com/Mr-MaNia7",
     "linkedin": "https://www.linkedin.com/in/abdulkarim-mohammed-b3b0201b1/",
-    "twitter": "https://x.com/abdulkarimg"
+    "twitter": ""
   },
   "resume": {
     "title": "Abdulkarim G. Mohammed — Résumé",
-    "description": "Senior Full-Stack Engineer & AI/LLM Specialist · Top Rated Plus on Upwork",
+    "description": "Senior Full-Stack & AI Platform Engineer · Top Rated Plus on Upwork",
     "fileType": "PDF",
-    "lastUpdated": "August 2026",
+    "lastUpdated": "October 2026",
     "fileSize": "—",
     "downloadUrl": "/resume.pdf"
   },
@@ -324,14 +635,14 @@
     "language": "english",
     "responseStyle": "concise and substantive",
     "useEmojis": false,
-    "topics": ["projects", "skills", "experience", "availability", "contact", "background", "ai", "leadership"]
+    "topics": ["projects", "skills", "experience", "availability", "contact", "reviews", "hobbies", "ai", "platform"]
   },
   "presetQuestions": {
     "me": [
       "Who are you?",
       "Tell me about yourself",
+      "What are you working on right now?",
       "What's your background?",
-      "How did you get into AI and LLMs?",
       "What kind of work do you enjoy most?"
     ],
     "professional": [
@@ -339,17 +650,17 @@
       "Can I see your résumé?",
       "What's your experience?",
       "Are you available for work?",
+      "What do clients say about you?",
       "Why should I hire you?",
-      "Tell me about your LLM training work",
-      "How do you approach system design?",
-      "What's your freelance track record?"
+      "Can you take on a project that needs a team?",
+      "How do you approach system design?"
     ],
     "projects": [
       "What projects are you most proud of?",
-      "Tell me about your AI projects",
-      "Show me your recent work",
-      "What did you build for fintech?",
-      "Tell me about the banking app"
+      "Tell me about AIVI",
+      "What did you build for Svetness?",
+      "Tell me about your AI work",
+      "Show me your recent work"
     ],
     "contact": [
       "How can I reach you?",
@@ -360,14 +671,15 @@
     ],
     "fun": [
       "What do you do outside of code?",
-      "What motivates you?",
+      "Do you play chess?",
+      "Which football club do you support?",
       "Tell me something interesting about you"
     ]
   },
   "meta": {
-    "configVersion": "3.1",
-    "lastUpdated": "2026-08-30",
+    "configVersion": "4.0",
+    "lastUpdated": "2026-10-25",
     "generatedBy": "Abdulkarim G. Mohammed",
-    "description": "Senior full-stack + AI/LLM portfolio, Claude research-journal design system."
+    "description": "Senior full-stack & AI platform engineer portfolio: conversational site, single config, generated résumé."
   }
 }

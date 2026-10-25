@@ -125,6 +125,7 @@ const ProjectTile = React.forwardRef<
 >(function ProjectTile({ project, index, variant, onOpen }, ref) {
   const lead = variant === 'lead';
   const wide = variant === 'wide';
+  const raster = /\.(png|jpe?g|webp)$/.test(projectCover(project));
   const metric = project.metrics?.[0] ? splitMetric(project.metrics[0]) : null;
   const stack = project.techStack.slice(0, lead ? 5 : 3);
   const more = project.techStack.length - stack.length;
@@ -143,14 +144,20 @@ const ProjectTile = React.forwardRef<
             : 'flex-col'
       }`}
     >
-      {/* Cover */}
+      {/* Cover — branded raster covers are 4:3 and must not be cropped */}
       <span
-        className={`relative block shrink-0 overflow-hidden bg-primary ${
-          lead
-            ? 'aspect-[16/10] sm:aspect-auto sm:w-[46%]'
-            : wide
-              ? 'aspect-[16/9] sm:aspect-auto sm:w-[34%]'
-              : 'aspect-[21/9] sm:aspect-[16/9]'
+        className={`relative block shrink-0 overflow-hidden ${raster ? 'bg-sunken' : 'bg-primary'} ${
+          raster
+            ? lead
+              ? 'aspect-[4/3] sm:w-[46%] sm:self-start'
+              : wide
+                ? 'aspect-[4/3] sm:w-[34%] sm:self-start'
+                : 'aspect-[4/3]'
+            : lead
+              ? 'aspect-[16/10] sm:aspect-auto sm:w-[46%]'
+              : wide
+                ? 'aspect-[16/9] sm:aspect-auto sm:w-[34%]'
+                : 'aspect-[21/9] sm:aspect-[16/9]'
         }`}
       >
         <Image

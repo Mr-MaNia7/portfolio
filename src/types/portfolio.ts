@@ -3,6 +3,8 @@ export interface PersonalInfo {
   shortName: string;
   initials: string;
   title: string;
+  /** The hero's H1: one promise, in plain words. */
+  headline: string;
   tagline: string;
   location: string;
   timezone: string;
@@ -11,8 +13,12 @@ export interface PersonalInfo {
   upworkBadge: string;
   upworkBadgeImage?: string;
   bio: string;
+  /** Current role, shown in the hero: "Software Engineer at AIVI". */
+  currently?: { role: string; company: string; url?: string };
   avatar: string;
   fallbackAvatar: string;
+  /** Portrait (4:5) for the hero and About card. */
+  photo: string;
 }
 
 export interface Stat {
@@ -63,15 +69,77 @@ export interface Education {
   achievements: string[];
 }
 
+/** How often a language is in my hands. */
+export type Usage = 'Daily' | 'Weekly' | 'When it fits';
+
+export interface Language {
+  name: string;
+  usage: Usage;
+  note: string;
+}
+
+/** One thing I do for clients, the proof that I've done it, and the tools. */
+export interface Capability {
+  id: string;
+  name: string;
+  /** First-person, one or two sentences. */
+  summary: string;
+  /** Concrete evidence from shipped work. */
+  proof: string[];
+  /** Where it was shipped — matches `Project.client` / `Experience.company`. */
+  shippedAt: string[];
+  tools: string[];
+}
+
 export interface Skills {
-  languages: string[];
-  frontend: string[];
-  backend: string[];
-  ai_llm: string[];
-  data_ml: string[];
-  cloud_devops: string[];
-  databases: string[];
-  practices: string[];
+  intro: string;
+  languages: Language[];
+  capabilities: Capability[];
+}
+
+export interface Quote {
+  text: string;
+  author: string;
+  role?: string;
+  engagement: string;
+  date: string;
+  rating?: number;
+  verified?: string;
+}
+
+export interface Reviews {
+  rating: string;
+  summary: string;
+  /** Ratings without written text — shown as ratings, never as quotes. */
+  ratings: Array<{ client: string; rating: number; detail: string }>;
+  quotes: Quote[];
+  endorsements: Array<{ label: string; count: number }>;
+  source: { name: string; url: string };
+}
+
+export interface Hobbies {
+  intro: string;
+  chess: {
+    username: string;
+    url: string;
+    /** Last known stats, used until (or if) the live API answers. */
+    fallback: { peakRapid: number; rapidGames: number; league: string };
+  };
+  football: {
+    position: string;
+    positionShort: string;
+    note: string;
+    clubs: string[];
+    idol: { name: string; note: string };
+  };
+}
+
+export interface Agency {
+  name: string;
+  role: string;
+  url: string;
+  pitch: string;
+  points: string[];
 }
 
 export interface ProjectLink {
@@ -99,6 +167,8 @@ export interface Project {
   links: ProjectLink[];
   cover?: string;
   images: ProjectImage[];
+  /** Lead case study on the landing page. */
+  flagship?: boolean;
 }
 
 export interface Social {
@@ -151,6 +221,9 @@ export interface PortfolioConfig {
   education: Education;
   skills: Skills;
   projects: Project[];
+  reviews: Reviews;
+  hobbies: Hobbies;
+  agency: Agency;
   social: Social;
   resume: Resume;
   chatbot: Chatbot;

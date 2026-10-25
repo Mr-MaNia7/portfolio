@@ -79,7 +79,7 @@ export default async function OpengraphImage() {
             {personal.title}
           </div>
           <div style={{ fontSize: 26, color: '#6b6960', marginTop: 20, maxWidth: 900, lineHeight: 1.4 }}>
-            {personal.tagline}
+            {personal.headline}
           </div>
         </div>
 

@@ -26,10 +26,10 @@ interface ChatBottombarProps {
 // drop the current one into the field — the Gmail / Copilot "ghost text"
 // pattern — so visitors discover the composer answers free-form questions live.
 const EXAMPLES = [
-  'How would you architect a RAG pipeline?',
-  'What was the hardest bug you shipped a fix for?',
-  'How do you approach LLM evals?',
-  "What's your experience leading a team?",
+  'How did you make AIVI multi-tenant on Supabase?',
+  'How do multi-region cells route requests?',
+  'Could you get my product ready for SOC 2?',
+  'How does the voice agent drive a co-browsing widget?',
   'Why should I hire you over another senior engineer?',
 ];
 
@@ -43,6 +43,7 @@ const KIND_LABEL: Record<Command['kind'], string> = {
   copy: 'Copy',
   resume: 'File',
   theme: 'Toggle',
+  hire: 'Hire',
 };
 
 export default function ChatBottombar({
@@ -66,16 +67,19 @@ export default function ChatBottombar({
   const slashMatches = useMemo(() => {
     if (!isSlash) return [];
     const q = input.slice(1).toLowerCase();
+    // Rank: exact slash, then slash prefix, then keyword / label — so `/hire`
+    // + Enter runs /hire, not the first command that merely mentions hiring.
+    const rank = (c: Command) => {
+      const s = c.slash!.slice(1).toLowerCase();
+      if (s === q) return 0;
+      if (s.startsWith(q)) return 1;
+      if (c.keywords.some((k) => k.toLowerCase().startsWith(q))) return 2;
+      if (c.label.toLowerCase().includes(q)) return 3;
+      return -1;
+    };
     return commands
-      .filter((c) => {
-        if (!c.slash) return false;
-        const s = c.slash.slice(1).toLowerCase();
-        return (
-          s.startsWith(q) ||
-          c.keywords.some((k) => k.toLowerCase().startsWith(q)) ||
-          c.label.toLowerCase().includes(q)
-        );
-      })
+      .filter((c) => c.slash && rank(c) >= 0)
+      .sort((a, b) => rank(a) - rank(b))
       .slice(0, 7);
   }, [isSlash, input, commands]);
 

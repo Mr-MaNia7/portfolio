@@ -24,10 +24,12 @@ import { AssistantTurn } from '@/components/chat/simple-chat-view';
 import { PresetReply } from '@/components/chat/preset-reply';
 import { CommandPalette } from '@/components/chat/command-palette';
 import { TopBar } from '@/components/chat/top-bar';
+import { HireSheet } from '@/components/chat/hire-sheet';
 import HelperBoost from './HelperBoost';
 import { TurnHeader } from './turn-badge';
 import { presetReplies, getConfig } from '@/lib/config-loader';
 import { buildCommands, type Command } from '@/lib/commands';
+import { onAsk, onHire } from '@/lib/portfolio-events';
 
 // Landing ⇄ conversation swap. Exit only — entrances are CSS `.reveal`.
 const MOTION_CONFIG = {
@@ -67,6 +69,7 @@ const Chat = () => {
   const [autoSubmitted, setAutoSubmitted] = useState(false);
   const [loadingSubmit, setLoadingSubmit] = useState(false);
   const [paletteOpen, setPaletteOpen] = useState(false);
+  const [hireOpen, setHireOpen] = useState(false);
   const [input, setInput] = useState('');
   const [presetItems, setPresetItems] = useState<PresetItem[]>([]);
   const [errorItem, setErrorItem] = useState<ErrorItem | null>(null);
@@ -272,10 +275,23 @@ const Chat = () => {
         case 'theme':
           setTheme(resolvedTheme === 'dark' ? 'light' : 'dark');
           break;
+        case 'hire':
+          setHireOpen(true);
+          break;
       }
     },
     [submitQuery, config.resume.downloadUrl, setTheme, resolvedTheme]
   );
+
+  // Cards and landing sections ask questions / open the hire sheet via events.
+  useEffect(
+    () =>
+      onAsk(({ question, live }) =>
+        live ? submitQueryToAI(question) : submitQuery(question)
+      ),
+    [submitQuery, submitQueryToAI]
+  );
+  useEffect(() => onHire(() => setHireOpen(true)), []);
 
   // ⌘K / Ctrl+K to open the command palette
   useEffect(() => {
@@ -322,7 +338,13 @@ const Chat = () => {
           onRun={runCommand}
         />
 
-        <TopBar onOpenCommand={() => setPaletteOpen(true)} onHome={goHome} />
+        <HireSheet open={hireOpen} onClose={() => setHireOpen(false)} />
+
+        <TopBar
+          onOpenCommand={() => setPaletteOpen(true)}
+          onHome={goHome}
+          onHire={() => setHireOpen(true)}
+        />
 
         {/* Scrollable content */}
         <div className="scrollbar-subtle flex-1 overflow-y-auto">
@@ -338,6 +360,7 @@ const Chat = () => {
                     submitQuery={submitQuery}
                     handlePresetReply={handlePresetReply}
                     onOpenCommand={() => setPaletteOpen(true)}
+                    onHire={() => setHireOpen(true)}
                     commands={commands}
                   />
                 </motion.div>

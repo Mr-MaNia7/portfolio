@@ -3,7 +3,7 @@
 import { AnimatePresence, motion } from 'framer-motion';
 import { ArrowLeft, ArrowRight, ArrowUpRight, X } from 'lucide-react';
 import Image from 'next/image';
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
 import type { Project } from '@/types/portfolio';
 import { pad2, splitMetric } from '@/components/artifact/artifact';
@@ -11,12 +11,16 @@ import { pad2, splitMetric } from '@/components/artifact/artifact';
 const EASE = [0.22, 1, 0.36, 1] as const;
 
 export const projectCover = (p: Project) =>
-  p.images[0]?.src || p.cover || '/covers/default.svg';
+  p.cover || p.images[0]?.src || '/covers/default.svg';
+
+const LIVE_STATUSES = ['Live', 'Production', 'Ongoing'];
 
 /**
  * The full dossier for one project, opened over the transcript. Portalled to
  * <body> so no transformed ancestor can trap its fixed positioning. ← / → step
  * through the set; Esc closes and focus returns to the tile that opened it.
+ * The header rail carries the project's primary link from the first screen,
+ * and steps aside once the full link row at the bottom scrolls into view.
  */
 export function ProjectDialog({
   projects,
@@ -31,9 +35,30 @@ export function ProjectDialog({
 }) {
   const closeRef = useRef<HTMLButtonElement>(null);
   const panelRef = useRef<HTMLDivElement>(null);
+  // The bottom link row (re-set on every project) and whether it has been
+  // reached — in view, or already scrolled past.
+  const [linksEl, setLinksEl] = useState<HTMLDivElement | null>(null);
+  const [linksReached, setLinksReached] = useState(false);
 
   const open = index !== null;
   const project = open ? projects[index] : null;
+  const primaryLink = project?.links[0];
+  const showTopLink = Boolean(primaryLink) && !(linksEl && linksReached);
+
+  useEffect(() => {
+    const root = panelRef.current;
+    if (!linksEl || !root) return;
+    const observer = new IntersectionObserver(
+      ([entry]) =>
+        setLinksReached(
+          entry.isIntersecting ||
+            entry.boundingClientRect.top < (entry.rootBounds?.top ?? 0)
+        ),
+      { root }
+    );
+    observer.observe(linksEl);
+    return () => observer.disconnect();
+  }, [linksEl]);
 
   useEffect(() => {
     if (!open) return;
@@ -49,7 +74,7 @@ export function ProjectDialog({
       } else if (e.key === 'Tab' && panelRef.current) {
         // Keep focus inside the dialog.
         const focusable = panelRef.current.querySelectorAll<HTMLElement>(
-          'a[href], button:not([disabled])'
+          'a[href]:not([tabindex="-1"]), button:not([disabled])'
         );
         const first = focusable[0];
         const last = focusable[focusable.length - 1];
@@ -121,6 +146,32 @@ export function ProjectDialog({
                 <span className="text-border-strong">{'//'}</span> Project dossier
               </p>
               <div className="flex shrink-0 items-center gap-1">
+                {primaryLink && (
+                  <>
+                    <a
+                      href={primaryLink.url}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      tabIndex={showTopLink ? undefined : -1}
+                      aria-hidden={!showTopLink}
+                      className={`btn-ink h-8 gap-1.5 px-3 text-[12.5px] transition-[opacity,transform] duration-200 ease-[cubic-bezier(0.22,1,0.36,1)] ${
+                        showTopLink ? '' : 'pointer-events-none -translate-y-1 opacity-0'
+                      }`}
+                    >
+                      {LIVE_STATUSES.includes(project.status) && (
+                        <span className="status-dot" aria-hidden />
+                      )}
+                      <span className="hidden sm:inline">Visit</span>
+                      {primaryLink.name}
+                      <ArrowUpRight className="h-3.5 w-3.5" aria-hidden />
+                      <span className="sr-only">(opens in a new tab)</span>
+                    </a>
+                    <span
+                      aria-hidden
+                      className={`mx-1 h-4 w-px bg-border transition-opacity duration-200 ${showTopLink ? '' : 'opacity-0'}`}
+                    />
+                  </>
+                )}
                 <button
                   type="button"
                   onClick={() =>
@@ -153,7 +204,11 @@ export function ProjectDialog({
               </div>
             </div>
 
-            <ProjectBody key={project.title} project={project} />
+            <ProjectBody
+              key={project.title}
+              project={project}
+              linksRef={setLinksEl}
+            />
           </motion.div>
         </motion.div>
       )}
@@ -162,7 +217,13 @@ export function ProjectDialog({
   );
 }
 
-function ProjectBody({ project }: { project: Project }) {
+function ProjectBody({
+  project,
+  linksRef,
+}: {
+  project: Project;
+  linksRef: (el: HTMLDivElement | null) => void;
+}) {
   const facts = [
     { term: 'Role', detail: project.role },
     { term: 'Client', detail: project.client },
@@ -175,7 +236,13 @@ function ProjectBody({ project }: { project: Project }) {
   return (
     <div className="reveal">
       {/* Cover */}
-      <div className="relative aspect-[16/7] w-full overflow-hidden bg-primary">
+      <div
+        className={`relative w-full overflow-hidden ${
+          /\.(png|jpe?g|webp)$/.test(projectCover(project))
+            ? 'aspect-[4/3] bg-sunken'
+            : 'aspect-[16/7] bg-primary'
+        }`}
+      >
         <Image
           src={projectCover(project)}
           alt={`${project.title} — cover`}
@@ -285,7 +352,10 @@ function ProjectBody({ project }: { project: Project }) {
 
         {/* Links */}
         {project.links.length > 0 && (
-          <div className="mt-8 flex flex-wrap gap-2 border-t border-border-subtle pt-6">
+          <div
+            ref={linksRef}
+            className="mt-8 flex flex-wrap gap-2 border-t border-border-subtle pt-6"
+          >
             {project.links.map((link, i) => (
               <a
                 key={link.name}
@@ -317,7 +387,7 @@ function ProjectBody({ project }: { project: Project }) {
                   className="h-auto w-full"
                 />
                 {image.alt && (
-                  <figcaption className="border-t border-border-subtle px-3 py-2 text-[12px] text-muted-foreground">
+                  <figcaption className="border-t border-border-subtle px-3 py-2 text-[13px] text-muted-foreground">
                     {image.alt}
                   </figcaption>
                 )}

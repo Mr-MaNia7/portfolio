@@ -12,7 +12,6 @@ export interface ToolMeta {
 
 export function getToolMeta(tool: string): ToolMeta {
   const config = getConfig();
-  const skillCount = Object.values(config.skills).flat().length;
 
   switch (tool) {
     case 'getProjects':
@@ -25,8 +24,16 @@ export function getToolMeta(tool: string): ToolMeta {
       return {
         fn: tool,
         file: 'skills.json',
-        records: `${skillCount} entries`,
+        records: `${config.skills.capabilities.length} capabilities`,
       };
+    case 'getReviews':
+      return {
+        fn: tool,
+        file: 'reviews.json',
+        records: `${config.reviews.quotes.length} quotes`,
+      };
+    case 'getHobbies':
+      return { fn: tool, file: 'off-the-clock.md', records: 'chess · football' };
     case 'getResume':
       return {
         fn: tool,

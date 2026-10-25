@@ -3,9 +3,11 @@ import { convertToModelMessages, stepCountIs, streamText } from 'ai';
 
 import { SYSTEM_PROMPT } from './prompt';
 import { getContact } from './tools/getContact';
+import { getHobbies } from './tools/getHobbies';
 import { getInternship } from './tools/getIntership';
 import { getProjects } from './tools/getProjects';
 import { getResume } from './tools/getResume';
+import { getReviews } from './tools/getReviews';
 import { getSkills } from './tools/getSkills';
 
 export const maxDuration = 30;
@@ -49,6 +51,8 @@ export async function POST(req: Request) {
       getContact,
       getSkills,
       getInternship,
+      getReviews,
+      getHobbies,
     };
 
     const result = streamText({

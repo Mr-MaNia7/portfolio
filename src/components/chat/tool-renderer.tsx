@@ -4,6 +4,8 @@ import AvailabilityCard from '../AvailabilityCard';
 import { Presentation } from '../presentation';
 import AllProjects from '../projects/AllProjects';
 import Resume from '../resume';
+import Reviews from '../reviews';
+import Hobbies from '../hobbies';
 import Skills from '../skills';
 import { Artifact, ArtifactHeader } from '../artifact/artifact';
 
@@ -27,6 +29,10 @@ export function renderToolArtifact(toolName: string) {
       return <Skills />;
     case 'getInternship':
       return <AvailabilityCard />;
+    case 'getReviews':
+      return <Reviews />;
+    case 'getHobbies':
+      return <Hobbies />;
     default:
       return null;
   }

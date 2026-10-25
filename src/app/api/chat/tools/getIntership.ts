@@ -8,7 +8,7 @@ export const getInternship = tool({
   inputSchema: z.object({}),
   execute: async () => {
     const config = getConfig();
-    const { availability, personal, social } = config;
+    const { availability, personal, social, agency } = config;
 
     return {
       open: availability.open,
@@ -28,8 +28,9 @@ export const getInternship = tool({
         github: social.github,
         linkedin: social.linkedin,
       },
+      agency: { name: agency.name, url: agency.url, pitch: agency.pitch },
       message:
-        "I'm open to freelance and contract work, remote, and I can flex into US or EU hours. I like owning real surface area — web platforms, AI/LLM features, or both — and I keep communication tight the whole way through. Send me the shape of the project and I'll tell you honestly whether I'm the right fit.",
+        "I'm open to contract work, part-time or full-time, remote and overlapping US or EU hours. I like owning real surface area — the platform, the AI, or both. If the project needs a whole team, my agency Eaglix Tech can staff it. Send me the shape of the project and I'll tell you honestly whether I'm the right fit.",
     };
   },
 });

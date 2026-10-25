@@ -3,6 +3,7 @@
 import { AnimatePresence, motion } from 'framer-motion';
 import {
   Briefcase,
+  ChessKnight,
   Command as CommandIcon,
   Copy,
   CornerDownLeft,
@@ -13,8 +14,10 @@ import {
   Layers,
   Mail,
   MoonStar,
+  Quote,
   Search,
   User,
+  Users,
 } from 'lucide-react';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { Github, Linkedin, Twitter } from '@/components/ui/brand-icons';
@@ -34,6 +37,9 @@ const ICONS: Record<string, React.ComponentType<{ className?: string }>> = {
   copy: Copy,
   download: Download,
   theme: MoonStar,
+  quote: Quote,
+  chess: ChessKnight,
+  users: Users,
 };
 
 const EASE = [0.22, 1, 0.36, 1] as const;

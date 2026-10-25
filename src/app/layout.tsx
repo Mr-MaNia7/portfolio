@@ -31,7 +31,7 @@ const jetbrainsMono = JetBrains_Mono({
 const config = getConfig();
 const { personal, social } = config;
 const siteUrl =
-  process.env.NEXT_PUBLIC_SITE_URL || 'https://abdulkarim.dev';
+  process.env.NEXT_PUBLIC_SITE_URL || 'https://abdulkarimg.com';
 
 export const metadata: Metadata = {
   metadataBase: new URL(siteUrl),

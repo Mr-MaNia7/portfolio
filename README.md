@@ -6,7 +6,7 @@
 </p>
 
 <p align="center">
-  <a href="https://abdulkarim.dev"><b>Live site →</b></a>
+  <a href="https://abdulkarimg.com"><b>abdulkarimg.com →</b></a>
   &nbsp;·&nbsp;
   <a href="#quick-start">Run it locally</a>
   &nbsp;·&nbsp;

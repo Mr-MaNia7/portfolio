@@ -342,7 +342,13 @@
       "metrics": ["500+ merged PRs", "~1,500 commits", "5.0★ client rating"],
       "cover": "/covers/aivi.png",
       "links": [{ "name": "aivi.io", "url": "https://aivi.io" }],
-      "images": []
+      "images": [
+        { "src": "/projects/aivi/platform.jpg", "alt": "AIVI platform: one AI platform connecting customer conversations to follow-up, handoffs and CRM write-back" },
+        { "src": "/projects/aivi/ai-agents.jpg", "alt": "AIVI AI agents: answering new leads and following up across voice, SMS and email" },
+        { "src": "/projects/aivi/desktop.jpg", "alt": "AIVI agent desktop: the handoff carries the conversation, customer need and next action to a person" },
+        { "src": "/projects/aivi/quality.jpg", "alt": "AIVI quality: every call graded, with the record available for review" },
+        { "src": "/projects/aivi/trust.jpg", "alt": "AIVI trust & security: humans approve what an agent version can do before it reaches a customer" }
+      ]
     },
     {
       "title": "Svetness — Legacy Rebuild & Unified Comms",

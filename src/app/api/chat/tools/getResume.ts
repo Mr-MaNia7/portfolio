@@ -48,7 +48,7 @@ export const getResume = tool({
         downloadUrl: config.resume.downloadUrl,
       },
       message:
-        "Here's the full picture — five years across fintech, telecom, and AI training, plus published research. The résumé card has the download; happy to expand on any role.",
+        "Here's the full picture — from AIVI's voice platform back through fintech, telecom and Google's Bard training, plus my final-year thesis on speech sentiment, now open access. The résumé card has the download; happy to expand on any role.",
     };
   },
 });

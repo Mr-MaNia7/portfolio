@@ -117,6 +117,17 @@ export function Resume() {
               <p className="mt-1 text-[14px] leading-relaxed text-ink-soft">
                 {education.research.summary}
               </p>
+              {education.research.link && (
+                <a
+                  href={education.research.link}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="mt-2 inline-flex items-center gap-1.5 text-[13px] font-medium text-clay-ink underline decoration-clay/40 underline-offset-4 hover:decoration-clay"
+                >
+                  <FileText className="size-3.5" aria-hidden />
+                  Read the paper · DOI {education.research.link.replace(/^https?:\/\/doi\.org\//, '')}
+                </a>
+              )}
             </div>
           )}
         </div>

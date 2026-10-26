@@ -14,6 +14,8 @@ export const projectCover = (p: Project) =>
   p.cover || p.images[0]?.src || '/covers/default.svg';
 
 const LIVE_STATUSES = ['Live', 'Production', 'Ongoing'];
+/** Links named by their host ("aivi.io") read as "Visit aivi.io"; labelled links stand alone. */
+const HOSTNAME = /^[\w-]+(\.[\w-]+)+$/;
 
 /**
  * The full dossier for one project, opened over the transcript. Portalled to
@@ -161,7 +163,9 @@ export function ProjectDialog({
                       {LIVE_STATUSES.includes(project.status) && (
                         <span className="status-dot" aria-hidden />
                       )}
-                      <span className="hidden sm:inline">Visit</span>
+                      {HOSTNAME.test(primaryLink.name) && (
+                        <span className="hidden sm:inline">Visit</span>
+                      )}
                       {primaryLink.name}
                       <ArrowUpRight className="h-3.5 w-3.5" aria-hidden />
                       <span className="sr-only">(opens in a new tab)</span>

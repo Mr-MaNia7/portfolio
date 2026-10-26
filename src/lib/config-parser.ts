@@ -66,7 +66,7 @@ ${experience
 
 ### Education
 - ${education.degree}${education.stream ? ` (${education.stream} stream)` : ''} · ${education.institution}${education.gpa ? ` · GPA ${education.gpa}` : ''}
-${education.research ? `- Research: ${education.research.title} — ${education.research.summary}` : ''}
+${education.research ? `- Final-year thesis: ${education.research.title} — ${education.research.summary}${education.research.link ? ` Paper: ${education.research.link}` : ''}` : ''}
 
 ### What I do (capabilities, with proof)
 - Languages: ${skills.languages.map((l) => `${l.name} (${l.note})`).join(', ')}

@@ -12,7 +12,7 @@
     "handle": "@abdulkarimgmohammed",
     "upworkBadge": "Top Rated Plus · 100% Job Success",
     "upworkBadgeImage": "https://www.upworkmrr.com/badges/top-rated-plus-badge.svg",
-    "bio": "I'm Abdulkarim, a senior full-stack engineer based in Addis Ababa, shipping software for clients around the world for 5+ years. On Upwork I'm Top Rated Plus with a 100% Job Success score: $60K+ earned across 26 jobs.\n\nSince June 2025 I've been building AIVI, a platform of AI voice agents and CRM for lending, insurance and contact centers. I was brought in to make the backend properly multi-tenant on Supabase, and my scope kept growing from there. Today I work across the backend, frontend, DevOps, security and SOC 2: multi-region cells, a micro-frontend platform, voice-guided co-browsing, and a reinforcement-learning policy that learns from call quality. That's 500+ merged PRs so far.\n\nBefore that I rebuilt Svetness's legacy system as Supabase microservices with a Next.js front end, led the frontend of Aladia's learning platform, trained frontier LLMs for Google through Turing, and built a real-time call-center platform for Canal+. I also founded Eaglix Tech, an agency that brings Ethiopian engineers to enterprise software and AI work.\n\nOff the clock you'll find me at the chessboard or in central midfield.",
+    "bio": "I'm Abdulkarim, a senior full-stack engineer based in Addis Ababa, shipping software for clients around the world for 5+ years. On Upwork I'm Top Rated Plus with a 100% Job Success score: $60K+ earned across 26 jobs.\n\nSince June 2025 I've been building AIVI, a platform of AI voice agents and CRM for lending, insurance and contact centers. I was brought in to make the backend properly multi-tenant on Supabase, and my scope kept growing from there. Today I work across the backend, frontend, DevOps, security and SOC 2: multi-region cells, a micro-frontend platform, voice-guided co-browsing, and a reinforcement-learning policy that learns from call quality. That's 500+ merged PRs so far.\n\nBefore that I rebuilt Svetness's legacy system as Supabase microservices with a Next.js front end, led the frontend of Aladia's learning platform, trained Google's Bard (now Gemini) through Turing, and built a real-time call-center platform for Canal+. I also founded Eaglix Tech, an agency that brings Ethiopian engineers to enterprise software and AI work.\n\nOff the clock you'll find me at the chessboard or in central midfield.",
     "currently": {
       "role": "Software Engineer",
       "company": "AIVI",
@@ -136,31 +136,33 @@
     },
     {
       "company": "Google (via Turing)",
-      "position": "Expert LLM Trainer & AI Data Specialist",
-      "type": "Contract",
+      "position": "Expert LLM Trainer — Bard (now Gemini)",
+      "type": "Contract · via Turing",
       "duration": "Mar 2024 — Aug 2024",
       "location": "Remote",
-      "description": "Trained and evaluated frontier large language models for Google through Turing, using RLHF, prompt engineering, and side-by-side model comparison across code and reasoning tasks in React, Next.js, Python, Django, Flask and Rust.",
+      "description": "Trained Google's flagship model, Bard (now Gemini), through Turing as a coding domain expert: RLHF preference ranking, SFT data, side-by-side evaluations, rubric design and code review of model outputs across C++, Rust, Python and full-stack JavaScript.",
       "highlights": [
-        "RLHF and reward-signal data for frontier models",
-        "Side-by-side model comparison and evaluation rubrics",
-        "High-quality data annotation and cleaning at scale"
+        "85% of my tasks approved by reviewers",
+        "20% less time per task than department peers",
+        "RLHF preference ranking and SFT data for code",
+        "Side-by-side evaluations, rubrics and code review"
       ],
-      "technologies": ["RLHF", "Prompt Engineering", "LLM Evaluation", "Python", "Rust", "Django"]
+      "technologies": ["RLHF", "SFT", "LLM Evaluation", "C++", "Rust", "Python", "TypeScript", "React", "Django"]
     },
     {
       "company": "EWA Services",
-      "position": "Backend Engineer — FINN Banking App",
+      "position": "Backend Engineer — FINN",
       "type": "Contract",
       "duration": "2023 · 8 months",
-      "location": "Remote",
-      "description": "Built the backend for FINN, a consumer banking application: secure authentication, accounts, and transaction APIs on Node.js and TypeScript with Firebase and GCP, integrated with an Angular client.",
+      "location": "Remote · finn-app.com",
+      "description": "Built the backend for FINN, an earned-wage-access app in Thailand: secure authentication, accounts, payments and a transaction ledger on Node.js, TypeScript and NestJS with Firebase and GCP, plus the whole KYC feature. Led security hardening that removed many vulnerabilities across the API.",
       "highlights": [
-        "Secure auth, accounts, and transaction flows",
-        "REST APIs consumed by an Angular front end",
-        "Firebase + GCP infrastructure"
+        "The whole KYC feature, end to end",
+        "Payments and a transaction ledger",
+        "Security hardening that removed many vulnerabilities",
+        "APIs for an Angular web app shipped to mobile with Ionic"
       ],
-      "technologies": ["Node.js", "TypeScript", "Angular", "Firebase", "GCP", "PostgreSQL"]
+      "technologies": ["Node.js", "TypeScript", "NestJS", "Firebase", "GCP", "Angular", "Ionic", "PostgreSQL"]
     },
     {
       "company": "Canal+",
@@ -168,11 +170,11 @@
       "type": "Full-time",
       "duration": "2022 — 2024",
       "location": "Addis Ababa",
-      "description": "Built ATCOM, a real-time call-center management system on Django and Vue.js with FreePBX/Asterisk VOIP, IVR configuration, role-based interfaces for operators, managers, and admins, Telegram integration for incident management, and live dashboards over WebSockets — lifting call-handling quality by roughly 35%. Also delivered Solar Village, an internal task-management application for field operations.",
+      "description": "Built ATCOM, a real-time call-center management system on Django and Vue.js with FreePBX/Asterisk VOIP, IVR configuration, role-based interfaces for operators, managers, and admins, Telegram integration for incident management, and live dashboards over WebSockets — improving customer support handling by roughly 35%. Also delivered Solar Village, an internal task-management app for field operations.",
       "highlights": [
         "Real-time call-center platform with Asterisk/FreePBX VOIP and IVR",
         "Role-based operator / manager / admin dashboards over WebSockets",
-        "~35% improvement in call-handling quality",
+        "~35% better customer support handling",
         "Telegram integration for incident management"
       ],
       "technologies": ["Django", "Python", "Vue.js", "Asterisk", "PostgreSQL", "WebSockets"]
@@ -198,14 +200,14 @@
     "gpa": "3.8 / 4.0",
     "note": "Software Engineering with an Artificial Intelligence specialization.",
     "research": {
-      "title": "Hate-speech detection for Afan Oromo (low-resource NLP)",
-      "summary": "Published machine-learning research on detecting hate speech in Afan Oromo, a low-resource language — covering data collection, preprocessing, and model training — reaching 90%+ accuracy.",
-      "link": ""
+      "title": "Afaan Oromoo Audio-Based Sentiment Analysis",
+      "summary": "Final-year BSc thesis (AI stream, team of five): reading sentiment straight from Afaan Oromoo speech, a low-resource language. We built a 40,000-clip labelled audio dataset and compared spectrogram CNNs on raw audio with text models on transcripts. Audio won, at 74% test accuracy across three classes. Open access on Zenodo.",
+      "link": "https://doi.org/10.5281/zenodo.23663622"
     },
     "achievements": [
       "Top Rated Plus on Upwork — 100% Job Success, $60K+ earned across 26 jobs",
       "500+ merged PRs on AIVI's production platform",
-      "Published NLP research on a low-resource language (90%+ accuracy)",
+      "Final-year thesis on Afaan Oromoo speech sentiment, open access on Zenodo",
       "GPA 3.8 / 4.0 — BSc Software Engineering, AI stream",
       "200+ competitive-programming problems solved (LeetCode / mania7)",
       "Marketable Software Development 101 — ITC × ICOG Makers (2022)",
@@ -240,7 +242,7 @@
         "proof": [
           "AIVI: brought in to make the Supabase backend properly multi-tenant",
           "Svetness: a legacy system rebuilt as Supabase microservices",
-          "FINN: auth, accounts and transaction APIs for a banking app"
+          "FINN: auth, KYC, payments and a transaction ledger for an earned-wage-access app"
         ],
         "shippedAt": ["AIVI", "Svetness", "EWA Services"],
         "tools": ["Supabase", "PostgreSQL", "Row-Level Security", "Edge Functions", "Node.js", "NestJS", "REST & GraphQL", "Redis"]
@@ -276,9 +278,10 @@
         "proof": [
           "AIVI: SOC 2 compliance and security hardening",
           "Secret scanning in CI",
-          "Postgres row-level security for tenant isolation"
+          "Postgres row-level security for tenant isolation",
+          "FINN: security hardening that removed many vulnerabilities, plus the KYC flow"
         ],
-        "shippedAt": ["AIVI"],
+        "shippedAt": ["AIVI", "EWA Services"],
         "tools": ["SOC 2", "Secret scanning", "Row-Level Security", "Auth & session design", "Dependency patching"]
       },
       {
@@ -311,8 +314,8 @@
         "summary": "I make models measurably better: reward signals, evaluations, and policies that learn from production.",
         "proof": [
           "AIVI: a reinforcement-learning decision policy trained nightly on call-quality rewards, rolled out in shadow mode",
-          "Google via Turing: RLHF and side-by-side evaluation of frontier models",
-          "Published Afan Oromo hate-speech detection research, 90%+ accuracy"
+          "Google Bard (now Gemini), via Turing: RLHF, SFT and side-by-side evals — 85% reviewer-approved",
+          "Final-year thesis: sentiment from Afaan Oromoo speech, a spectrogram CNN at 74% test accuracy on 40,000 audio clips"
         ],
         "shippedAt": ["AIVI", "Google (via Turing)"],
         "tools": ["Reinforcement learning", "RLHF", "DSPy", "LLM evals", "PyTorch", "scikit-learn", "NLP"]
@@ -368,7 +371,13 @@
       "metrics": ["5.0★ client rating", "3 channels, one dashboard"],
       "cover": "/covers/svetness.png",
       "links": [{ "name": "svetness.com", "url": "https://svetness.com" }],
-      "images": []
+      "images": [
+        { "src": "/projects/svetness/home.jpg", "alt": "Svetness home: in-home personal training, nationwide" },
+        { "src": "/projects/svetness/booking.jpg", "alt": "Svetness booking: pick a service and zip code to match with a trainer near you" },
+        { "src": "/projects/svetness/client-contact.jpg", "alt": "Svetness current-client contact form, with consent for SMS and calls" },
+        { "src": "/projects/svetness/services.jpg", "alt": "Svetness services: personal, couples, corporate wellness and apartment-community training" },
+        { "src": "/projects/svetness/locations.jpg", "alt": "Svetness locations: in-home training across US states" }
+      ]
     },
     {
       "title": "Aladia — Build Your Academy. Find Your Academy.",
@@ -412,16 +421,21 @@
         "AI-agent-driven issue resolution tracking"
       ],
       "metrics": ["5.0★ — “Would gladly rehire.”"],
-      "cover": "/covers/saas.svg",
+      "cover": "/covers/alertix.jpg",
       "links": [],
-      "images": []
+      "images": [
+        { "src": "/projects/alertix/dashboard.jpg", "alt": "Alertix dashboard: active alerts, issues resolved, SKUs monitored and alerts over time" },
+        { "src": "/projects/alertix/summary.jpg", "alt": "Alertix alert summary with suppression-risk warning" },
+        { "src": "/projects/alertix/alert-types.jpg", "alt": "Alert types Alertix watches: deleted and inactive listings, lost or suppressed buy box, FBA stockouts and more" },
+        { "src": "/projects/alertix/asins.jpg", "alt": "Alertix monitored ASINs view, with new and unresolved alerts per product" }
+      ]
     },
     {
       "title": "ATCOM — Real-Time Call-Center Management",
       "category": "Telecom · Full-Stack",
       "role": "Full-Stack Developer",
       "client": "Canal+",
-      "description": "A real-time call-center management platform built on Django and Vue.js with FreePBX/Asterisk VOIP and IVR configuration. Three role-based interfaces — operators, managers, and admins — with call-agent QA, reporting, Telegram integration for incident management, and live dashboards driven over WebSockets. Improved call-handling quality by roughly 35% and gave the team a data-driven view of service performance.",
+      "description": "A real-time call-center management platform built on Django and Vue.js with FreePBX/Asterisk VOIP and IVR configuration. Three role-based interfaces — operators, managers, and admins — with call-agent QA, reporting, Telegram integration for incident management, and live dashboards driven over WebSockets. Improved customer support handling by roughly 35% and gave the team a data-driven view of service performance.",
       "techStack": ["Django", "Python", "Vue.js", "Asterisk", "PostgreSQL", "WebSockets"],
       "date": "2022 — 2024",
       "status": "Delivered",
@@ -432,69 +446,89 @@
         "Real-time data flow over WebSockets",
         "Telegram integration for incident management"
       ],
-      "metrics": ["~35% quality improvement", "“A realistic game-changer.” — Leul M."],
-      "cover": "/covers/telecom.svg",
+      "metrics": ["~35% better customer support handling", "“A realistic game-changer.” — Leul M."],
+      "cover": "/covers/atcom.jpg",
       "links": [],
-      "images": []
+      "images": [
+        { "src": "/projects/atcom/dashboard.jpg", "alt": "ATCOM dashboard: active calls, active agents, abandoned calls and queue, updated live" },
+        { "src": "/projects/atcom/call-monitor.jpg", "alt": "ATCOM call monitor: every call with agent, campaign, wrap-up, talk time and recording" },
+        { "src": "/projects/atcom/queue-report.jpg", "alt": "ATCOM queue report: filter by agent, campaign, status and time range" },
+        { "src": "/projects/atcom/agents-reports.jpg", "alt": "ATCOM agents view with the reports menu: call reports, recall, agent performance and reachability" }
+      ]
     },
     {
-      "title": "FINN — Mobile Banking Platform",
-      "category": "Fintech · Backend",
+      "title": "FINN — Earned Wage Access App",
+      "category": "Fintech · Backend & Security",
       "role": "Backend Engineer",
       "client": "EWA Services",
-      "description": "Backend for a consumer banking application: secure authentication, accounts, and transaction APIs built on Node.js and TypeScript with Firebase and GCP, integrated with an Angular client. Focused on correctness, security, and clean API contracts for a product handling real money.",
-      "techStack": ["Node.js", "TypeScript", "NestJS", "Firebase", "GCP", "Angular", "PostgreSQL"],
+      "description": "FINN is an earned-wage-access and financial-health app in Thailand: employees draw on salary they've already earned before payday, with no interest or fees, and see their spending through a financial health score. I built the backend — secure authentication, accounts, payments and a transaction ledger on Node.js, TypeScript and NestJS with Firebase and GCP — and the whole KYC feature, then led security hardening that removed many vulnerabilities across the API. The client is an Angular web app shipped to mobile with Ionic.",
+      "techStack": ["Node.js", "TypeScript", "NestJS", "Firebase", "GCP", "Angular", "Ionic", "PostgreSQL"],
       "date": "2023",
-      "status": "Delivered",
+      "status": "Live",
       "featured": true,
       "highlights": [
-        "Secure auth, accounts, and transaction flows",
-        "REST APIs consumed by an Angular mobile client",
-        "Firebase + GCP cloud infrastructure"
+        "The whole KYC feature, end to end",
+        "Payments and a transaction ledger",
+        "Secure authentication and accounts",
+        "Security hardening that removed many vulnerabilities",
+        "APIs for an Angular + Ionic mobile app"
       ],
-      "metrics": ["Live banking product", "Security-first architecture"],
-      "cover": "/covers/fintech.svg",
-      "links": [],
-      "images": []
+      "metrics": ["KYC, built end to end", "Live at finn-app.com"],
+      "cover": "/covers/finn.jpg",
+      "links": [{ "name": "finn-app.com", "url": "https://www.finn-app.com" }],
+      "images": [
+        { "src": "/projects/finn/home.jpg", "alt": "FINN home: early access to earned salary, with the app's onboarding, verification and withdrawal screens" },
+        { "src": "/projects/finn/health-check.jpg", "alt": "FINN financial health check: score, salary to date, daily balance and income vs. expenses" },
+        { "src": "/projects/finn/early-payday.jpg", "alt": "FINN for employers: earned wage access, financial education and savings" },
+        { "src": "/projects/finn/earn-more.jpg", "alt": "FINN Earn More: a part-time job marketplace inside the app" }
+      ]
     },
     {
-      "title": "LLM Training & Evaluation",
-      "category": "AI · LLM",
-      "role": "LLM Trainer",
+      "title": "Google Bard → Gemini — LLM Training",
+      "category": "AI · LLM training",
+      "role": "Expert LLM Trainer (coding domain)",
       "client": "Google (via Turing)",
-      "description": "Six months training and evaluating frontier LLMs for Google through Turing, using RLHF, prompt engineering, and side-by-side model comparison. I designed evaluation rubrics and ran large-scale data cleaning and annotation to push model quality and reduce failure modes.",
-      "techStack": ["RLHF", "Prompt Engineering", "LLM Evaluation", "Python", "Data Annotation"],
+      "description": "Six months making Google's flagship model, Bard (now Gemini), a better coder. Through Turing, I worked as a coding domain expert across C++, Rust, Python and full-stack JavaScript: ranking responses for RLHF, writing SFT examples, running side-by-side evaluations, designing rubrics and reviewing the model's code for correctness, safety and style.",
+      "techStack": ["RLHF", "SFT", "LLM Evaluation", "C++", "Rust", "Python", "TypeScript"],
       "date": "2024",
       "status": "Delivered",
       "featured": true,
       "highlights": [
-        "RLHF and reward-signal authoring for frontier models",
-        "Side-by-side comparison and evaluation rubrics",
-        "High-quality, high-volume data annotation"
+        "RLHF preference ranking on coding tasks",
+        "SFT data: prompts and ideal responses",
+        "Side-by-side evaluations and rubric design",
+        "Code review of model outputs across C++, Rust, Python and full stack"
       ],
-      "metrics": ["Frontier-model quality work"],
-      "cover": "/covers/ai.svg",
+      "metrics": ["85% reviewer-approved tasks", "20% less time per task than peers"],
+      "cover": "/covers/llm-training.jpg",
       "links": [],
       "images": []
     },
     {
-      "title": "Afan Oromo Hate-Speech Detection",
-      "category": "Research · NLP",
-      "role": "Researcher & Author",
-      "description": "Published machine-learning research detecting hate speech in Afan Oromo, a low-resource language. The work spanned data collection, preprocessing, feature engineering, and model training — reaching 90%+ accuracy and contributing tooling for an under-served language.",
-      "techStack": ["Python", "NLP", "scikit-learn", "PyTorch", "Research"],
-      "date": "2023",
-      "status": "Published",
+      "title": "Afaan Oromoo Audio-Based Sentiment Analysis",
+      "category": "Research · Speech & NLP",
+      "role": "Co-author · team of five",
+      "description": "Our final-year BSc thesis in the AI stream: can you read sentiment straight from Afaan Oromoo speech, a low-resource language? We built a 40,000-clip audio dataset labelled negative, neutral or positive, then compared two routes: spectrogram CNNs on the raw audio, and text models (CNN with FastText, CNN with Word2Vec, BERT) on machine transcripts. Audio won: 74% test accuracy, against 61% for the best text model.",
+      "techStack": ["Python", "CNN", "CNN-LSTM", "BERT", "FastText", "Word2Vec", "Fairseq", "Spectrograms & MFCC"],
+      "date": "Jun 2024",
+      "status": "Open access",
       "featured": true,
       "highlights": [
-        "End-to-end NLP pipeline for a low-resource language",
-        "Data collection, preprocessing, and modelling",
-        "Published academic research"
+        "40,000 labelled audio clips across three sentiment classes, plus 7,000 text samples",
+        "Audio pipeline: spectrogram and MFCC features into CNN and CNN-LSTM models",
+        "Text pipeline: Fairseq transcription, then CNN + FastText, CNN + Word2Vec and BERT",
+        "Finding: audio beat text on unseen data; synthetic-speech noise capped further gains",
+        "Supervised by Amanuel Negash · Addis Ababa University (AAiT)"
       ],
-      "metrics": ["90%+ accuracy", "Published research"],
-      "cover": "/covers/research.svg",
-      "links": [],
-      "images": []
+      "metrics": ["74% test accuracy (audio CNN)", "61% best text model (BERT)", "40,000 audio clips", "7,000 text samples"],
+      "cover": "/covers/research.jpg",
+      "links": [{ "name": "Read the paper (DOI)", "url": "https://doi.org/10.5281/zenodo.23663622" }],
+      "images": [
+        { "src": "/projects/research/dataset.jpg", "alt": "The 40,000-clip audio dataset, split across negative, neutral and positive" },
+        { "src": "/projects/research/spectrogram.jpg", "alt": "A mel power spectrogram: how each clip is turned into an image for the CNN" },
+        { "src": "/projects/research/architecture.jpg", "alt": "The CNN-LSTM architecture: three convolution blocks, an LSTM layer and a three-way softmax" },
+        { "src": "/projects/research/results.jpg", "alt": "Spectrogram CNN test results by dataset size, from 5,000 to 40,000 clips" }
+      ]
     },
     {
       "title": "Rental Management System",

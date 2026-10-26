@@ -84,7 +84,7 @@ const s = StyleSheet.create({
 const RECENT_ROLES = 4;
 
 /** Achievements the header, stats and education lines already carry. */
-const ALREADY_STATED = /^(Top Rated Plus|GPA|500\+ merged)/;
+const ALREADY_STATED = /^(Top Rated Plus|GPA|500\+ merged|Final-year thesis)/;
 
 /** Glyphs outside WinAnsi, spelled for the built-in faces. */
 const pdfText = (t: string) =>
@@ -226,7 +226,17 @@ export function ResumeDocument({
             {education.gpa ? ` · GPA ${education.gpa}` : ''}
           </Text>
           {education.research && (
-            <Text style={s.para}>Research: {education.research.title}</Text>
+            <Text style={s.para}>
+              Final-year thesis: {education.research.title}
+              {education.research.link && (
+                <>
+                  {' '}·{' '}
+                  <Link src={education.research.link} style={s.link}>
+                    {education.research.link.replace(/^https?:\/\//, '')}
+                  </Link>
+                </>
+              )}
+            </Text>
           )}
           <Text style={s.para}>
             {education.achievements

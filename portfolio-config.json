@@ -185,12 +185,12 @@
       "type": "Full-time",
       "duration": "2021 — 2022",
       "location": "Addis Ababa",
-      "description": "Delivered a rental-management platform that automated bookings, tenants, and billing, raising operational productivity by around 75%.",
+      "description": "Replaced a scaffolding-rental firm's scattered Excel workbooks with one web app for stock, customers, transactions and rental agreements, raising productivity by around 75%.",
       "highlights": [
-        "~75% productivity gain from automation",
-        "Full CRUD platform: bookings, tenants, billing"
+        "~75% productivity gain and 50% less screen time for staff",
+        "Owned the requirements spec, UI design, build, Heroku deployment and documentation"
       ],
-      "technologies": ["Node.js", "MySQL", "JavaScript"]
+      "technologies": ["Java", "Spring Boot", "PostgreSQL", "JavaScript", "Heroku"]
     }
   ],
   "education": {
@@ -531,42 +531,58 @@
       ]
     },
     {
-      "title": "Rental Management System",
-      "category": "Web App · Automation",
-      "role": "Software Engineer",
+      "title": "HiyaScaffold — Rental Management System",
+      "category": "Web App · Operations",
+      "role": "Full-stack & DevOps engineer",
       "client": "Hiya General Trading PLC",
-      "description": "A rental-operations platform that automated bookings, tenant records, and billing. Replacing manual workflows lifted operational productivity by around 75% and gave the business a single source of truth.",
-      "techStack": ["Node.js", "MySQL", "JavaScript", "Express.js"],
+      "description": "Hiya rents scaffolding and construction materials, and ran the business on scattered Excel workbooks: agreements, delivery and return sheets, stock summaries. I wrote the requirements spec, designed the UI and built HiyaScaffold Service, one web app for items and stock, customers, transactions, proformas and rental agreements, with a live view of what's available, on loan, in maintenance or defective. Staff productivity rose by about 75% and screen time fell by half.",
+      "techStack": ["Java", "Spring Boot", "PostgreSQL", "JavaScript", "HTML & CSS", "Heroku"],
       "date": "2021 — 2022",
       "status": "Delivered",
       "featured": false,
       "highlights": [
-        "Automated bookings, tenants, and billing",
-        "Single source of truth for operations"
+        "Requirements spec (SRS), UI design, build, deployment and documentation, end to end",
+        "Items and stock with loan prices, unit prices and area coverage",
+        "Customers, transactions, proformas and rental agreements in one place",
+        "Per-item status: available, on loan, in maintenance, defective",
+        "Worked directly with the client's accountants and sales managers"
       ],
-      "metrics": ["~75% productivity gain"],
-      "cover": "/covers/automation.svg",
+      "metrics": ["~75% productivity gain", "50% less screen time", "20% under time & budget"],
+      "cover": "/covers/hiya.jpg",
       "links": [],
-      "images": []
+      "images": [
+        { "src": "/projects/hiya/home.jpg", "alt": "Home: one entry point for company, items, customers, transactions, proformas and agreements" },
+        { "src": "/projects/hiya/items.jpg", "alt": "Items: every scaffolding part with loan price, unit price, stock and area coverage" },
+        { "src": "/projects/hiya/summary.jpg", "alt": "Stock summary: available, loaned, in maintenance and defective counts per item" }
+      ]
     },
     {
       "title": "This Portfolio — Conversational AI Site",
       "category": "AI · Web",
       "role": "Designer & Engineer",
-      "description": "The site you're on: a conversational portfolio you can scan in seconds or interrogate in depth. Ask it anything about my work and it answers in my voice with rich, structured cards. Curated answers load instantly with no API call; free-form questions go to a live model with tool calls.",
-      "techStack": ["Next.js 16", "React 19", "TypeScript", "Vercel AI SDK", "Tailwind CSS", "Gemini"],
+      "description": "The site you're on, designed and built end to end. Scan it in seconds, or ask it anything about my work and it answers in my voice with structured cards. Curated answers render instantly with no model call; open questions go to a live model that can call seven tools. One config file drives the site, the AI's system prompt, the résumé PDF and the social cards, so none of them can drift.",
+      "techStack": ["Next.js 16", "React 19", "TypeScript", "Vercel AI SDK", "Gemini", "Tailwind CSS v4", "react-pdf"],
       "date": "2026",
       "status": "Live",
       "featured": true,
       "highlights": [
-        "Conversational, tool-driven UI with instant curated answers",
-        "⌘K command palette and slash commands",
-        "Résumé PDF generated from the same config as the site"
+        "Instant curated answers with no API call; a live model with tool calls for everything else",
+        "⌘K command palette and 17 slash commands with ranked matching",
+        "One config drives the site, the AI's system prompt, the résumé PDF and the social cards",
+        "Résumé PDF typeset from that config at build time",
+        "Live chess.com rating, refreshed daily",
+        "Light and dark themes, keyboard-first, respects reduced motion"
       ],
-      "metrics": ["You're looking at it"],
-      "cover": "/covers/portfolio.svg",
+      "metrics": ["17 slash commands", "7 tools for the live model", "0 API calls for curated answers"],
+      "cover": "/covers/portfolio.jpg",
       "links": [{ "name": "GitHub", "url": "https://github.com/Mr-MaNia7/portfolio" }],
-      "images": []
+      "images": [
+        { "src": "/projects/portfolio/landing.jpg", "alt": "The landing page: proof first, one hire button, and a prompt to ask anything" },
+        { "src": "/projects/portfolio/palette.jpg", "alt": "⌘K command palette: every question and destination, one keystroke away" },
+        { "src": "/projects/portfolio/skills.jpg", "alt": "The skills card in dark mode: capabilities with proof, where they shipped and the tools behind them" },
+        { "src": "/projects/portfolio/reviews.jpg", "alt": "Client reviews, quoted verbatim from Upwork with no model call" },
+        { "src": "/projects/portfolio/resume.jpg", "alt": "The résumé PDF, typeset from the same config as the site" }
+      ]
     }
   ],
   "reviews": {

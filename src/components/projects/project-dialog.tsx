@@ -293,7 +293,12 @@ function ProjectBody({
             </h3>
             <ul className="grid gap-px overflow-hidden rounded-md border border-border bg-border-subtle sm:grid-cols-2">
               {metrics.map((m, i) => (
-                <li key={i} className="flex flex-col gap-1.5 bg-card px-4 py-4">
+                <li
+                  key={i}
+                  className={`flex flex-col gap-1.5 bg-card px-4 py-4 ${
+                    metrics.length % 2 === 1 && i === metrics.length - 1 ? 'sm:col-span-2' : ''
+                  }`}
+                >
                   {m.figure ? (
                     <>
                       <span className="num text-[1.75rem] leading-none text-foreground">

@@ -4,10 +4,8 @@ import Image from 'next/image';
 import { ArrowRight, ArrowUpRight, Sparkles } from 'lucide-react';
 import React, { useState, type CSSProperties } from 'react';
 
-import { pad2, splitMetric } from '@/components/artifact/artifact';
+import { splitMetric } from '@/components/artifact/artifact';
 import { ProjectDialog, projectCover } from '@/components/projects/project-dialog';
-import { UpworkBadge } from '@/components/ui/upwork-badge';
-import { useLocalTime } from '@/hooks/use-local-time';
 import { presetReplies, getConfig } from '@/lib/config-loader';
 import type { Command } from '@/lib/commands';
 import type { Project } from '@/types/portfolio';
@@ -28,10 +26,18 @@ const LIVE_EXAMPLES = [
   'Why should I hire you over another senior engineer?',
 ];
 
+// The street the picture was taken on, credited where it is shown.
+const HERO_PHOTO = {
+  src: '/hero/addis.jpg',
+  alt: 'Churchill Avenue in Addis Ababa: traffic on a wide avenue between office towers under a cloudy sky',
+  credit: 'Churchill Avenue, Addis Ababa — photo by Mjr74, CC BY 4.0, via Wikimedia Commons',
+  href: 'https://commons.wikimedia.org/wiki/File:Churchill_Avenue,_Addis_Ababa,_September_2022.jpg',
+};
+
 /**
- * The landing page is the path a client takes without typing — who I am,
- * proof, what I can do for you, what clients say, how to hire me — with the
- * chat as the layer on top. Every section ends somewhere useful.
+ * The landing: the name as a monument on a slate field, then a small, calm
+ * column — record, flagship, selected work, services, client words, the ask-me
+ * index — and the name once more, inverted, as the close.
  */
 const ChatLanding: React.FC<ChatLandingProps> = ({
   submitQuery,
@@ -42,7 +48,6 @@ const ChatLanding: React.FC<ChatLandingProps> = ({
 }) => {
   const config = getConfig();
   const { personal, stats, availability, projects, reviews, agency } = config;
-  const time = useLocalTime(personal.timezone);
   const [openIndex, setOpenIndex] = useState<number | null>(null);
 
   const flagshipIndex = Math.max(
@@ -61,6 +66,8 @@ const ChatLanding: React.FC<ChatLandingProps> = ({
   const index = commands.filter((c) => c.group === 'Ask');
   const [lead, ...moreQuotes] = reviews.quotes;
   const shortQuotes = moreQuotes.filter((q) => q.text.length < 140).slice(0, 2);
+  const name = personal.shortName.toUpperCase();
+  const city = personal.location.split(',')[0];
 
   const ask = (q: string) => {
     const preset = presetReplies[q as keyof typeof presetReplies];
@@ -71,63 +78,44 @@ const ChatLanding: React.FC<ChatLandingProps> = ({
     }
   };
 
-  const city = personal.location.split(',')[0];
-  const offset = personal.timezone.split('·').pop()?.trim();
-
   return (
-    <div className="mx-auto w-full py-8 sm:py-12">
-      {/* ── Hero ─────────────────────────────────────────── */}
-      <section aria-labelledby="hero-heading" className="grid gap-8 sm:grid-cols-[1fr_10.5rem] sm:items-end sm:gap-10">
-        <div className="min-w-0">
-          <div
-            className="reveal flex items-center gap-3"
-            style={{ '--i': 0 } as CSSProperties}
-          >
-            <span className="relative h-12 w-12 shrink-0 overflow-hidden rounded-md border border-border sm:hidden">
-              <Image src={personal.photo} alt={personal.name} fill sizes="48px" className="object-cover" priority />
-            </span>
-            {availability.open && (
-              <p className="meta flex items-center gap-2 text-ink-soft">
-                <span className="status-dot" aria-hidden />
-                {availability.headline}
-              </p>
-            )}
-          </div>
+    <div className="w-full">
+      {/* ── Hero: the name as a monument ─────────────────── */}
+      <section
+        aria-labelledby="hero-heading"
+        className="on-field monument-hero relative flex flex-col overflow-hidden bg-field pb-10 text-field-ink md:block md:pb-0"
+      >
+        <figure className="relative order-1 mx-3 mt-3 h-[55svh] max-h-[34rem] overflow-hidden bg-card md:absolute md:inset-y-5 md:left-5 md:m-0 md:h-auto md:max-h-none md:w-[47vw]">
+          <Image
+            src={HERO_PHOTO.src}
+            alt={HERO_PHOTO.alt}
+            fill
+            priority
+            sizes="(min-width: 768px) 47vw, 100vw"
+            className="monument-photo object-cover object-[78%_40%]"
+          />
+        </figure>
 
-          <h1
-            id="hero-heading"
-            className="reveal font-display mt-5 text-[2.75rem] leading-[1] tracking-[-0.035em] text-balance text-foreground sm:text-[3.875rem]"
+        <div className="monument-say order-3 mt-8 px-5 md:absolute md:top-5 md:right-8 md:left-[calc(47vw+3rem)] md:mt-0 md:flex md:flex-col md:justify-center md:px-0">
+          <p
+            className="reveal max-w-[26ch] text-[1.25rem] leading-[1.35] text-field-ink md:text-[1.625rem]"
             style={{ '--i': 1 } as CSSProperties}
           >
-            {personal.headline}
-          </h1>
-
+            I build AI voice platforms and multi-tenant SaaS that hold up in
+            production.
+          </p>
           <p
-            className="reveal measure mt-5 text-[1.0625rem] leading-[1.55] text-ink-soft sm:text-[1.1875rem]"
+            className="reveal mt-4 max-w-[38ch] text-[16px] leading-[1.5] text-field-muted"
             style={{ '--i': 2 } as CSSProperties}
           >
-            {personal.tagline}
-            {personal.currently && (
-              <>
-                {' '}Currently {personal.currently.role.toLowerCase()} at{' '}
-                <a
-                  href={personal.currently.url}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="font-medium text-foreground underline decoration-clay/50 underline-offset-4 hover:decoration-clay"
-                >
-                  {personal.currently.company}
-                </a>
-                .
-              </>
-            )}
+            Senior full-stack engineer in {city} · {personal.upworkBadge} on
+            Upwork.
           </p>
-
           <div
-            className="reveal mt-7 flex flex-wrap items-center gap-2.5"
+            className="reveal mt-6 flex flex-wrap items-center gap-2.5"
             style={{ '--i': 3 } as CSSProperties}
           >
-            <button type="button" onClick={onHire} aria-haspopup="dialog" className="btn-clay h-11 px-5 text-[15px]">
+            <button type="button" onClick={onHire} aria-haspopup="dialog" className="btn-clay h-12 px-5 text-[16px]">
               Hire me
               <ArrowUpRight className="h-4 w-4" aria-hidden />
             </button>
@@ -135,68 +123,65 @@ const ChatLanding: React.FC<ChatLandingProps> = ({
               type="button"
               onClick={() => setOpenIndex(flagshipIndex)}
               aria-haspopup="dialog"
-              className="btn-line h-11 px-5 text-[15px]"
+              className="btn-line h-12 px-5 text-[16px]"
             >
               See the {flagship.client ?? 'flagship'} case study
             </button>
           </div>
-          <div className="reveal mt-4" style={{ '--i': 4 } as CSSProperties}>
-            <UpworkBadge className="!text-[13px]" />
-          </div>
         </div>
 
-        {/* Portrait */}
-        <figure className="reveal hidden sm:block" style={{ '--i': 2 } as CSSProperties}>
-          <div className="relative aspect-[4/5] overflow-hidden rounded-lg border border-border">
-            <Image src={personal.photo} alt={personal.name} fill sizes="168px" className="object-cover" priority />
-          </div>
-          <figcaption className="meta mt-2.5 text-muted-foreground">
-            {city}{' '}
-            <span className="num text-foreground" suppressHydrationWarning>
-              {time?.label ?? '--:--'}
-            </span>{' '}
-            {offset}
-          </figcaption>
-        </figure>
+        {/* The name. On wider screens the h1 spans the field and the letters sit
+            on its right margin; a dark-slate copy of the same letters, clipped
+            to the picture, keeps them legible where they cross the photograph. */}
+        <h1
+          id="hero-heading"
+          className="order-2 mt-4 px-3 md:absolute md:right-8 md:bottom-9 md:left-0 md:mt-0 md:px-0 md:text-right"
+        >
+          <span className="monument-name monument-settle font-display block whitespace-nowrap text-field-ink">
+            {name}
+          </span>
+          <span aria-hidden className="monument-clip pointer-events-none absolute inset-0 hidden md:block">
+            <span className="monument-name monument-settle font-display block whitespace-nowrap text-on-photo">
+              {name}
+            </span>
+          </span>
+        </h1>
       </section>
 
-      {/* ── Telemetry ────────────────────────────────────── */}
-      <dl
-        className="reveal mt-10 grid grid-cols-2 gap-px border-y border-border bg-border-subtle sm:grid-cols-4"
-        style={{ '--i': 5 } as CSSProperties}
-      >
-        {stats.map((s) => (
-          <div
-            key={s.label}
-            className="flex flex-col gap-1.5 bg-background py-4 pr-3 pl-4 max-sm:odd:pl-0 sm:first:pl-0"
+      {/* ── The calm column ─────────────────────────────── */}
+      <div className="mx-auto w-full max-w-3xl px-4 sm:px-6">
+        {/* Track record */}
+        <Section title="Track record" id="record">
+          <dl className="grid grid-cols-2 gap-1 sm:grid-cols-4">
+            {stats.map((s) => (
+              <div key={s.label} className="flex flex-col gap-2 bg-card p-4">
+                <dt className="text-[13px] leading-snug text-muted-foreground">{s.label}</dt>
+                <dd className="num font-display order-first text-[2.5rem] leading-none text-foreground">
+                  {s.value}
+                </dd>
+              </div>
+            ))}
+          </dl>
+          <p className="measure mt-5 text-[1.25rem] leading-[1.4] text-ink-soft">
+            Shipped for{' '}
+            {clients.map((c, i) => (
+              <React.Fragment key={c}>
+                <span className="font-semibold text-foreground">{c}</span>
+                {i < clients.length - 2 ? ', ' : i === clients.length - 2 ? ' and ' : '.'}
+              </React.Fragment>
+            ))}
+          </p>
+        </Section>
+
+        {/* Flagship */}
+        <Section title="Flagship case study" id="flagship">
+          <button
+            type="button"
+            onClick={() => setOpenIndex(flagshipIndex)}
+            aria-haspopup="dialog"
+            className="group grid w-full bg-card text-left transition-colors hover:bg-sunken sm:grid-cols-[1.15fr_1fr]"
           >
-            <dt className="text-[13px] leading-snug text-muted-foreground">{s.label}</dt>
-            <dd className="num order-first text-[1.375rem] leading-none text-foreground">{s.value}</dd>
-          </div>
-        ))}
-      </dl>
-
-      {/* ── Trusted by ───────────────────────────────────── */}
-      <div className="reveal mt-6 flex flex-wrap items-baseline gap-x-5 gap-y-2" style={{ '--i': 6 } as CSSProperties}>
-        <span className="meta text-muted-foreground">Shipped for</span>
-        {clients.map((c) => (
-          <span key={c} className="font-display text-[1.125rem] leading-none text-ink-soft">
-            {c}
-          </span>
-        ))}
-      </div>
-
-      {/* ── 01 Flagship ──────────────────────────────────── */}
-      <Section index={1} title="Flagship case study" id="flagship">
-        <button
-          type="button"
-          onClick={() => setOpenIndex(flagshipIndex)}
-          aria-haspopup="dialog"
-          className="group grid w-full overflow-hidden rounded-lg border border-border bg-card text-left transition-colors hover:border-border-strong sm:grid-cols-[1.15fr_1fr]"
-        >
-          {/* The 4:3 cover, centred in a sunken frame that matches the text's height */}
-          <span className="flex items-center border-b border-border bg-sunken sm:border-r sm:border-b-0 sm:p-4">
-            <span className="relative block aspect-[4/3] w-full overflow-hidden sm:rounded-md sm:border sm:border-border-subtle">
+            <span className="relative block aspect-[4/3] w-full overflow-hidden bg-sunken">
               <Image
                 src={projectCover(flagship)}
                 alt={`${flagship.title} — cover`}
@@ -205,217 +190,222 @@ const ChatLanding: React.FC<ChatLandingProps> = ({
                 className="object-cover transition-transform duration-[240ms] ease-[cubic-bezier(0.22,1,0.36,1)] group-hover:scale-[1.02] motion-reduce:transition-none motion-reduce:group-hover:scale-100"
               />
             </span>
-          </span>
-          <span className="flex min-w-0 flex-col gap-3 p-5 sm:p-6">
-            <span className="meta flex items-center justify-between gap-2 text-muted-foreground">
-              <span className="text-clay-ink">{flagship.category}</span>
-              <span className="num normal-case tracking-normal">{flagship.date}</span>
+            <span className="flex min-w-0 flex-col gap-3 p-5 sm:p-6">
+              <span className="meta flex items-center justify-between gap-2 text-muted-foreground">
+                <span>{flagship.category}</span>
+                <span className="num">{flagship.date}</span>
+              </span>
+              <span className="font-display text-[1.625rem] leading-[0.95] text-foreground">
+                {flagship.title}
+              </span>
+              <ul className="space-y-1.5">
+                {flagship.highlights?.slice(0, 4).map((h) => (
+                  <li key={h} className="text-[16px] leading-snug text-ink-soft">
+                    {h}
+                  </li>
+                ))}
+              </ul>
+              <Metrics project={flagship} />
+              <span className="mt-auto flex items-center gap-1.5 pt-1 text-[16px] font-semibold text-foreground">
+                Read the case study
+                <ArrowRight aria-hidden className="h-4 w-4 transition-transform group-hover:translate-x-0.5" />
+              </span>
             </span>
-            <span className="font-display text-[1.5rem] leading-[1.1] text-foreground">
-              {flagship.title}
-            </span>
-            <ul className="space-y-1.5">
-              {flagship.highlights?.slice(0, 4).map((h) => (
-                <li key={h} className="flex gap-2 text-[14px] leading-snug text-ink-soft">
-                  <span aria-hidden className="text-clay">–</span>
-                  {h}
-                </li>
-              ))}
-            </ul>
-            <Metrics project={flagship} />
-            <span className="mt-auto flex items-center gap-1.5 pt-1 text-[13.5px] font-medium text-foreground">
-              Read the case study
-              <ArrowRight aria-hidden className="h-4 w-4 transition-transform group-hover:translate-x-0.5 group-hover:text-clay" />
-            </span>
-          </span>
-        </button>
-      </Section>
-
-      {/* ── 02 Selected work ─────────────────────────────── */}
-      <Section
-        index={2}
-        title="Selected work"
-        id="work"
-        action={
-          <button
-            type="button"
-            onClick={() => ask('What projects are you most proud of?')}
-            className="press flex items-center gap-1 text-[13px] text-muted-foreground hover:text-foreground"
-          >
-            All {projects.length} case studies <ArrowRight className="h-3.5 w-3.5" aria-hidden />
           </button>
-        }
-      >
-        <ul className="grid gap-4 sm:grid-cols-2">
-          {selected.map(({ p, i }) => (
-            <li key={p.title} className="flex">
-              <WorkTile project={p} onOpen={() => setOpenIndex(i)} />
-            </li>
-          ))}
-        </ul>
-      </Section>
+        </Section>
 
-      {/* ── 03 What I can do for you ─────────────────────── */}
-      <Section index={3} title="What I can do for you" id="services">
-        <ol className="border-y border-border">
-          {availability.focusAreas.map((area, i) => (
-            <li key={area} className="border-b border-border-subtle last:border-b-0">
-              <button
-                type="button"
-                onClick={() => submitQuery(`How would you help with this: ${area}?`)}
-                className="group flex w-full items-baseline gap-4 py-3.5 text-left"
-              >
-                <span className="num text-[11px] text-clay-ink">{pad2(i + 1)}</span>
-                <span className="font-display flex-1 text-[1.1875rem] leading-snug text-foreground">
-                  {area}
-                </span>
-                <span className="flex shrink-0 items-center gap-1 text-[12.5px] text-muted-foreground transition-colors group-hover:text-foreground">
-                  <span className="hidden sm:inline">Ask how</span>
-                  <Sparkles aria-hidden className="h-3.5 w-3.5 group-hover:text-clay" />
-                </span>
-              </button>
-            </li>
-          ))}
-        </ol>
-
-        <a
-          href={agency.url}
-          target="_blank"
-          rel="noopener noreferrer"
-          className="group mt-4 flex flex-col gap-3 rounded-lg border border-border bg-sunken p-5 transition-colors hover:border-border-strong sm:flex-row sm:items-center sm:justify-between"
+        {/* Selected work */}
+        <Section
+          title="Selected work"
+          id="work"
+          action={
+            <button
+              type="button"
+              onClick={() => ask('What projects are you most proud of?')}
+              className="press flex items-center gap-1 text-[16px] text-muted-foreground hover:text-foreground"
+            >
+              All {projects.length} case studies <ArrowRight className="h-4 w-4" aria-hidden />
+            </button>
+          }
         >
-          <span className="min-w-0">
-            <span className="meta text-muted-foreground">Bigger build?</span>
-            <span className="font-display mt-1 block text-[1.25rem] leading-tight text-foreground">
-              Need a team? Meet {agency.name}.
-            </span>
-            <span className="measure mt-1 block text-[14px] leading-relaxed text-ink-soft">
-              {agency.pitch}
-            </span>
-          </span>
-          <span className="btn-line h-9 shrink-0 self-start px-4 text-[13px] sm:self-auto">
-            {new URL(agency.url).hostname.replace('www.', '')}
-            <ArrowUpRight className="h-4 w-4" aria-hidden />
-          </span>
-        </a>
-      </Section>
+          <ul className="grid gap-4 sm:grid-cols-2">
+            {selected.map(({ p, i }) => (
+              <li key={p.title} className="flex">
+                <WorkTile project={p} onOpen={() => setOpenIndex(i)} />
+              </li>
+            ))}
+          </ul>
+        </Section>
 
-      {/* ── 04 What clients say ──────────────────────────── */}
-      <Section
-        index={4}
-        title="What clients say"
-        id="reviews"
-        action={
-          <button
-            type="button"
-            onClick={() => ask('What do clients say about you?')}
-            className="press flex items-center gap-1 text-[13px] text-muted-foreground hover:text-foreground"
+        {/* Services */}
+        <Section title="What I can do for you" id="services">
+          <ul className="flex flex-col gap-1">
+            {availability.focusAreas.map((area) => (
+              <li key={area}>
+                <button
+                  type="button"
+                  onClick={() => submitQuery(`How would you help with this: ${area}?`)}
+                  className="group flex w-full items-center gap-4 bg-card px-4 py-3.5 text-left transition-colors hover:bg-sunken"
+                >
+                  <span className="flex-1 text-[16px] font-semibold leading-snug text-foreground">
+                    {area}
+                  </span>
+                  <span className="flex shrink-0 items-center gap-1.5 text-[13px] text-muted-foreground transition-colors group-hover:text-foreground">
+                    <span className="hidden sm:inline">Ask how</span>
+                    <Sparkles aria-hidden className="h-4 w-4" />
+                  </span>
+                </button>
+              </li>
+            ))}
+          </ul>
+
+          <a
+            href={agency.url}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="group mt-6 flex flex-col gap-4 bg-sunken p-5 transition-colors hover:bg-card sm:flex-row sm:items-center sm:justify-between"
           >
-            All reviews <ArrowRight className="h-3.5 w-3.5" aria-hidden />
-          </button>
-        }
-      >
-        <figure>
-          <blockquote className="font-display hang measure text-[1.375rem] leading-[1.4] text-foreground sm:text-[1.625rem]">
-            “{lead.text}”
-          </blockquote>
-          <figcaption className="mt-3 text-[13.5px] text-muted-foreground">
-            <span className="font-medium text-foreground">{lead.author}</span> · {lead.engagement} ·{' '}
-            <span className="num">{lead.date}</span>
-          </figcaption>
-        </figure>
-        <ul className="mt-6 grid gap-px overflow-hidden rounded-lg border border-border bg-border sm:grid-cols-2">
-          {shortQuotes.map((q) => (
-            <li key={q.text} className="bg-card p-5">
-              <p className="text-[15px] leading-relaxed text-foreground">“{q.text}”</p>
-              <p className="mt-2 text-[13px] text-muted-foreground">
-                {q.engagement} · <span className="num">{q.date}</span>
-              </p>
-            </li>
-          ))}
-        </ul>
-        <p className="mt-4 flex flex-wrap items-center gap-x-2 text-[13.5px] text-ink-soft">
-          <span className="num text-foreground">{reviews.rating}★</span>
-          from {reviews.ratings.map((r) => r.client).join(', ')} · {reviews.summary}
-        </p>
-      </Section>
+            <span className="min-w-0">
+              <span className="font-display block text-[1.625rem] leading-[0.95] text-foreground">
+                Need a team? Meet {agency.name}.
+              </span>
+              <span className="measure mt-2 block text-[16px] leading-relaxed text-ink-soft">
+                {agency.pitch}
+              </span>
+            </span>
+            <span className="btn-ink h-11 shrink-0 self-start px-4 text-[16px] sm:self-auto">
+              {new URL(agency.url).hostname.replace('www.', '')}
+              <ArrowUpRight className="h-4 w-4" aria-hidden />
+            </span>
+          </a>
+        </Section>
 
-      {/* ── 05 Ask me ────────────────────────────────────── */}
-      <Section
-        index={5}
-        title="Ask me anything"
-        id="ask"
-        action={
-          <button
-            onClick={onOpenCommand}
-            className="press flex items-center gap-1.5 rounded-sm text-[13px] text-muted-foreground hover:text-foreground"
-          >
-            Every command <kbd className="kbd">⌘K</kbd>
-          </button>
-        }
-      >
-        <p className="measure mb-4 text-[14.5px] leading-relaxed text-ink-soft">
-          This site is a conversation. The cards below answer instantly; anything
-          you type goes to a live model that answers as me.
-        </p>
-        <ol className="grid grid-cols-2 gap-px overflow-hidden rounded-lg border border-border bg-border sm:grid-cols-4">
-          {index.map((cmd, i) => (
-            <li key={cmd.id} className="flex">
-              <button
-                onClick={() => ask(cmd.payload || cmd.label)}
-                className="group flex min-h-[7rem] w-full flex-col justify-between gap-3 bg-card p-4 text-left transition-colors duration-200 hover:bg-background focus-visible:z-10 focus-visible:outline-offset-[-2px]"
-              >
-                <span className="flex w-full items-center justify-between gap-2">
-                  <span className="num text-[11px] text-muted-foreground">{pad2(i + 1)}</span>
-                  <span className="num text-[12px] text-clay-ink">{cmd.slash}</span>
-                </span>
-                <span className="font-display text-[1.0625rem] leading-[1.22] text-foreground">
-                  {cmd.label}
-                </span>
-              </button>
-            </li>
-          ))}
-        </ol>
-        <ul className="mt-4">
-          {LIVE_EXAMPLES.map((q) => (
-            <li key={q} className="border-b border-border-subtle last:border-b-0">
-              <button
-                onClick={() => submitQuery(q)}
-                className="group flex w-full items-center gap-3 py-2.5 text-left text-[14px] text-ink-soft transition-colors duration-200 hover:text-foreground"
-              >
-                <Sparkles aria-hidden className="h-3.5 w-3.5 shrink-0 text-border-strong transition-colors group-hover:text-clay" />
-                <span className="flex-1">{q}</span>
-                <ArrowRight aria-hidden className="h-3.5 w-3.5 shrink-0 opacity-0 transition-opacity group-hover:opacity-100" />
-              </button>
-            </li>
-          ))}
-        </ul>
-      </Section>
+        {/* Client words */}
+        <Section
+          title="What clients say"
+          id="reviews"
+          action={
+            <button
+              type="button"
+              onClick={() => ask('What do clients say about you?')}
+              className="press flex items-center gap-1 text-[16px] text-muted-foreground hover:text-foreground"
+            >
+              All reviews <ArrowRight className="h-4 w-4" aria-hidden />
+            </button>
+          }
+        >
+          <figure>
+            <blockquote className="hang measure text-[1.625rem] leading-[1.35] text-foreground">
+              “{lead.text}”
+            </blockquote>
+            <figcaption className="mt-4 text-[16px] text-muted-foreground">
+              <span className="font-semibold text-foreground">{lead.author}</span> · {lead.engagement} ·{' '}
+              <span className="num">{lead.date}</span>
+            </figcaption>
+          </figure>
+          <ul className="mt-8 grid gap-1 sm:grid-cols-2">
+            {shortQuotes.map((q) => (
+              <li key={q.text} className="bg-card p-5">
+                <p className="text-[16px] leading-relaxed text-foreground">“{q.text}”</p>
+                <p className="mt-2 text-[13px] text-muted-foreground">
+                  {q.engagement} · <span className="num">{q.date}</span>
+                </p>
+              </li>
+            ))}
+          </ul>
+          <p className="mt-5 text-[16px] text-ink-soft">
+            Rated <span className="num font-semibold text-foreground">{reviews.rating} out of 5</span> by{' '}
+            {reviews.ratings.map((r) => r.client).join(', ')} · {reviews.summary}.
+          </p>
+        </Section>
 
-      {/* ── Close ────────────────────────────────────────── */}
+        {/* Ask me */}
+        <Section
+          title="Ask me anything"
+          id="ask"
+          action={
+            <button
+              onClick={onOpenCommand}
+              className="press flex items-center gap-2 text-[16px] text-muted-foreground hover:text-foreground"
+            >
+              Every command <kbd className="kbd">⌘K</kbd>
+            </button>
+          }
+        >
+          <p className="measure mb-5 text-[16px] leading-relaxed text-ink-soft">
+            This site is a conversation. The cards below answer instantly; anything
+            you type goes to a live model that answers as me.
+          </p>
+          <ul className="grid grid-cols-2 gap-1 sm:grid-cols-4">
+            {index.map((cmd) => (
+              <li key={cmd.id} className="flex">
+                <button
+                  onClick={() => ask(cmd.payload || cmd.label)}
+                  className="group flex min-h-[7.5rem] w-full flex-col justify-between gap-3 bg-card p-4 text-left transition-colors duration-200 hover:bg-sunken focus-visible:z-10 focus-visible:outline-offset-[-2px]"
+                >
+                  <span className="text-[13px] text-muted-foreground">{cmd.slash}</span>
+                  <span className="text-[16px] font-semibold leading-snug text-foreground">
+                    {cmd.label}
+                  </span>
+                </button>
+              </li>
+            ))}
+          </ul>
+          <ul className="mt-5 flex flex-col gap-1">
+            {LIVE_EXAMPLES.map((q) => (
+              <li key={q}>
+                <button
+                  onClick={() => submitQuery(q)}
+                  className="group flex w-full items-center gap-3 px-1 py-2.5 text-left text-[16px] text-ink-soft transition-colors duration-200 hover:text-foreground"
+                >
+                  <Sparkles aria-hidden className="h-4 w-4 shrink-0 text-muted-foreground" />
+                  <span className="flex-1">{q}</span>
+                  <ArrowRight aria-hidden className="h-4 w-4 shrink-0 opacity-0 transition-opacity group-hover:opacity-100" />
+                </button>
+              </li>
+            ))}
+          </ul>
+        </Section>
+      </div>
+
+      {/* ── Close: the name again, inverted ─────────────── */}
       <section
         aria-labelledby="close-heading"
-        className="mt-14 rounded-lg bg-[#141413] px-6 py-8 text-[#f3f0e8] sm:px-8 sm:py-10 dark:border dark:border-border dark:bg-sunken"
+        className="on-field mt-24 overflow-hidden bg-field px-5 pt-5 pb-6 text-field-ink sm:px-8"
       >
-        <h2 id="close-heading" className="font-display text-[2rem] leading-[1.05] tracking-[-0.03em] sm:text-[2.5rem]">
-          Have something to build?
-        </h2>
-        <p className="measure mt-3 text-[15px] leading-relaxed text-[#f3f0e8]/75">
-          {availability.headline}. Send me the shape of it and I&apos;ll reply
-          within 0–4 hours with questions and an honest fit check.
+        <p aria-hidden className="close-name font-display whitespace-nowrap text-field-ink">
+          {name}
         </p>
-        <div className="mt-6 flex flex-wrap gap-2.5">
-          <button type="button" onClick={onHire} aria-haspopup="dialog" className="btn-clay h-11 px-5 text-[15px]">
-            Hire me
-            <ArrowUpRight className="h-4 w-4" aria-hidden />
-          </button>
-          <a
-            href={`mailto:${personal.email}`}
-            className="inline-flex h-11 items-center rounded-md border border-[#f3f0e8]/30 px-5 text-[15px] font-medium text-[#f3f0e8] transition-colors hover:border-[#f3f0e8]/60"
-          >
-            {personal.email}
-          </a>
+        <div className="mx-auto mt-14 max-w-3xl sm:px-6">
+          <h2 id="close-heading" className="font-display text-[2.5rem] leading-[0.92]">
+            Have something to build?
+          </h2>
+          <p className="measure mt-4 text-[16px] leading-relaxed text-field-ink">
+            {availability.headline}. Send me the shape of it and I&apos;ll reply
+            within 0–4 hours with questions and an honest fit check.
+          </p>
+          <div className="mt-6 flex flex-wrap gap-2.5">
+            <button type="button" onClick={onHire} aria-haspopup="dialog" className="btn-clay h-12 px-5 text-[16px]">
+              Hire me
+              <ArrowUpRight className="h-4 w-4" aria-hidden />
+            </button>
+            <a href={`mailto:${personal.email}`} className="btn-line h-12 px-5 text-[16px]">
+              {personal.email}
+            </a>
+          </div>
         </div>
+        <p className="mx-auto mt-14 max-w-3xl text-[13px] text-field-muted sm:px-6">
+          Hero photograph:{' '}
+          <a
+            href={HERO_PHOTO.href}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="underline underline-offset-4 hover:text-field-ink"
+          >
+            {HERO_PHOTO.credit}
+          </a>
+          .
+        </p>
       </section>
 
       <ProjectDialog
@@ -429,24 +419,21 @@ const ChatLanding: React.FC<ChatLandingProps> = ({
 };
 
 function Section({
-  index,
   title,
   id,
   action,
   children,
 }: {
-  index: number;
   title: string;
   id: string;
   action?: React.ReactNode;
   children: React.ReactNode;
 }) {
   return (
-    <section aria-labelledby={`${id}-heading`} className="mt-14">
-      <div className="mb-4 flex items-baseline justify-between gap-4">
-        <h2 id={`${id}-heading`} className="meta text-muted-foreground">
-          <span className="num text-clay-ink">{pad2(index)}</span>{' '}
-          <span className="text-border-strong">/</span> {title}
+    <section aria-labelledby={`${id}-heading`} id={id} className="mt-20 scroll-mt-6">
+      <div className="mb-6 flex flex-wrap items-end justify-between gap-x-4 gap-y-2">
+        <h2 id={`${id}-heading`} className="font-display text-[2.5rem] leading-[0.92] text-foreground">
+          {title}
         </h2>
         {action}
       </div>
@@ -458,12 +445,12 @@ function Section({
 function Metrics({ project }: { project: Project }) {
   if (!project.metrics?.length) return null;
   return (
-    <span className="flex flex-wrap gap-x-5 gap-y-2 border-l-2 border-clay py-0.5 pl-3">
+    <span className="flex flex-wrap gap-x-5 gap-y-2 bg-sunken px-3 py-2">
       {project.metrics.map((m) => {
         const { figure, caption } = splitMetric(m);
         return (
           <span key={m} className="flex items-baseline gap-1.5">
-            {figure && <span className="num text-[1.0625rem] leading-none text-foreground">{figure}</span>}
+            {figure && <span className="num text-[16px] font-semibold leading-none text-foreground">{figure}</span>}
             <span className="text-[13px] text-muted-foreground">{caption}</span>
           </span>
         );
@@ -478,9 +465,9 @@ function WorkTile({ project, onOpen }: { project: Project; onOpen: () => void })
       type="button"
       onClick={onOpen}
       aria-haspopup="dialog"
-      className="group flex w-full flex-col overflow-hidden rounded-lg border border-border bg-card text-left transition-colors hover:border-border-strong"
+      className="group flex w-full flex-col bg-card text-left transition-colors hover:bg-sunken"
     >
-      <span className="relative block aspect-[4/3] overflow-hidden border-b border-border bg-sunken">
+      <span className="relative block aspect-[4/3] overflow-hidden bg-sunken">
         <Image
           src={projectCover(project)}
           alt={`${project.title} — cover`}
@@ -491,11 +478,11 @@ function WorkTile({ project, onOpen }: { project: Project; onOpen: () => void })
       </span>
       <span className="flex flex-1 flex-col gap-2.5 p-5">
         <span className="meta flex items-center justify-between gap-2 text-muted-foreground">
-          <span className="truncate text-clay-ink">{project.category}</span>
-          <span className="num shrink-0 normal-case tracking-normal">{project.date}</span>
+          <span className="truncate">{project.category}</span>
+          <span className="num shrink-0">{project.date}</span>
         </span>
-        <span className="font-display text-[1.25rem] leading-[1.15] text-foreground">{project.title}</span>
-        <span className="line-clamp-2 text-[14px] leading-relaxed text-ink-soft">{project.description}</span>
+        <span className="font-display text-[1.625rem] leading-[0.95] text-foreground">{project.title}</span>
+        <span className="line-clamp-2 text-[16px] leading-relaxed text-ink-soft">{project.description}</span>
         <span className="mt-auto pt-1">
           <Metrics project={project} />
         </span>

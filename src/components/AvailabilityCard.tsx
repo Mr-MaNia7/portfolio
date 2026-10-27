@@ -9,7 +9,6 @@ import {
   Artifact,
   ArtifactHeader,
   ArtifactSection,
-  pad2,
 } from '@/components/artifact/artifact';
 import { CopyEmail } from '@/components/artifact/copy-email';
 
@@ -48,15 +47,6 @@ const AvailabilityCard = () => {
   return (
     <Artifact label="Availability">
       <ArtifactHeader
-        kicker={
-          <span className="flex items-center gap-2">
-            {availability.open && <span className="status-dot" aria-hidden />}
-            {availability.open
-              ? 'Accepting engagements'
-              : 'Not taking new work'}
-            <span className="text-border-strong">{'//'}</span> availability.json
-          </span>
-        }
         title={availability.open ? 'Commission a build.' : 'Currently booked.'}
         standfirst={availability.headline + '. ' + availability.workStyle}
       />
@@ -73,16 +63,16 @@ const AvailabilityCard = () => {
           />
           <span className="meta text-muted-foreground">Verified on Upwork</span>
         </div>
-        <dl className="grid grid-cols-2 gap-px border-t border-border-subtle bg-border-subtle sm:grid-cols-4">
+        <dl className="grid grid-cols-2 gap-1 border-t border-border-subtle bg-border-subtle sm:grid-cols-4">
           {stats.map((s) => (
             <div
               key={s.label}
               className="flex flex-col gap-1.5 bg-card px-5 py-4 sm:px-7"
             >
-              <dt className="text-[12px] leading-snug text-muted-foreground">
+              <dt className="text-[13px] leading-snug text-muted-foreground">
                 {s.label}
               </dt>
-              <dd className="num order-first text-[1.375rem] leading-none text-foreground">
+              <dd className="num order-first text-[1.625rem] leading-none text-foreground">
                 {s.value}
               </dd>
             </div>
@@ -98,7 +88,7 @@ const AvailabilityCard = () => {
               className="grid gap-1 py-2.5 first:pt-0 last:pb-0 sm:grid-cols-[9rem_1fr] sm:gap-6"
             >
               <dt className="meta pt-[3px] text-muted-foreground">{term}</dt>
-              <dd className="text-[14.5px] leading-relaxed text-foreground">
+              <dd className="text-[16px] leading-relaxed text-foreground">
                 {detail}
               </dd>
             </div>
@@ -113,10 +103,7 @@ const AvailabilityCard = () => {
               key={area}
               className="flex items-baseline gap-4 border-b border-border-subtle py-2.5 first:pt-0 last:border-b-0 last:pb-0"
             >
-              <span className="num text-[11px] text-clay-ink">
-                {pad2(i + 1)}
-              </span>
-              <span className="font-display text-[1.125rem] leading-snug text-foreground">
+              <span className="font-display text-[1.25rem] leading-snug text-foreground">
                 {area}
               </span>
             </li>
@@ -125,10 +112,10 @@ const AvailabilityCard = () => {
       </ArtifactSection>
 
       <ArtifactSection index={4}>
-        <p className="measure text-[15px] leading-[1.7] text-ink-soft">
+        <p className="measure text-[16px] leading-[1.7] text-ink-soft">
           {availability.goals}
         </p>
-        <p className="font-display measure mt-3 text-[15px] leading-relaxed text-muted-foreground italic">
+        <p className="measure mt-3 text-[16px] leading-relaxed text-muted-foreground">
           {availability.note}
         </p>
       </ArtifactSection>

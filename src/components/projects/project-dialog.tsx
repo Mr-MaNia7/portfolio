@@ -6,7 +6,7 @@ import Image from 'next/image';
 import { useEffect, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
 import type { Project } from '@/types/portfolio';
-import { pad2, splitMetric } from '@/components/artifact/artifact';
+import { splitMetric } from '@/components/artifact/artifact';
 
 const EASE = [0.22, 1, 0.36, 1] as const;
 
@@ -117,7 +117,7 @@ export function ProjectDialog({
         >
           <div
             aria-hidden
-            className="absolute inset-0 bg-[#141413]/45 dark:bg-black/65"
+            className="absolute inset-0 bg-[#0b151b]/45 dark:bg-black/65"
             onClick={onClose}
           />
           <motion.div
@@ -135,17 +135,13 @@ export function ProjectDialog({
             }}
             transition={{ duration: 0.24, ease: EASE }}
             style={{ transformOrigin: '50% 0%' }}
-            className="scrollbar-subtle relative max-h-[92vh] w-full max-w-3xl overflow-y-auto rounded-xl border border-border-strong bg-card shadow-[var(--shadow-float)] sm:max-h-[88vh]"
+            className="scrollbar-subtle relative max-h-[92vh] w-full max-w-3xl overflow-y-auto rounded-xl border border-transparent bg-card shadow-[var(--shadow-float)] sm:max-h-[88vh]"
           >
             {/* Header rail */}
             <div className="sticky top-0 z-10 flex items-center justify-between gap-3 border-b border-border-subtle bg-card px-5 py-2.5 sm:px-8">
               <p className="meta truncate text-muted-foreground">
-                <span className="num">{pad2(index + 1)}</span>
-                <span className="text-border-strong">
-                  {' '}
-                  / {pad2(projects.length)}{' '}
-                </span>
-                <span className="text-border-strong">{'//'}</span> Project dossier
+                Project <span className="num">{index + 1}</span> of{' '}
+                <span className="num">{projects.length}</span>
               </p>
               <div className="flex shrink-0 items-center gap-1">
                 {primaryLink && (
@@ -156,7 +152,7 @@ export function ProjectDialog({
                       rel="noopener noreferrer"
                       tabIndex={showTopLink ? undefined : -1}
                       aria-hidden={!showTopLink}
-                      className={`btn-ink h-8 gap-1.5 px-3 text-[12.5px] transition-[opacity,transform] duration-200 ease-[cubic-bezier(0.22,1,0.36,1)] ${
+                      className={`btn-ink h-8 gap-1.5 px-3 text-[13px] transition-[opacity,transform] duration-200 ease-[cubic-bezier(0.22,1,0.36,1)] ${
                         showTopLink ? '' : 'pointer-events-none -translate-y-1 opacity-0'
                       }`}
                     >
@@ -200,7 +196,7 @@ export function ProjectDialog({
                   type="button"
                   onClick={onClose}
                   aria-label="Close project"
-                  className="press flex h-8 items-center gap-1.5 rounded-md px-2 text-[12px] text-muted-foreground hover:bg-secondary hover:text-foreground"
+                  className="press flex h-8 items-center gap-1.5 rounded-md px-2 text-[13px] text-muted-foreground hover:bg-secondary hover:text-foreground"
                 >
                   <kbd className="kbd hidden sm:inline-flex">esc</kbd>
                   <X className="h-4 w-4" />
@@ -261,20 +257,20 @@ function ProjectBody({
         <p className="meta text-clay-ink">{project.category}</p>
         <h2
           id="project-dialog-title"
-          className="font-display mt-2 text-[2rem] leading-[1.05] tracking-[-0.03em] text-foreground sm:text-[2.5rem]"
+          className="font-display mt-2 text-[2.5rem] leading-[1.05] text-foreground sm:text-[2.5rem]"
         >
           {project.title}
         </h2>
 
         {/* Facts */}
-        <dl className="mt-6 grid grid-cols-2 gap-px overflow-hidden rounded-md border border-border bg-border-subtle sm:grid-cols-4">
+        <dl className="mt-6 grid grid-cols-2 gap-1 overflow-hidden rounded-md border border-border bg-border-subtle sm:grid-cols-4">
           {facts.map(({ term, detail }) => (
             <div
               key={term}
               className="flex flex-col gap-1 bg-sunken px-3.5 py-3"
             >
               <dt className="meta text-muted-foreground">{term}</dt>
-              <dd className="num text-[12.5px] leading-snug text-foreground">
+              <dd className="num text-[13px] leading-snug text-foreground">
                 {detail}
               </dd>
             </div>
@@ -291,17 +287,17 @@ function ProjectBody({
             <h3 id="impact-h" className="meta mb-3 text-muted-foreground">
               Impact
             </h3>
-            <ul className="grid gap-px overflow-hidden rounded-md border border-border bg-border-subtle sm:grid-cols-2">
+            <ul className="grid gap-1 overflow-hidden rounded-md border border-border bg-border-subtle sm:grid-cols-2">
               {metrics.map((m, i) => (
                 <li
                   key={i}
-                  className={`flex flex-col gap-1.5 bg-card px-4 py-4 ${
+                  className={`flex flex-col gap-1.5 bg-sunken px-4 py-4 ${
                     metrics.length % 2 === 1 && i === metrics.length - 1 ? 'sm:col-span-2' : ''
                   }`}
                 >
                   {m.figure ? (
                     <>
-                      <span className="num text-[1.75rem] leading-none text-foreground">
+                      <span className="num text-[1.625rem] leading-none text-foreground">
                         {m.figure}
                       </span>
                       {m.caption && (
@@ -311,7 +307,7 @@ function ProjectBody({
                       )}
                     </>
                   ) : (
-                    <span className="font-display text-[1.125rem] leading-snug text-foreground">
+                    <span className="font-display text-[1.25rem] leading-snug text-foreground">
                       {m.caption}
                     </span>
                   )}
@@ -331,11 +327,8 @@ function ProjectBody({
               {project.highlights.map((h, i) => (
                 <li
                   key={h}
-                  className="flex gap-4 border-b border-border-subtle py-2.5 text-[15px] leading-snug text-foreground last:border-b-0"
+                  className="flex gap-4 border-b border-border-subtle py-2.5 text-[16px] leading-snug text-foreground last:border-b-0"
                 >
-                  <span className="num pt-0.5 text-[11px] text-clay-ink">
-                    {pad2(i + 1)}
-                  </span>
                   {h}
                 </li>
               ))}
@@ -351,7 +344,7 @@ function ProjectBody({
             </h3>
             <ul className="flex flex-wrap gap-1.5">
               {project.techStack.map((t) => (
-                <li key={t} className="tag !h-6 !px-2 !text-[12px]">
+                <li key={t} className="tag !h-6 !px-2 !text-[13px]">
                   {t}
                 </li>
               ))}

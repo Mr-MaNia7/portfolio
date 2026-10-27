@@ -1,30 +1,25 @@
 import { Analytics } from '@vercel/analytics/react';
 import type { Metadata, Viewport } from 'next';
-import { Inter, Newsreader, JetBrains_Mono } from 'next/font/google';
+import { Big_Shoulders, Public_Sans } from 'next/font/google';
 import { cn } from '@/lib/utils';
 import { ThemeProvider } from '@/components/theme-provider';
 import { Toaster } from '@/components/ui/sonner';
 import { getConfig } from '@/lib/config-loader';
 import './globals.css';
 
-const inter = Inter({
+// Two faces only: a tall civic gothic for the name and headings, a plain
+// public-service sans for everything you read.
+const bigShoulders = Big_Shoulders({
   subsets: ['latin'],
-  variable: '--font-inter',
+  weight: '800',
+  variable: '--font-big-shoulders',
   display: 'swap',
 });
 
-const newsreader = Newsreader({
+const publicSans = Public_Sans({
   subsets: ['latin'],
-  variable: '--font-newsreader',
-  display: 'swap',
-  style: ['normal', 'italic'],
-  // Optical sizing: tighter, higher-contrast cuts at display sizes.
-  axes: ['opsz'],
-});
-
-const jetbrainsMono = JetBrains_Mono({
-  subsets: ['latin'],
-  variable: '--font-jetbrains',
+  weight: ['400', '600'],
+  variable: '--font-public-sans',
   display: 'swap',
 });
 
@@ -97,8 +92,8 @@ export const viewport: Viewport = {
   initialScale: 1,
   maximumScale: 1,
   themeColor: [
-    { media: '(prefers-color-scheme: light)', color: '#faf9f5' },
-    { media: '(prefers-color-scheme: dark)', color: '#161412' },
+    { media: '(prefers-color-scheme: light)', color: '#1f3038' },
+    { media: '(prefers-color-scheme: dark)', color: '#0b151b' },
   ],
 };
 
@@ -162,9 +157,8 @@ export default function RootLayout({
       <body
         className={cn(
           'min-h-screen bg-background font-sans antialiased',
-          inter.variable,
-          newsreader.variable,
-          jetbrainsMono.variable
+          bigShoulders.variable,
+          publicSans.variable
         )}
       >
         <ThemeProvider

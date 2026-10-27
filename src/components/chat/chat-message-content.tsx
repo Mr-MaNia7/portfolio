@@ -79,7 +79,7 @@ const CodeBlock = ({ content }: { content: string }) => {
 const MARKDOWN: Components = {
   p: ({ children }) => <p className="my-3 first:mt-0 last:mb-0">{children}</p>,
   h1: ({ children }) => (
-    <h3 className="font-display mt-6 mb-2 text-[1.375rem] leading-tight text-foreground first:mt-0">
+    <h3 className="font-display mt-6 mb-2 text-[1.625rem] leading-tight text-foreground first:mt-0">
       {children}
     </h3>
   ),
@@ -89,7 +89,7 @@ const MARKDOWN: Components = {
     </h3>
   ),
   h3: ({ children }) => (
-    <h4 className="mt-5 mb-1.5 text-[15px] font-semibold text-foreground first:mt-0">
+    <h4 className="mt-5 mb-1.5 text-[16px] font-semibold text-foreground first:mt-0">
       {children}
     </h4>
   ),
@@ -108,10 +108,10 @@ const MARKDOWN: Components = {
     <strong className="font-semibold text-foreground">{children}</strong>
   ),
   em: ({ children }) => (
-    <em className="font-display text-[1.05em] italic">{children}</em>
+    <em className="font-semibold not-italic">{children}</em>
   ),
   blockquote: ({ children }) => (
-    <blockquote className="font-display hang my-4 border-l-2 border-clay pl-4 text-[1.125rem] leading-snug text-ink-soft italic">
+    <blockquote className="hang my-4 bg-sunken px-4 py-3 text-[1.25rem] leading-snug text-ink-soft">
       {children}
     </blockquote>
   ),
@@ -123,7 +123,7 @@ const MARKDOWN: Components = {
   ),
   table: ({ children }) => (
     <div className="scrollbar-subtle my-4 overflow-x-auto rounded-md border border-border">
-      <table className="w-full border-collapse text-left text-[14px]">
+      <table className="w-full border-collapse text-left text-[16px]">
         {children}
       </table>
     </div>
@@ -154,7 +154,7 @@ export default function ChatMessageContent({
   message,
 }: ChatMessageContentProps) {
   return (
-    <div className="measure w-full text-[15.5px] leading-[1.7] text-foreground">
+    <div className="measure w-full text-[16px] leading-[1.7] text-foreground">
       {message.parts?.map((part, partIndex) => {
         if (part.type !== 'text' || !part.text) return null;
 

@@ -2,8 +2,8 @@ import { cn } from '@/lib/utils';
 import type { CSSProperties, ReactNode } from 'react';
 
 /**
- * The sheet every tool-rendered card is printed on: one warm step above the
- * ground, a 1px hairline, a 12px corner. No shadow — it rests on the desk.
+ * The sheet every tool-rendered card is printed on: one tone step above the
+ * ground, square corners, no outline and no shadow.
  */
 export function Artifact({
   children,
@@ -19,7 +19,7 @@ export function Artifact({
     <section
       aria-label={label}
       className={cn(
-        'reveal-sheet w-full overflow-hidden rounded-lg border border-border bg-card text-card-foreground',
+        'reveal-sheet w-full overflow-hidden bg-card text-card-foreground',
         className
       )}
     >
@@ -30,13 +30,13 @@ export function Artifact({
 
 /** Kicker + serif title + standfirst, with an optional aside on the right. */
 export function ArtifactHeader({
-  kicker,
   title,
   standfirst,
   aside,
   className,
 }: {
-  kicker: ReactNode;
+  /** Retired: section labels were mono marginalia; the h2 carries the section now. */
+  kicker?: ReactNode;
   title: ReactNode;
   standfirst?: ReactNode;
   aside?: ReactNode;
@@ -50,12 +50,11 @@ export function ArtifactHeader({
       )}
     >
       <div className="min-w-0 flex-1 basis-72">
-        <p className="meta text-muted-foreground">{kicker}</p>
-        <h2 className="font-display mt-2 text-[1.75rem] leading-[1.08] text-foreground sm:text-[2rem]">
+        <h2 className="font-display text-[1.625rem] leading-[1.08] text-foreground sm:text-[2.5rem]">
           {title}
         </h2>
         {standfirst && (
-          <p className="measure mt-2 text-[15px] leading-relaxed text-ink-soft">
+          <p className="measure mt-2 text-[16px] leading-relaxed text-ink-soft">
             {standfirst}
           </p>
         )}
@@ -107,6 +106,10 @@ export function splitMetric(metric: string): {
   const m = metric.match(
     /^([~≈$]?\d[\d.,]*\s?(?:%|★|\+|x|k|K|M)*\+?)\s*[—–-]?\s*(.*)$/
   );
-  if (!m) return { caption: metric };
-  return { figure: m[1].trim(), caption: m[2].trim() };
+  if (!m) return { caption: deStar(metric) };
+  return { figure: deStar(m[1].trim()), caption: deStar(m[2].trim()) };
 }
+
+/** Ratings are written "5.0★" in the config; set them in words instead. */
+export const deStar = (t: string) =>
+  t.replace(/(\d(?:\.\d)?)\s?★/g, '$1/5').replace(/★/g, '');

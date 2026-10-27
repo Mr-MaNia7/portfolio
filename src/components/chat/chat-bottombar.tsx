@@ -222,7 +222,7 @@ export default function ChatBottombar({
             exit={{ opacity: 0, y: 4, transition: { duration: 0.12 } }}
             transition={{ duration: 0.18, ease: EASE }}
             style={{ transformOrigin: '50% 100%' }}
-            className="absolute bottom-[calc(100%+8px)] left-0 z-30 w-full overflow-hidden rounded-lg border border-border-strong bg-popover shadow-[var(--shadow-float)]"
+            className="absolute bottom-[calc(100%+8px)] left-0 z-30 w-full overflow-hidden rounded-lg border border-transparent bg-popover shadow-[var(--shadow-float)]"
           >
             <div className="flex items-center justify-between border-b border-border-subtle px-3.5 py-2">
               <span className="meta text-muted-foreground">Commands</span>
@@ -249,18 +249,18 @@ export default function ChatBottombar({
                     onMouseEnter={() => setActive(i)}
                     onMouseDown={(e) => e.preventDefault()}
                     onClick={() => runSlash(cmd)}
-                    className={`flex cursor-pointer items-center gap-3 rounded-md px-3 py-2 text-[14px] transition-colors duration-150 ${
+                    className={`flex cursor-pointer items-center gap-3 rounded-md px-3 py-2 text-[16px] transition-colors duration-150 ${
                       selected
                         ? 'bg-secondary text-foreground shadow-[inset_2px_0_0_var(--clay)]'
                         : 'text-ink-soft'
                     }`}
                   >
-                    <span className="num w-[5.5rem] shrink-0 text-[12.5px] text-clay-ink">
+                    <span className="num w-[5.5rem] shrink-0 text-[13px] text-clay-ink">
                       {cmd.slash}
                     </span>
                     <span className="min-w-0 flex-1 truncate">{cmd.label}</span>
                     {cmd.hint && (
-                      <span className="hidden max-w-[11rem] shrink-0 truncate text-[12px] text-muted-foreground sm:block">
+                      <span className="hidden max-w-[11rem] shrink-0 truncate text-[13px] text-muted-foreground sm:block">
                         {cmd.hint}
                       </span>
                     )}
@@ -280,12 +280,12 @@ export default function ChatBottombar({
       </AnimatePresence>
 
       <form onSubmit={handleSubmit} className="w-full">
-        <div className="rounded-lg border border-border-strong bg-card transition-[border-color,box-shadow] duration-200 focus-within:border-clay">
+        <div className="border border-input bg-card transition-[border-color,box-shadow] duration-200 focus-within:border-clay">
           {/* Input row */}
           <div className="relative flex items-start gap-2.5 px-4 pt-3.5 pb-2">
             <span
               aria-hidden
-              className="num select-none pt-[3px] text-[14px] leading-6 text-clay"
+              className="num select-none pt-[3px] text-[16px] leading-6 text-clay"
             >
               ›
             </span>
@@ -295,7 +295,7 @@ export default function ChatBottombar({
                 <span
                   key={exampleIdx}
                   aria-hidden
-                  className="reveal pointer-events-none absolute inset-x-0 top-1 truncate text-[15px] leading-6 text-muted-foreground"
+                  className="reveal pointer-events-none absolute inset-x-0 top-1 truncate text-[16px] leading-6 text-muted-foreground"
                 >
                   {currentExample}
                 </span>
@@ -303,7 +303,7 @@ export default function ChatBottombar({
               {input.length === 0 && isToolInProgress && (
                 <span
                   aria-hidden
-                  className="pointer-events-none absolute inset-x-0 top-1 text-[15px] leading-6 text-muted-foreground"
+                  className="pointer-events-none absolute inset-x-0 top-1 text-[16px] leading-6 text-muted-foreground"
                 >
                   One moment…
                 </span>
@@ -325,7 +325,7 @@ export default function ChatBottombar({
                     ? `slash-opt-${slashMatches[active]?.id}`
                     : undefined
                 }
-                className="scrollbar-subtle relative block max-h-40 w-full resize-none bg-transparent py-1 text-[15px] leading-6 text-foreground focus:outline-none focus-visible:outline-none disabled:cursor-not-allowed"
+                className="scrollbar-subtle relative block max-h-40 w-full resize-none bg-transparent py-1 text-[16px] leading-6 text-foreground focus:outline-none focus-visible:outline-none disabled:cursor-not-allowed"
                 disabled={isToolInProgress}
               />
             </div>

@@ -22,7 +22,7 @@ export function Presentation() {
       detail: (
         <>
           {personal.location}
-          <span className="num ml-2 text-[12px] text-muted-foreground">
+          <span className="num ml-2 text-[13px] text-muted-foreground">
             {personal.timezone}
           </span>
         </>
@@ -30,7 +30,7 @@ export function Presentation() {
     },
     {
       term: 'Standing',
-      detail: <UpworkBadge className="!text-[14px] !text-foreground" />,
+      detail: <UpworkBadge className="!text-[16px] !text-foreground" />,
     },
     {
       term: 'Education',
@@ -42,11 +42,6 @@ export function Presentation() {
   return (
     <Artifact label="About">
       <ArtifactHeader
-        kicker={
-          <>
-            About <span className="text-border-strong">{'//'}</span> about.md
-          </>
-        }
         title={profile.name}
         standfirst={profile.title}
         aside={
@@ -63,13 +58,13 @@ export function Presentation() {
       />
 
       <ArtifactSection index={1}>
-        <p className="font-display hang measure text-[1.25rem] leading-[1.45] text-foreground sm:text-[1.375rem]">
+        <p className="hang measure text-[1.25rem] leading-[1.5] text-foreground sm:text-[1.625rem]">
           {lede}
         </p>
         {rest.map((para) => (
           <p
             key={para.slice(0, 24)}
-            className="measure mt-4 text-[15px] leading-[1.7] text-ink-soft"
+            className="measure mt-4 text-[16px] leading-[1.7] text-ink-soft"
           >
             {para}
           </p>
@@ -84,7 +79,7 @@ export function Presentation() {
               className="grid gap-1 py-2.5 first:pt-0 last:pb-0 sm:grid-cols-[9rem_1fr] sm:gap-6"
             >
               <dt className="meta pt-[3px] text-muted-foreground">{term}</dt>
-              <dd className="text-[14.5px] leading-relaxed text-foreground">
+              <dd className="text-[16px] leading-relaxed text-foreground">
                 {detail}
               </dd>
             </div>
@@ -93,7 +88,7 @@ export function Presentation() {
       </ArtifactSection>
 
       <dl
-        className="reveal grid grid-cols-2 gap-px border-t border-border-subtle bg-border-subtle sm:grid-cols-4"
+        className="reveal grid grid-cols-2 gap-1 border-t border-border-subtle bg-border-subtle sm:grid-cols-4"
         style={{ '--i': 3 } as React.CSSProperties}
       >
         {stats.map((s) => (
@@ -101,7 +96,7 @@ export function Presentation() {
             key={s.label}
             className="flex flex-col gap-1.5 bg-sunken px-5 py-4 sm:px-7"
           >
-            <dt className="text-[12px] leading-snug text-muted-foreground">
+            <dt className="text-[13px] leading-snug text-muted-foreground">
               {s.label}
             </dt>
             <dd className="num order-first text-[1.25rem] leading-none text-foreground">

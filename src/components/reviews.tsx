@@ -8,7 +8,6 @@ import {
   Artifact,
   ArtifactHeader,
   ArtifactSection,
-  pad2,
 } from '@/components/artifact/artifact';
 
 function Stars({ rating, className = '' }: { rating: number; className?: string }) {
@@ -22,7 +21,7 @@ function Stars({ rating, className = '' }: { rating: number; className?: string 
         <Star
           key={i}
           aria-hidden
-          className={`h-3.5 w-3.5 ${i < Math.round(rating) ? 'fill-clay text-clay' : 'text-border-strong'}`}
+          className={`h-3.5 w-3.5 ${i < Math.round(rating) ? 'fill-clay text-clay' : 'text-muted-foreground'}`}
         />
       ))}
     </span>
@@ -45,17 +44,11 @@ export function Reviews() {
   return (
     <Artifact label="Reviews">
       <ArtifactHeader
-        kicker={
-          <>
-            Reviews <span className="text-border-strong">{'//'}</span>{' '}
-            upwork.json
-          </>
-        }
         title="In my clients' words."
         standfirst={`${reviews.summary}. Quoted verbatim — nothing edited.`}
         aside={
           <div className="text-right">
-            <p className="num text-[2.25rem] leading-none text-foreground">
+            <p className="num text-[2.5rem] leading-none text-foreground">
               {reviews.rating}
             </p>
             <Stars rating={Number(reviews.rating)} className="mt-1.5" />
@@ -71,11 +64,11 @@ export function Reviews() {
         aria-label="Client quotes"
       >
         <div key={i} className="reveal" aria-live="polite">
-          <blockquote className="font-display hang measure text-[1.3125rem] leading-[1.42] text-foreground sm:text-[1.5rem]">
+          <blockquote className="hang measure font-semibold text-[1.25rem] leading-[1.42] text-foreground">
             “{quote.text}”
           </blockquote>
-          <figcaption className="mt-5 flex flex-wrap items-center gap-x-3 gap-y-1.5 text-[13.5px]">
-            <span className="font-medium text-foreground">
+          <figcaption className="mt-5 flex flex-wrap items-center gap-x-3 gap-y-1.5 text-[16px]">
+            <span className="font-semibold text-foreground">
               {quote.author}
               {quote.role && (
                 <span className="font-normal text-muted-foreground">, {quote.role}</span>
@@ -98,13 +91,13 @@ export function Reviews() {
                   onClick={() => setI(n)}
                   aria-current={n === i}
                   aria-label={`Quote ${n + 1}: ${q.engagement}`}
-                  className={`press num flex h-7 min-w-7 items-center justify-center rounded-sm px-1.5 text-[11px] ${
+                  className={`press num flex h-7 min-w-7 items-center justify-center rounded-sm px-1.5 text-[13px] ${
                     n === i
                       ? 'bg-primary text-primary-foreground'
                       : 'text-muted-foreground hover:bg-secondary hover:text-foreground'
                   }`}
                 >
-                  {pad2(n + 1)}
+                  {n + 1}
                 </button>
               </li>
             ))}
@@ -132,7 +125,7 @@ export function Reviews() {
 
       {/* Ratings without words */}
       <ArtifactSection label="Recent contracts, rated" index={2}>
-        <ul className="grid gap-px overflow-hidden rounded-md border border-border-subtle bg-border-subtle sm:grid-cols-3">
+        <ul className="grid gap-1 overflow-hidden rounded-md border border-border-subtle bg-border-subtle sm:grid-cols-3">
           {reviews.ratings.map((r) => (
             <li key={r.client} className="flex flex-col gap-1.5 bg-card p-4">
               <span className="flex items-center justify-between gap-2">
@@ -158,7 +151,7 @@ export function Reviews() {
           {reviews.endorsements.map((e) => (
             <li
               key={e.label}
-              className="grid grid-cols-[9.5rem_1fr_1.5rem] items-center gap-3 text-[13.5px] sm:grid-cols-[11rem_1fr_2rem]"
+              className="grid grid-cols-[9.5rem_1fr_1.5rem] items-center gap-3 text-[16px] sm:grid-cols-[11rem_1fr_2rem]"
             >
               <span className="text-foreground">{e.label}</span>
               <span className="h-1.5 overflow-hidden rounded-full bg-sunken">
@@ -167,7 +160,7 @@ export function Reviews() {
                   style={{ width: `${(e.count / maxEndorse) * 100}%` }}
                 />
               </span>
-              <span className="num text-right text-[12px] text-muted-foreground">
+              <span className="num text-right text-[13px] text-muted-foreground">
                 ×{e.count}
               </span>
             </li>

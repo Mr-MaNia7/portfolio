@@ -45,7 +45,7 @@ export default function HelperBoost({
             <button
               onClick={() => handleClick(cmd.payload || cmd.label)}
               title={cmd.label}
-              className="press num flex h-7 shrink-0 items-center rounded-md border border-border bg-card px-2.5 text-[12px] text-ink-soft hover:border-border-strong hover:text-foreground"
+              className="press num flex h-7 shrink-0 items-center rounded-md border border-border bg-card px-2.5 text-[13px] text-ink-soft hover:border-transparent hover:text-foreground"
             >
               <span className="text-clay-ink">/</span>
               {cmd.slash?.slice(1)}

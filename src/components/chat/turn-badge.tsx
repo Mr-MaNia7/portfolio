@@ -22,7 +22,7 @@ export function TurnHeader({
   return (
     <div className="flex items-center justify-between gap-3">
       <div className="flex min-w-0 items-center gap-2">
-        <span className="relative h-5 w-5 shrink-0 overflow-hidden rounded-sm dark:ring-1 dark:ring-border-strong">
+        <span className="relative h-5 w-5 shrink-0 overflow-hidden rounded-sm">
           <Image
             src={personal.avatar}
             alt=""
@@ -31,7 +31,7 @@ export function TurnHeader({
             className="object-cover"
           />
         </span>
-        <span className="text-[13px] font-medium text-foreground">
+        <span className="text-[13px] font-semibold text-foreground">
           {personal.shortName}
         </span>
         <span aria-hidden className="h-3 w-px bg-border" />
@@ -70,7 +70,7 @@ export function ToolPill({
     <div
       role="status"
       aria-live="polite"
-      className={`num inline-flex max-w-full items-center gap-2 overflow-hidden rounded-md border border-border-subtle bg-sunken py-1 pr-2.5 pl-2 text-[11.5px] text-muted-foreground ${
+      className={`num inline-flex max-w-full items-center gap-2 overflow-hidden rounded-md border border-border-subtle bg-sunken py-1 pr-2.5 pl-2 text-[13px] text-muted-foreground ${
         running ? 'scan-line' : ''
       }`}
     >
@@ -86,7 +86,7 @@ export function ToolPill({
               ? 'artifact'
               : 'rendered artifact'}
         </span>{' '}
-        <span className="text-border-strong">{'//'}</span>{' '}
+        <span className="text-muted-foreground">·</span>{' '}
         <span className="text-foreground">{meta.file}</span>
       </span>
       <span

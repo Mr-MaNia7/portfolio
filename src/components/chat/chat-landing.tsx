@@ -135,17 +135,18 @@ const ChatLanding: React.FC<ChatLandingProps> = ({
             to the picture, keeps them legible where they cross the photograph. */}
         <h1
           id="hero-heading"
-          className="order-2 mt-4 px-3 md:absolute md:right-8 md:bottom-9 md:left-0 md:mt-0 md:px-0 md:text-right"
+          className="monument-name monument-settle font-display order-2 mt-4 whitespace-nowrap px-3 text-field-ink md:absolute md:right-8 md:bottom-9 md:left-0 md:mt-0 md:px-0 md:text-right"
         >
-          <span className="monument-name monument-settle font-display block whitespace-nowrap text-field-ink">
+          {name}
+        </h1>
+        <div
+          aria-hidden
+          className="monument-clip pointer-events-none hidden md:absolute md:right-8 md:bottom-9 md:left-0 md:block md:text-right"
+        >
+          <span className="monument-name monument-settle font-display block whitespace-nowrap text-on-photo">
             {name}
           </span>
-          <span aria-hidden className="monument-clip pointer-events-none absolute inset-0 hidden md:block">
-            <span className="monument-name monument-settle font-display block whitespace-nowrap text-on-photo">
-              {name}
-            </span>
-          </span>
-        </h1>
+        </div>
       </section>
 
       {/* ── The calm column ─────────────────────────────── */}

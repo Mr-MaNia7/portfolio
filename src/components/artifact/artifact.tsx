@@ -108,5 +108,6 @@ export function splitMetric(metric: string): {
     /^([~≈$]?\d[\d.,]*\s?(?:%|★|\+|x|k|K|M)*\+?)\s*[—–-]?\s*(.*)$/
   );
   if (!m) return { caption: metric };
-  return { figure: m[1].trim(), caption: m[2].trim() };
+  // A rating reads "5.0/5", not a decorative star.
+  return { figure: m[1].trim().replace(/★$/, '/5'), caption: m[2].trim() };
 }

@@ -484,7 +484,7 @@ const Chat = () => {
           className={
             'relative z-30 shrink-0 bg-background pb-[env(safe-area-inset-bottom)]' +
             (isEmptyState
-              ? ' lg:absolute lg:bottom-3 lg:left-3 lg:w-[calc(50%-18px)]'
+              ? ' lg:absolute lg:bottom-0 lg:left-3 lg:w-[calc(50%-18px)] lg:pb-3'
               : '')
           }
         >

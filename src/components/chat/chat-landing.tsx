@@ -98,45 +98,49 @@ const ChatLanding: React.FC<ChatLandingProps> = ({
         />
         <figcaption className="absolute inset-x-0 bottom-6 lg:bottom-0 grid grid-cols-2 items-center gap-4 bg-background px-5 py-3 text-[13px] leading-snug sm:gap-6 sm:text-[16px] text-foreground sm:px-6">
           <span>
-            {personal.location.split(',')[0]} · {offset}, overlapping US &amp; EU hours
+            {personal.location.split(',')[0]} · {offset}
           </span>
           {availability.open && (
-            <span className="text-right">{availability.headline}</span>
+            <span className="text-right">{availability.headline.split(',')[0]}</span>
           )}
         </figcaption>
       </figure>
 
       {/* ── The sheet that scrolls ──────────────────────── */}
       <div className="relative z-10 -mt-6 bg-background lg:order-1 lg:mt-0 lg:pb-32">
+        {/* The wordmark row stays with the reader, so Hire me is always one click away. */}
+        <nav
+          aria-label="Landing"
+          className="sticky top-0 z-20 hidden h-24 items-center justify-between gap-4 bg-background px-10 text-[16px] lg:flex"
+        >
+          <button type="button" onClick={() => scrollTo('work')} className="press flex-1 text-left hover:text-clay-ink">
+            Work
+          </button>
+          <span className="font-display text-[1.5rem] leading-none whitespace-nowrap text-foreground">
+            {personal.name}
+          </span>
+          <span className="flex flex-1 items-center justify-end gap-1">
+            <button
+              type="button"
+              onClick={onOpenCommand}
+              aria-label="Open command menu"
+              aria-keyshortcuts="Meta+K Control+K"
+              className="press flex h-9 items-center gap-2 px-2 hover:text-clay-ink"
+            >
+              <Search className="h-4 w-4" aria-hidden />
+            </button>
+            <ThemeToggle className="!h-9 !w-9" />
+            <button type="button" onClick={onHire} aria-haspopup="dialog" className="btn-clay ml-1 h-10 shrink-0 px-4 text-[16px] whitespace-nowrap">
+              Hire me
+            </button>
+          </span>
+        </nav>
+
         {/* First screen */}
         <section
           aria-labelledby="hero-heading"
-          className="relative flex flex-col px-5 pt-10 pb-4 text-center sm:px-10 lg:min-h-[calc(100svh-24px)] lg:pt-0 lg:pb-0"
+          className="relative flex flex-col px-5 pt-10 pb-4 text-center sm:px-10 lg:min-h-[calc(100svh-24px-6rem)] lg:pt-0 lg:pb-0"
         >
-          <nav
-            aria-label="Landing"
-            className="hidden h-24 shrink-0 items-center justify-between text-[16px] lg:flex"
-          >
-            <button type="button" onClick={() => scrollTo('work')} className="press flex-1 text-left hover:text-clay-ink">
-              Work
-            </button>
-            <span className="font-display text-[1.5rem] leading-none whitespace-nowrap text-foreground">
-              {personal.name}
-            </span>
-            <span className="flex flex-1 items-center justify-end gap-1">
-              <button
-                type="button"
-                onClick={onOpenCommand}
-                aria-label="Open command menu"
-                aria-keyshortcuts="Meta+K Control+K"
-                className="press flex h-9 items-center gap-2 px-2 hover:text-clay-ink"
-              >
-                <Search className="h-4 w-4" aria-hidden />
-                <kbd className="kbd">⌘K</kbd>
-              </button>
-              <ThemeToggle className="!h-9 !w-9" />
-            </span>
-          </nav>
 
           <div className="mx-auto flex max-w-[34rem] flex-col items-center lg:mt-[14svh]">
             <h1

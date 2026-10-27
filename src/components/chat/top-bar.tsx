@@ -26,7 +26,7 @@ export function TopBar({ onOpenCommand, onHome, onHire }: TopBarProps) {
     personal.timezone.split('·').pop()?.trim() ?? personal.timezone;
 
   return (
-    <header className="relative z-40 shrink-0 border-b border-border bg-background">
+    <header className="relative z-40 shrink-0 bg-background">
       <div className="mx-auto flex h-14 max-w-3xl items-center justify-between gap-4 px-4 sm:px-6">
         {/* Identity */}
         <button
@@ -45,12 +45,9 @@ export function TopBar({ onOpenCommand, onHome, onHire }: TopBarProps) {
             />
           </span>
           <span className="flex min-w-0 flex-col">
-            <span className="font-display truncate text-[17px] leading-none text-foreground">
+            <span className="font-display truncate text-[1.125rem] leading-none text-foreground">
               <span className="sm:hidden">{personal.shortName}</span>
               <span className="hidden sm:inline">{personal.name}</span>
-            </span>
-            <span className="meta mt-1 hidden truncate text-muted-foreground sm:block">
-              Full-stack · AI platforms
             </span>
           </span>
         </button>
@@ -72,7 +69,7 @@ export function TopBar({ onOpenCommand, onHome, onHire }: TopBarProps) {
 
           <button
             onClick={onOpenCommand}
-            className="press flex h-8 items-center gap-2 rounded-md border border-border px-2 text-muted-foreground hover:border-border-strong hover:text-foreground"
+            className="press flex h-8 items-center gap-2 bg-secondary px-2.5 text-ink-soft hover:text-foreground"
             aria-label="Open command menu"
             aria-keyshortcuts="Meta+K Control+K"
           >
@@ -101,7 +98,7 @@ export function TopBar({ onOpenCommand, onHome, onHire }: TopBarProps) {
             type="button"
             onClick={onHire}
             aria-haspopup="dialog"
-            className="btn-clay ml-1 h-8 px-3 text-[13px]"
+            className="btn-clay ml-1 h-9 px-4 text-[16px]"
           >
             Hire me
             <ArrowUpRight className="hidden h-3.5 w-3.5 sm:block" aria-hidden />

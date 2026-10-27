@@ -1,13 +1,12 @@
 'use client';
 
 import Image from 'next/image';
-import { ArrowRight, ArrowUpRight, Sparkles } from 'lucide-react';
+import { ArrowRight, ArrowUpRight, Search } from 'lucide-react';
 import React, { useState, type CSSProperties } from 'react';
 
-import { pad2, splitMetric } from '@/components/artifact/artifact';
+import { splitMetric } from '@/components/artifact/artifact';
 import { ProjectDialog, projectCover } from '@/components/projects/project-dialog';
-import { UpworkBadge } from '@/components/ui/upwork-badge';
-import { useLocalTime } from '@/hooks/use-local-time';
+import { ThemeToggle } from '@/components/theme-toggle';
 import { presetReplies, getConfig } from '@/lib/config-loader';
 import type { Command } from '@/lib/commands';
 import type { Project } from '@/types/portfolio';
@@ -28,10 +27,20 @@ const LIVE_EXAMPLES = [
   'Why should I hire you over another senior engineer?',
 ];
 
+const PHOTO = {
+  src: '/hero/addis.jpg',
+  alt: 'Churchill Avenue in Addis Ababa: traffic running between office towers under a cloudy sky',
+  credit:
+    'https://commons.wikimedia.org/wiki/File:Churchill_Avenue,_Addis_Ababa,_September_2022.jpg',
+};
+
+const i = (n: number) => ({ '--i': n }) as CSSProperties;
+
 /**
- * The landing page is the path a client takes without typing — who I am,
- * proof, what I can do for you, what clients say, how to hire me — with the
- * chat as the layer on top. Every section ends somewhere useful.
+ * The split stage: half the screen never moves. On desktop the right half is
+ * a sticky photograph of Addis Ababa; the left half is a paper sheet that
+ * scrolls — hero, work, services, quotes, the ask-me index and the close.
+ * On phones the photograph leads as a tall panel and the sheet slides over it.
  */
 const ChatLanding: React.FC<ChatLandingProps> = ({
   submitQuery,
@@ -41,8 +50,7 @@ const ChatLanding: React.FC<ChatLandingProps> = ({
   commands,
 }) => {
   const config = getConfig();
-  const { personal, stats, availability, projects, reviews, agency } = config;
-  const time = useLocalTime(personal.timezone);
+  const { personal, availability, projects, reviews, agency, stats } = config;
   const [openIndex, setOpenIndex] = useState<number | null>(null);
 
   const flagshipIndex = Math.max(
@@ -50,17 +58,19 @@ const ChatLanding: React.FC<ChatLandingProps> = ({
     projects.findIndex((p) => p.flagship)
   );
   const flagship = projects[flagshipIndex];
-  // The next two projects with real covers.
   const selected = projects
-    .map((p, i) => ({ p, i }))
-    .filter(({ p, i }) => i !== flagshipIndex && /\.(png|jpe?g|webp)$/.test(p.cover ?? ''))
-    .slice(0, 2);
-  const clients = config.experience
-    .map((e) => e.company)
-    .filter((c) => !['Upwork', 'Eaglix Tech', 'Hiya General Trading PLC'].includes(c));
+    .map((p, idx) => ({ p, idx }))
+    .filter(
+      ({ p, idx }) =>
+        idx !== flagshipIndex && /\.(png|jpe?g|webp)$/.test(p.cover ?? '')
+    )
+    .slice(0, 3);
   const index = commands.filter((c) => c.group === 'Ask');
   const [lead, ...moreQuotes] = reviews.quotes;
   const shortQuotes = moreQuotes.filter((q) => q.text.length < 140).slice(0, 2);
+  const upworkStats = stats.filter((s) => /Upwork|Job Success/.test(s.label));
+  const earned = stats.find((s) => /Earned/.test(s.label))?.value;
+  const offset = personal.timezone.split('·').pop()?.trim();
 
   const ask = (q: string) => {
     const preset = presetReplies[q as keyof typeof presetReplies];
@@ -71,386 +81,361 @@ const ChatLanding: React.FC<ChatLandingProps> = ({
     }
   };
 
-  const city = personal.location.split(',')[0];
-  const offset = personal.timezone.split('·').pop()?.trim();
+  const scrollTo = (id: string) =>
+    document.getElementById(id)?.scrollIntoView({ behavior: 'smooth', block: 'start' });
 
   return (
-    <div className="mx-auto w-full py-8 sm:py-12">
-      {/* ── Hero ─────────────────────────────────────────── */}
-      <section aria-labelledby="hero-heading" className="grid gap-8 sm:grid-cols-[1fr_10.5rem] sm:items-end sm:gap-10">
-        <div className="min-w-0">
-          <div
-            className="reveal flex items-center gap-3"
-            style={{ '--i': 0 } as CSSProperties}
+    <div className="w-full bg-card lg:grid lg:grid-cols-2 lg:gap-3 lg:p-3">
+      {/* ── The photograph that never moves ─────────────── */}
+      <figure className="stage-photo sticky top-0 z-0 h-[56svh] overflow-hidden lg:order-2 lg:top-3 lg:h-[calc(100svh-24px)] lg:self-start">
+        <Image
+          src={PHOTO.src}
+          alt={PHOTO.alt}
+          fill
+          priority
+          sizes="(min-width: 1024px) 50vw, 100vw"
+          className="object-cover object-[50%_45%]"
+        />
+        <figcaption className="absolute inset-x-0 bottom-6 lg:bottom-0 grid grid-cols-2 items-center gap-4 bg-background px-5 py-3 text-[13px] leading-snug sm:gap-6 sm:text-[16px] text-foreground sm:px-6">
+          <span>
+            {personal.location.split(',')[0]} · {offset}, overlapping US &amp; EU hours
+          </span>
+          {availability.open && (
+            <span className="text-right">{availability.headline}</span>
+          )}
+        </figcaption>
+      </figure>
+
+      {/* ── The sheet that scrolls ──────────────────────── */}
+      <div className="relative z-10 -mt-6 bg-background lg:order-1 lg:mt-0 lg:pb-32">
+        {/* First screen */}
+        <section
+          aria-labelledby="hero-heading"
+          className="relative flex flex-col px-5 pt-10 pb-4 text-center sm:px-10 lg:min-h-[calc(100svh-24px)] lg:pt-0 lg:pb-0"
+        >
+          <nav
+            aria-label="Landing"
+            className="hidden h-24 shrink-0 items-center justify-between text-[16px] lg:flex"
           >
-            <span className="relative h-12 w-12 shrink-0 overflow-hidden rounded-md border border-border sm:hidden">
-              <Image src={personal.photo} alt={personal.name} fill sizes="48px" className="object-cover" priority />
+            <button type="button" onClick={() => scrollTo('work')} className="press flex-1 text-left hover:text-clay-ink">
+              Work
+            </button>
+            <span className="font-display text-[1.5rem] leading-none whitespace-nowrap text-foreground">
+              {personal.name}
             </span>
-            {availability.open && (
-              <p className="meta flex items-center gap-2 text-ink-soft">
-                <span className="status-dot" aria-hidden />
-                {availability.headline}
-              </p>
-            )}
+            <span className="flex flex-1 items-center justify-end gap-1">
+              <button
+                type="button"
+                onClick={onOpenCommand}
+                aria-label="Open command menu"
+                aria-keyshortcuts="Meta+K Control+K"
+                className="press flex h-9 items-center gap-2 px-2 hover:text-clay-ink"
+              >
+                <Search className="h-4 w-4" aria-hidden />
+                <kbd className="kbd">⌘K</kbd>
+              </button>
+              <ThemeToggle className="!h-9 !w-9" />
+            </span>
+          </nav>
+
+          <div className="mx-auto flex max-w-[34rem] flex-col items-center lg:mt-[14svh]">
+            <h1
+              id="hero-heading"
+              className="reveal font-display text-[2.75rem] leading-[0.95] text-clay sm:text-[3.5rem] lg:text-[clamp(3rem,4.2vw,4rem)]"
+              style={i(0)}
+            >
+              <span className="sr-only">{personal.name}: </span>
+              AI products that hold&nbsp;up.
+            </h1>
+            <p
+              className="reveal mt-7 max-w-[40ch] text-[1.125rem] leading-[1.5] text-foreground"
+              style={i(1)}
+            >
+              Senior full-stack engineer in Addis Ababa. I build AI voice
+              platforms and multi-tenant SaaS for teams around the world.
+            </p>
+            <button
+              type="button"
+              onClick={onHire}
+              aria-haspopup="dialog"
+              className="reveal btn-clay mt-8 h-14 w-full px-8 text-[1.125rem] sm:w-auto"
+              style={i(2)}
+            >
+              Hire me
+            </button>
+            <p className="reveal mt-5 text-[16px] text-muted-foreground" style={i(3)}>
+              Top Rated Plus · 100% Job Success{earned ? ` · ${earned}` : ''} on Upwork
+            </p>
           </div>
 
-          <h1
-            id="hero-heading"
-            className="reveal font-display mt-5 text-[2.75rem] leading-[1] tracking-[-0.035em] text-balance text-foreground sm:text-[3.875rem]"
-            style={{ '--i': 1 } as CSSProperties}
-          >
-            {personal.headline}
-          </h1>
-
-          <p
-            className="reveal measure mt-5 text-[1.0625rem] leading-[1.55] text-ink-soft sm:text-[1.1875rem]"
-            style={{ '--i': 2 } as CSSProperties}
-          >
-            {personal.tagline}
-            {personal.currently && (
-              <>
-                {' '}Currently {personal.currently.role.toLowerCase()} at{' '}
-                <a
-                  href={personal.currently.url}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="font-medium text-foreground underline decoration-clay/50 underline-offset-4 hover:decoration-clay"
-                >
-                  {personal.currently.company}
-                </a>
-                .
-              </>
-            )}
+          <p className="mt-auto hidden pt-10 pb-36 text-[13px] text-muted-foreground lg:block">
+            Churchill Avenue, Addis Ababa — photo by Mjr74,{' '}
+            <a href={PHOTO.credit} target="_blank" rel="noopener noreferrer" className="underline underline-offset-2 hover:text-foreground">
+              CC BY 4.0, via Wikimedia Commons
+            </a>
           </p>
+        </section>
 
-          <div
-            className="reveal mt-7 flex flex-wrap items-center gap-2.5"
-            style={{ '--i': 3 } as CSSProperties}
-          >
-            <button type="button" onClick={onHire} aria-haspopup="dialog" className="btn-clay h-11 px-5 text-[15px]">
-              Hire me
-              <ArrowUpRight className="h-4 w-4" aria-hidden />
-            </button>
+        <div className="mx-auto w-full max-w-[36rem] px-5 sm:px-10 lg:px-0">
+          {/* ── Flagship ─────────────────────────────────── */}
+          <Section title="The flagship build" id="flagship">
             <button
               type="button"
               onClick={() => setOpenIndex(flagshipIndex)}
               aria-haspopup="dialog"
-              className="btn-line h-11 px-5 text-[15px]"
+              className="group block w-full text-left"
             >
-              See the {flagship.client ?? 'flagship'} case study
+              <span className="relative block aspect-[4/3] w-full overflow-hidden bg-card">
+                <Image
+                  src={projectCover(flagship)}
+                  alt={`${flagship.title} — cover`}
+                  fill
+                  loading="eager"
+                  sizes="(min-width: 1024px) 576px, 100vw"
+                  className="object-cover transition-transform duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] group-hover:scale-[1.02] motion-reduce:transition-none motion-reduce:group-hover:scale-100"
+                />
+              </span>
+              <span className="font-display mt-6 block text-[1.5rem] leading-[1.1] text-foreground">
+                {flagship.title}
+              </span>
+              <span className="mt-2 block text-[16px] text-muted-foreground">
+                {flagship.category} · {flagship.date}
+              </span>
+              <span className="mt-4 block text-[1.125rem] leading-[1.5] text-foreground">
+                {flagship.description}
+              </span>
+              <Metrics project={flagship} />
+              <span className="mt-6 inline-flex items-center gap-2 text-[1.125rem] font-semibold text-clay-ink">
+                Read the case study
+                <ArrowRight aria-hidden className="h-4 w-4 transition-transform group-hover:translate-x-1" />
+              </span>
             </button>
-          </div>
-          <div className="reveal mt-4" style={{ '--i': 4 } as CSSProperties}>
-            <UpworkBadge className="!text-[13px]" />
-          </div>
-        </div>
+          </Section>
 
-        {/* Portrait */}
-        <figure className="reveal hidden sm:block" style={{ '--i': 2 } as CSSProperties}>
-          <div className="relative aspect-[4/5] overflow-hidden rounded-lg border border-border">
-            <Image src={personal.photo} alt={personal.name} fill sizes="168px" className="object-cover" priority />
-          </div>
-          <figcaption className="meta mt-2.5 text-muted-foreground">
-            {city}{' '}
-            <span className="num text-foreground" suppressHydrationWarning>
-              {time?.label ?? '--:--'}
-            </span>{' '}
-            {offset}
-          </figcaption>
-        </figure>
-      </section>
-
-      {/* ── Telemetry ────────────────────────────────────── */}
-      <dl
-        className="reveal mt-10 grid grid-cols-2 gap-px border-y border-border bg-border-subtle sm:grid-cols-4"
-        style={{ '--i': 5 } as CSSProperties}
-      >
-        {stats.map((s) => (
-          <div
-            key={s.label}
-            className="flex flex-col gap-1.5 bg-background py-4 pr-3 pl-4 max-sm:odd:pl-0 sm:first:pl-0"
-          >
-            <dt className="text-[13px] leading-snug text-muted-foreground">{s.label}</dt>
-            <dd className="num order-first text-[1.375rem] leading-none text-foreground">{s.value}</dd>
-          </div>
-        ))}
-      </dl>
-
-      {/* ── Trusted by ───────────────────────────────────── */}
-      <div className="reveal mt-6 flex flex-wrap items-baseline gap-x-5 gap-y-2" style={{ '--i': 6 } as CSSProperties}>
-        <span className="meta text-muted-foreground">Shipped for</span>
-        {clients.map((c) => (
-          <span key={c} className="font-display text-[1.125rem] leading-none text-ink-soft">
-            {c}
-          </span>
-        ))}
-      </div>
-
-      {/* ── 01 Flagship ──────────────────────────────────── */}
-      <Section index={1} title="Flagship case study" id="flagship">
-        <button
-          type="button"
-          onClick={() => setOpenIndex(flagshipIndex)}
-          aria-haspopup="dialog"
-          className="group grid w-full overflow-hidden rounded-lg border border-border bg-card text-left transition-colors hover:border-border-strong sm:grid-cols-[1.15fr_1fr]"
-        >
-          {/* The 4:3 cover, centred in a sunken frame that matches the text's height */}
-          <span className="flex items-center border-b border-border bg-sunken sm:border-r sm:border-b-0 sm:p-4">
-            <span className="relative block aspect-[4/3] w-full overflow-hidden sm:rounded-md sm:border sm:border-border-subtle">
-              <Image
-                src={projectCover(flagship)}
-                alt={`${flagship.title} — cover`}
-                fill
-                sizes="(min-width: 640px) 400px, 100vw"
-                className="object-cover transition-transform duration-[240ms] ease-[cubic-bezier(0.22,1,0.36,1)] group-hover:scale-[1.02] motion-reduce:transition-none motion-reduce:group-hover:scale-100"
-              />
-            </span>
-          </span>
-          <span className="flex min-w-0 flex-col gap-3 p-5 sm:p-6">
-            <span className="meta flex items-center justify-between gap-2 text-muted-foreground">
-              <span className="text-clay-ink">{flagship.category}</span>
-              <span className="num normal-case tracking-normal">{flagship.date}</span>
-            </span>
-            <span className="font-display text-[1.5rem] leading-[1.1] text-foreground">
-              {flagship.title}
-            </span>
-            <ul className="space-y-1.5">
-              {flagship.highlights?.slice(0, 4).map((h) => (
-                <li key={h} className="flex gap-2 text-[14px] leading-snug text-ink-soft">
-                  <span aria-hidden className="text-clay">–</span>
-                  {h}
+          {/* ── Selected work ────────────────────────────── */}
+          <Section title="Selected work" id="work">
+            <ul className="flex flex-col gap-8">
+              {selected.map(({ p, idx }) => (
+                <li key={p.title}>
+                  <WorkRow project={p} onOpen={() => setOpenIndex(idx)} />
                 </li>
               ))}
             </ul>
-            <Metrics project={flagship} />
-            <span className="mt-auto flex items-center gap-1.5 pt-1 text-[13.5px] font-medium text-foreground">
-              Read the case study
-              <ArrowRight aria-hidden className="h-4 w-4 transition-transform group-hover:translate-x-0.5 group-hover:text-clay" />
-            </span>
-          </span>
-        </button>
-      </Section>
+            <button
+              type="button"
+              onClick={() => ask('What projects are you most proud of?')}
+              className="btn-line mt-10 h-12 px-6 text-[16px]"
+            >
+              All {projects.length} case studies <ArrowRight className="h-4 w-4" aria-hidden />
+            </button>
+          </Section>
 
-      {/* ── 02 Selected work ─────────────────────────────── */}
-      <Section
-        index={2}
-        title="Selected work"
-        id="work"
-        action={
-          <button
-            type="button"
-            onClick={() => ask('What projects are you most proud of?')}
-            className="press flex items-center gap-1 text-[13px] text-muted-foreground hover:text-foreground"
-          >
-            All {projects.length} case studies <ArrowRight className="h-3.5 w-3.5" aria-hidden />
-          </button>
-        }
-      >
-        <ul className="grid gap-4 sm:grid-cols-2">
-          {selected.map(({ p, i }) => (
-            <li key={p.title} className="flex">
-              <WorkTile project={p} onOpen={() => setOpenIndex(i)} />
-            </li>
-          ))}
-        </ul>
-      </Section>
+          {/* ── Services ─────────────────────────────────── */}
+          <Section title="What I can do for you" id="services">
+            <ul className="flex flex-col gap-1">
+              {availability.focusAreas.map((area) => (
+                <li key={area}>
+                  <button
+                    type="button"
+                    onClick={() => submitQuery(`How would you help with this: ${area}?`)}
+                    className="group flex w-full items-baseline justify-between gap-4 py-2 text-left"
+                  >
+                    <span className="text-[1.5rem] leading-[1.25] text-foreground transition-colors group-hover:text-clay-ink">
+                      {area}
+                    </span>
+                    <ArrowRight aria-hidden className="h-4 w-4 shrink-0 text-muted-foreground opacity-0 transition-opacity group-hover:opacity-100 group-focus-visible:opacity-100" />
+                  </button>
+                </li>
+              ))}
+            </ul>
+          </Section>
+        </div>
 
-      {/* ── 03 What I can do for you ─────────────────────── */}
-      <Section index={3} title="What I can do for you" id="services">
-        <ol className="border-y border-border">
-          {availability.focusAreas.map((area, i) => (
-            <li key={area} className="border-b border-border-subtle last:border-b-0">
+        {/* Eaglix: a full-width surface panel inside the sheet */}
+        <section aria-labelledby="eaglix-heading" className="mt-20 bg-card px-5 py-14 sm:px-10">
+          <div className="mx-auto max-w-[36rem]">
+            <h2 id="eaglix-heading" className="font-display text-[2rem] leading-[1.05] text-foreground">
+              Need a team? Meet {agency.name}.
+            </h2>
+            <p className="mt-4 text-[1.125rem] leading-[1.5] text-foreground">{agency.pitch}</p>
+            <ul className="mt-5 flex flex-col gap-1 text-[16px] text-ink-soft">
+              {agency.points.map((pt) => (
+                <li key={pt}>{pt}</li>
+              ))}
+            </ul>
+            <a
+              href={agency.url}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="btn-ink mt-8 h-12 px-6 text-[16px]"
+            >
+              {new URL(agency.url).hostname.replace('www.', '')}
+              <ArrowUpRight className="h-4 w-4" aria-hidden />
+            </a>
+          </div>
+        </section>
+
+        <div className="mx-auto w-full max-w-[36rem] px-5 sm:px-10 lg:px-0">
+          {/* ── Clients ──────────────────────────────────── */}
+          <Section title="What clients say" id="reviews">
+            <figure>
+              <blockquote className="hang text-[1.5rem] leading-[1.35] text-foreground">
+                “{lead.text}”
+              </blockquote>
+              <figcaption className="mt-4 text-[16px] text-muted-foreground">
+                <span className="font-semibold text-foreground">{lead.author}</span> · {lead.engagement} ·{' '}
+                <span className="num">{lead.date}</span>
+              </figcaption>
+            </figure>
+            <ul className="mt-10 flex flex-col gap-6 sm:pl-16">
+              {shortQuotes.map((q) => (
+                <li key={q.text}>
+                  <p className="text-[1.125rem] leading-[1.5] text-foreground">“{q.text}”</p>
+                  <p className="mt-1.5 text-[16px] text-muted-foreground">
+                    {q.engagement} · <span className="num">{q.date}</span>
+                  </p>
+                </li>
+              ))}
+            </ul>
+            <p className="mt-10 text-[16px] text-ink-soft">
+              <span className="num font-semibold text-foreground">{reviews.rating} out of 5</span>{' '}
+              from {reviews.ratings.map((r) => r.client).join(', ')} · {reviews.summary}
+            </p>
+            {upworkStats.length > 0 && (
+              <dl className="mt-8 grid grid-cols-2 gap-6">
+                {upworkStats.map((s) => (
+                  <div key={s.label} className="flex flex-col gap-1">
+                    <dt className="text-[16px] text-muted-foreground">{s.label}</dt>
+                    <dd className="font-display num order-first text-[2.5rem] leading-none text-foreground">
+                      {s.value}
+                    </dd>
+                  </div>
+                ))}
+              </dl>
+            )}
+            <button
+              type="button"
+              onClick={() => ask('What do clients say about you?')}
+              className="btn-line mt-10 h-12 px-6 text-[16px]"
+            >
+              All reviews <ArrowRight className="h-4 w-4" aria-hidden />
+            </button>
+          </Section>
+
+          {/* ── Ask me ───────────────────────────────────── */}
+          <Section title="Ask me anything" id="ask">
+            <p className="text-[1.125rem] leading-[1.5] text-foreground">
+              This site is a conversation. These answer instantly; anything you
+              type below goes to a live model that answers as me.
+            </p>
+            <ul className="mt-6 grid gap-x-8 sm:grid-cols-2">
+              {index.map((cmd) => (
+                <li key={cmd.id}>
+                  <button
+                    onClick={() => ask(cmd.payload || cmd.label)}
+                    className="group flex w-full items-baseline justify-between gap-3 py-2.5 text-left"
+                  >
+                    <span className="text-[1.125rem] leading-snug text-foreground transition-colors group-hover:text-clay-ink">
+                      {cmd.label}
+                    </span>
+                    <span className="shrink-0 text-[13px] text-muted-foreground">{cmd.slash}</span>
+                  </button>
+                </li>
+              ))}
+            </ul>
+            <h3 className="mt-10 text-[16px] font-semibold text-foreground">Or ask the live model</h3>
+            <ul className="mt-2">
+              {LIVE_EXAMPLES.map((q) => (
+                <li key={q}>
+                  <button
+                    onClick={() => submitQuery(q)}
+                    className="group flex w-full items-center gap-3 py-2.5 text-left text-[1.125rem] text-ink-soft transition-colors hover:text-foreground"
+                  >
+                    <span className="flex-1">{q}</span>
+                    <ArrowRight aria-hidden className="h-4 w-4 shrink-0 text-clay-ink transition-transform group-hover:translate-x-1" />
+                  </button>
+                </li>
+              ))}
+            </ul>
+            <button
+              onClick={onOpenCommand}
+              className="btn-line mt-8 h-12 px-6 text-[16px]"
+            >
+              Every command <kbd className="kbd">⌘K</kbd>
+            </button>
+          </Section>
+        </div>
+
+        {/* ── Close: the deep-leaf field ─────────────────── */}
+        <section
+          aria-labelledby="close-heading"
+          className="mt-28 bg-field px-5 py-20 text-field-ink sm:px-10"
+        >
+          <div className="mx-auto max-w-[36rem]">
+            <h2 id="close-heading" className="font-display text-[2.5rem] leading-[0.95]">
+              Have something to build?
+            </h2>
+            <p className="mt-5 text-[1.125rem] leading-[1.5]">
+              {availability.headline}. Send me the shape of it and I&apos;ll reply
+              within 0–4 hours with questions and an honest fit check.
+            </p>
+            <div className="mt-8 flex flex-wrap gap-3">
               <button
                 type="button"
-                onClick={() => submitQuery(`How would you help with this: ${area}?`)}
-                className="group flex w-full items-baseline gap-4 py-3.5 text-left"
+                onClick={onHire}
+                aria-haspopup="dialog"
+                className="inline-flex h-14 items-center gap-2 bg-field-ink px-8 text-[1.125rem] font-semibold text-field transition-transform active:translate-y-px"
               >
-                <span className="num text-[11px] text-clay-ink">{pad2(i + 1)}</span>
-                <span className="font-display flex-1 text-[1.1875rem] leading-snug text-foreground">
-                  {area}
-                </span>
-                <span className="flex shrink-0 items-center gap-1 text-[12.5px] text-muted-foreground transition-colors group-hover:text-foreground">
-                  <span className="hidden sm:inline">Ask how</span>
-                  <Sparkles aria-hidden className="h-3.5 w-3.5 group-hover:text-clay" />
-                </span>
+                Hire me
               </button>
-            </li>
-          ))}
-        </ol>
-
-        <a
-          href={agency.url}
-          target="_blank"
-          rel="noopener noreferrer"
-          className="group mt-4 flex flex-col gap-3 rounded-lg border border-border bg-sunken p-5 transition-colors hover:border-border-strong sm:flex-row sm:items-center sm:justify-between"
-        >
-          <span className="min-w-0">
-            <span className="meta text-muted-foreground">Bigger build?</span>
-            <span className="font-display mt-1 block text-[1.25rem] leading-tight text-foreground">
-              Need a team? Meet {agency.name}.
-            </span>
-            <span className="measure mt-1 block text-[14px] leading-relaxed text-ink-soft">
-              {agency.pitch}
-            </span>
-          </span>
-          <span className="btn-line h-9 shrink-0 self-start px-4 text-[13px] sm:self-auto">
-            {new URL(agency.url).hostname.replace('www.', '')}
-            <ArrowUpRight className="h-4 w-4" aria-hidden />
-          </span>
-        </a>
-      </Section>
-
-      {/* ── 04 What clients say ──────────────────────────── */}
-      <Section
-        index={4}
-        title="What clients say"
-        id="reviews"
-        action={
-          <button
-            type="button"
-            onClick={() => ask('What do clients say about you?')}
-            className="press flex items-center gap-1 text-[13px] text-muted-foreground hover:text-foreground"
-          >
-            All reviews <ArrowRight className="h-3.5 w-3.5" aria-hidden />
-          </button>
-        }
-      >
-        <figure>
-          <blockquote className="font-display hang measure text-[1.375rem] leading-[1.4] text-foreground sm:text-[1.625rem]">
-            “{lead.text}”
-          </blockquote>
-          <figcaption className="mt-3 text-[13.5px] text-muted-foreground">
-            <span className="font-medium text-foreground">{lead.author}</span> · {lead.engagement} ·{' '}
-            <span className="num">{lead.date}</span>
-          </figcaption>
-        </figure>
-        <ul className="mt-6 grid gap-px overflow-hidden rounded-lg border border-border bg-border sm:grid-cols-2">
-          {shortQuotes.map((q) => (
-            <li key={q.text} className="bg-card p-5">
-              <p className="text-[15px] leading-relaxed text-foreground">“{q.text}”</p>
-              <p className="mt-2 text-[13px] text-muted-foreground">
-                {q.engagement} · <span className="num">{q.date}</span>
-              </p>
-            </li>
-          ))}
-        </ul>
-        <p className="mt-4 flex flex-wrap items-center gap-x-2 text-[13.5px] text-ink-soft">
-          <span className="num text-foreground">{reviews.rating}★</span>
-          from {reviews.ratings.map((r) => r.client).join(', ')} · {reviews.summary}
-        </p>
-      </Section>
-
-      {/* ── 05 Ask me ────────────────────────────────────── */}
-      <Section
-        index={5}
-        title="Ask me anything"
-        id="ask"
-        action={
-          <button
-            onClick={onOpenCommand}
-            className="press flex items-center gap-1.5 rounded-sm text-[13px] text-muted-foreground hover:text-foreground"
-          >
-            Every command <kbd className="kbd">⌘K</kbd>
-          </button>
-        }
-      >
-        <p className="measure mb-4 text-[14.5px] leading-relaxed text-ink-soft">
-          This site is a conversation. The cards below answer instantly; anything
-          you type goes to a live model that answers as me.
-        </p>
-        <ol className="grid grid-cols-2 gap-px overflow-hidden rounded-lg border border-border bg-border sm:grid-cols-4">
-          {index.map((cmd, i) => (
-            <li key={cmd.id} className="flex">
-              <button
-                onClick={() => ask(cmd.payload || cmd.label)}
-                className="group flex min-h-[7rem] w-full flex-col justify-between gap-3 bg-card p-4 text-left transition-colors duration-200 hover:bg-background focus-visible:z-10 focus-visible:outline-offset-[-2px]"
+              <a
+                href={`mailto:${personal.email}`}
+                className="inline-flex h-14 items-center px-2 text-[1.125rem] font-semibold underline underline-offset-4 hover:no-underline"
               >
-                <span className="flex w-full items-center justify-between gap-2">
-                  <span className="num text-[11px] text-muted-foreground">{pad2(i + 1)}</span>
-                  <span className="num text-[12px] text-clay-ink">{cmd.slash}</span>
-                </span>
-                <span className="font-display text-[1.0625rem] leading-[1.22] text-foreground">
-                  {cmd.label}
-                </span>
-              </button>
-            </li>
-          ))}
-        </ol>
-        <ul className="mt-4">
-          {LIVE_EXAMPLES.map((q) => (
-            <li key={q} className="border-b border-border-subtle last:border-b-0">
-              <button
-                onClick={() => submitQuery(q)}
-                className="group flex w-full items-center gap-3 py-2.5 text-left text-[14px] text-ink-soft transition-colors duration-200 hover:text-foreground"
-              >
-                <Sparkles aria-hidden className="h-3.5 w-3.5 shrink-0 text-border-strong transition-colors group-hover:text-clay" />
-                <span className="flex-1">{q}</span>
-                <ArrowRight aria-hidden className="h-3.5 w-3.5 shrink-0 opacity-0 transition-opacity group-hover:opacity-100" />
-              </button>
-            </li>
-          ))}
-        </ul>
-      </Section>
+                {personal.email}
+              </a>
+            </div>
+          </div>
+        </section>
 
-      {/* ── Close ────────────────────────────────────────── */}
-      <section
-        aria-labelledby="close-heading"
-        className="mt-14 rounded-lg bg-[#141413] px-6 py-8 text-[#f3f0e8] sm:px-8 sm:py-10 dark:border dark:border-border dark:bg-sunken"
-      >
-        <h2 id="close-heading" className="font-display text-[2rem] leading-[1.05] tracking-[-0.03em] sm:text-[2.5rem]">
-          Have something to build?
-        </h2>
-        <p className="measure mt-3 text-[15px] leading-relaxed text-[#f3f0e8]/75">
-          {availability.headline}. Send me the shape of it and I&apos;ll reply
-          within 0–4 hours with questions and an honest fit check.
-        </p>
-        <div className="mt-6 flex flex-wrap gap-2.5">
-          <button type="button" onClick={onHire} aria-haspopup="dialog" className="btn-clay h-11 px-5 text-[15px]">
-            Hire me
-            <ArrowUpRight className="h-4 w-4" aria-hidden />
-          </button>
-          <a
-            href={`mailto:${personal.email}`}
-            className="inline-flex h-11 items-center rounded-md border border-[#f3f0e8]/30 px-5 text-[15px] font-medium text-[#f3f0e8] transition-colors hover:border-[#f3f0e8]/60"
-          >
-            {personal.email}
+        <p className="px-5 pt-6 pb-6 text-[13px] text-muted-foreground sm:px-10 lg:hidden">
+          Photo: Churchill Avenue, Addis Ababa — by Mjr74,{' '}
+          <a href={PHOTO.credit} target="_blank" rel="noopener noreferrer" className="underline underline-offset-2">
+            CC BY 4.0, via Wikimedia Commons
           </a>
-        </div>
-      </section>
+        </p>
+      </div>
 
       <ProjectDialog
         projects={projects}
         index={openIndex}
         onClose={() => setOpenIndex(null)}
-        onNavigate={(i) => setOpenIndex(i)}
+        onNavigate={(n) => setOpenIndex(n)}
       />
     </div>
   );
 };
 
 function Section({
-  index,
   title,
   id,
-  action,
   children,
 }: {
-  index: number;
   title: string;
   id: string;
-  action?: React.ReactNode;
   children: React.ReactNode;
 }) {
   return (
-    <section aria-labelledby={`${id}-heading`} className="mt-14">
-      <div className="mb-4 flex items-baseline justify-between gap-4">
-        <h2 id={`${id}-heading`} className="meta text-muted-foreground">
-          <span className="num text-clay-ink">{pad2(index)}</span>{' '}
-          <span className="text-border-strong">/</span> {title}
-        </h2>
-        {action}
+    <section id={id} aria-labelledby={`${id}-heading`} className="scroll-mt-6 pt-20 sm:pt-28">
+      <h2
+        id={`${id}-heading`}
+        className="reveal font-display mb-8 text-[2rem] leading-[1.05] text-foreground sm:text-[2.5rem]"
+      >
+        {title}
+      </h2>
+      <div className="reveal" style={i(1)}>
+        {children}
       </div>
-      {children}
     </section>
   );
 }
@@ -458,13 +443,15 @@ function Section({
 function Metrics({ project }: { project: Project }) {
   if (!project.metrics?.length) return null;
   return (
-    <span className="flex flex-wrap gap-x-5 gap-y-2 border-l-2 border-clay py-0.5 pl-3">
-      {project.metrics.map((m) => {
+    <span className="mt-6 grid grid-cols-2 gap-x-6 gap-y-5">
+      {project.metrics.slice(0, 4).map((m) => {
         const { figure, caption } = splitMetric(m);
         return (
-          <span key={m} className="flex items-baseline gap-1.5">
-            {figure && <span className="num text-[1.0625rem] leading-none text-foreground">{figure}</span>}
-            <span className="text-[13px] text-muted-foreground">{caption}</span>
+          <span key={m} className="flex flex-col gap-1">
+            {figure && (
+              <span className="font-display num text-[2rem] leading-none text-foreground">{figure}</span>
+            )}
+            <span className="text-[16px] leading-snug text-muted-foreground">{caption}</span>
           </span>
         );
       })}
@@ -472,32 +459,33 @@ function Metrics({ project }: { project: Project }) {
   );
 }
 
-function WorkTile({ project, onOpen }: { project: Project; onOpen: () => void }) {
+function WorkRow({ project, onOpen }: { project: Project; onOpen: () => void }) {
   return (
     <button
       type="button"
       onClick={onOpen}
       aria-haspopup="dialog"
-      className="group flex w-full flex-col overflow-hidden rounded-lg border border-border bg-card text-left transition-colors hover:border-border-strong"
+      className="group grid w-full grid-cols-[38%_1fr] items-start gap-5 text-left"
     >
-      <span className="relative block aspect-[4/3] overflow-hidden border-b border-border bg-sunken">
+      <span className="relative block aspect-[4/5] overflow-hidden bg-card">
         <Image
           src={projectCover(project)}
           alt={`${project.title} — cover`}
           fill
-          sizes="(min-width: 640px) 360px, 100vw"
-          className="object-cover transition-transform duration-[240ms] ease-[cubic-bezier(0.22,1,0.36,1)] group-hover:scale-[1.02] motion-reduce:transition-none motion-reduce:group-hover:scale-100"
+          loading="eager"
+          sizes="220px"
+          className="object-cover transition-transform duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] group-hover:scale-[1.03] motion-reduce:transition-none motion-reduce:group-hover:scale-100"
         />
       </span>
-      <span className="flex flex-1 flex-col gap-2.5 p-5">
-        <span className="meta flex items-center justify-between gap-2 text-muted-foreground">
-          <span className="truncate text-clay-ink">{project.category}</span>
-          <span className="num shrink-0 normal-case tracking-normal">{project.date}</span>
+      <span className="flex min-w-0 flex-col gap-2">
+        <span className="font-display text-[1.125rem] leading-[1.1] text-foreground transition-colors group-hover:text-clay-ink sm:text-[1.5rem]">
+          {project.title}
         </span>
-        <span className="font-display text-[1.25rem] leading-[1.15] text-foreground">{project.title}</span>
-        <span className="line-clamp-2 text-[14px] leading-relaxed text-ink-soft">{project.description}</span>
-        <span className="mt-auto pt-1">
-          <Metrics project={project} />
+        <span className="text-[16px] text-muted-foreground">
+          {project.category} · {project.date}
+        </span>
+        <span className="line-clamp-4 text-[16px] leading-[1.5] text-foreground">
+          {project.description}
         </span>
       </span>
     </button>

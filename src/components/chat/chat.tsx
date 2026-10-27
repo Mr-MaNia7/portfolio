@@ -340,20 +340,23 @@ const Chat = () => {
 
         <HireSheet open={hireOpen} onClose={() => setHireOpen(false)} />
 
-        <TopBar
-          onOpenCommand={() => setPaletteOpen(true)}
-          onHome={goHome}
-          onHire={() => setHireOpen(true)}
-        />
+        {/* On the desktop landing the sheet carries its own wordmark row. */}
+        <div className={isEmptyState ? 'lg:hidden' : undefined}>
+          <TopBar
+            onOpenCommand={() => setPaletteOpen(true)}
+            onHome={goHome}
+            onHire={() => setHireOpen(true)}
+          />
+        </div>
 
-        {/* Scrollable content */}
+        {/* Scrollable content — the landing's sticky photograph sticks to this */}
         <div className="scrollbar-subtle flex-1 overflow-y-auto">
-          <div className="mx-auto flex min-h-full max-w-3xl flex-col px-4 sm:px-6">
+          <div className="flex min-h-full flex-col">
             <AnimatePresence mode="wait">
               {isEmptyState ? (
                 <motion.div
                   key="landing"
-                  className="flex min-h-full flex-1 items-center"
+                  className="flex min-h-full w-full flex-1"
                   {...MOTION_CONFIG}
                 >
                   <ChatLanding
@@ -367,7 +370,7 @@ const Chat = () => {
               ) : (
                 <motion.div
                   key="conversation"
-                  className="flex flex-col gap-10 pt-8 pb-10"
+                  className="mx-auto flex w-full max-w-3xl flex-col gap-10 px-4 pt-8 pb-10 sm:px-6"
                   {...MOTION_CONFIG}
                 >
                   <AnimatePresence initial={false}>
@@ -477,8 +480,15 @@ const Chat = () => {
         </div>
 
         {/* Composer */}
-        <div className="relative z-30 shrink-0 bg-background pb-[env(safe-area-inset-bottom)]">
-          <div className="mx-auto w-full max-w-3xl px-4 pt-2 pb-4 sm:px-6">
+        <div
+          className={
+            'relative z-30 shrink-0 bg-background pb-[env(safe-area-inset-bottom)]' +
+            (isEmptyState
+              ? ' lg:absolute lg:bottom-3 lg:left-3 lg:w-[calc(50%-18px)]'
+              : '')
+          }
+        >
+          <div className="mx-auto w-full max-w-3xl px-4 pt-2 pb-4 sm:px-6 lg:max-w-[38rem]">
             <div className="flex flex-col gap-2.5">
               {!isEmptyState && (
                 <HelperBoost
@@ -510,7 +520,7 @@ function UserBubble({ text }: { text: string }) {
   if (!text.trim()) return null;
   return (
     <div className="reveal flex justify-end">
-      <p className="max-w-[85%] rounded-lg rounded-br-sm border border-border-subtle bg-sunken px-4 py-2.5 text-[15px] leading-relaxed break-words whitespace-pre-wrap text-foreground">
+      <p className="max-w-[85%] bg-card px-4 py-2.5 text-[16px] leading-relaxed break-words whitespace-pre-wrap text-foreground">
         <span className="sr-only">You asked: </span>
         {text}
       </p>
@@ -535,10 +545,10 @@ function QuotaNotice({
           </span>
         </div>
         <div className="px-5 py-4">
-          <h3 className="font-display text-[1.25rem] leading-tight text-foreground">
+          <h3 className="font-display text-[1.5rem] leading-tight text-foreground">
             The live model is resting.
           </h3>
-          <p className="measure mt-1.5 text-[14px] leading-relaxed text-ink-soft">
+          <p className="measure mt-1.5 text-[16px] leading-relaxed text-ink-soft">
             Free-form AI answers are momentarily unavailable (rate limits on the
             hosted model). Everything else still works instantly — the quick
             answers and the ⌘K menu read from curated notes, no API call.

@@ -19,7 +19,7 @@ const buttonVariants = cva(
         destructive:
           "rounded-md bg-destructive text-white hover:opacity-90",
         outline:
-          "rounded-md border border-border-strong bg-transparent hover:bg-secondary text-foreground",
+          "rounded-md border border-transparent bg-transparent hover:bg-secondary text-foreground",
         secondary:
           "rounded-md bg-secondary text-secondary-foreground hover:bg-secondary/70",
         ghost:

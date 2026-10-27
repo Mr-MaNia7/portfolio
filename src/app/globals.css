@@ -2,20 +2,7 @@
 
 @custom-variant dark (&:is(.dark *));
 
-/*
-  ────────────────────────────────────────────────────────────────
-  Research journal × tactile editorial artifacts
-  Warm ivory parchment · deep warm obsidian · one terracotta/clay accent.
-  Surfaces separate by small warm luminance steps and 1px hairlines —
-  never by drop-shadows or glow. Shadows exist only on things that truly
-  float (command menu, popovers, dialogs, toasts).
-
-  Faces (next/font): Newsreader for display, Inter for running text,
-  JetBrains Mono for metadata, commands and figures.
-
-  Radius roles: chip/kbd 4px · control 8px · artifact sheet 12px.
-  ────────────────────────────────────────────────────────────────
-*/
+/* Split stage: Besley (display) + Libre Franklin (text). Square corners, no hairlines. */
 
 @theme inline {
   --color-background: var(--background);
@@ -56,117 +43,119 @@
   --color-input: var(--input);
   --color-ring: var(--ring);
 
-  --font-sans: var(--font-inter), ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
-  --font-serif: var(--font-newsreader), Georgia, "Times New Roman", ui-serif, serif;
-  --font-mono: var(--font-jetbrains), ui-monospace, "SF Mono", Menlo, monospace;
+  --color-field: var(--field);
+  --color-field-ink: var(--field-ink);
 
-  --radius-sm: 0.25rem; /* chip · kbd            */
-  --radius-md: 0.5rem;  /* control               */
-  --radius-lg: 0.75rem; /* artifact sheet · card  */
-  --radius-xl: 1rem;    /* dialog                */
+  --font-sans: var(--font-text), ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
+  --font-serif: var(--font-display), Georgia, "Times New Roman", ui-serif, serif;
+  --font-mono: ui-monospace, "SF Mono", Menlo, monospace;
+
+  /* One corner: square. */
+  --radius-xs: 0;
+  --radius-sm: 0;
+  --radius-md: 0;
+  --radius-lg: 0;
+  --radius-xl: 0;
+  --radius-2xl: 0;
+  --radius-3xl: 0;
 
   --ease-out-expo: cubic-bezier(0.22, 1, 0.36, 1);
 
   /* Floating layers only (menus, dialogs, toasts) — never on resting cards. */
-  --shadow-float: 0 1px 0 0 var(--border-subtle), 0 16px 40px -16px rgba(20, 18, 15, 0.22);
+  --shadow-float: 0 18px 48px -18px rgba(20, 18, 15, 0.35);
 }
 
+/* Split stage — sand ground, charcoal ink, one moss accent. Surfaces separate
+   by a tone step; borders are transparent except on form fields. */
 :root {
-  /* Ground: warm ivory parchment — never pure white */
-  --background: #faf9f5;
-  --foreground: #141413;
-  /* Secondary running text: still near-ink, never washed-out grey */
-  --ink-soft: #3d3b35;
+  --background: #ddd6c6;
+  --foreground: #2a2a26;
+  --ink-soft: #3a3933;
 
-  /* Card: one warm luminance step above the ground */
-  --card: #fdfcf8;
-  --card-foreground: #141413;
-  --popover: #fdfcf8;
-  --popover-foreground: #141413;
-  /* Sunken: inset wells, code, user turns */
-  --sunken: #f2efe7;
+  --card: #d2cab8;
+  --card-foreground: #2a2a26;
+  --popover: #e7e1d4;
+  --popover-foreground: #2a2a26;
+  --sunken: #d2cab8;
 
-  --primary: #141413;
-  --primary-foreground: #faf9f5;
+  --primary: #2a2a26;
+  --primary-foreground: #ece7dc;
 
-  --secondary: #f0ede4;
-  --secondary-foreground: #201f1d;
-  --muted: #f0ede4;
-  --muted-foreground: #6b6960; /* 5.3:1 on ground */
-  --accent: #f0ede4;
-  --accent-foreground: #201f1d;
+  --secondary: #cbc3b0;
+  --secondary-foreground: #2a2a26;
+  --muted: #d2cab8;
+  --muted-foreground: #514f47;
+  --accent: #d2cab8;
+  --accent-foreground: #2a2a26;
 
-  /* Clay — held in reserve for the one action that matters.
-     clay-ink is the AA-safe clay for small text (6.1:1 on ground). */
-  --clay: #c6613f;
-  --clay-ink: #a54a2a;
-  --clay-strong: #a54a2a;
-  --clay-highlight: #d97757;
-  --clay-foreground: #fffdf8;
-  --clay-soft: #f5e7df;
+  /* "clay" is the accent role: moss */
+  --clay: #4f6238;
+  --clay-ink: #4a5c34;
+  --clay-strong: #3f4f2c;
+  --clay-highlight: #5d7342;
+  --clay-foreground: #ffffff;
+  --clay-soft: #c9ccb2;
 
-  --oat: #e3dacc;
+  --field: #3f5a2a;
+  --field-ink: #ffffff;
 
-  --destructive: #b4402e;
-  --success: #4f7a3f;
-  --warning: #b5812a;
+  --oat: #d2cab8;
 
-  /* Hairlines: subtle (inner dividers) · default · strong (controls) */
-  --border-subtle: #ebe6db;
-  --border: #e0d9cb;
-  --border-strong: #b8b2a5;
-  --input: #d6d0c2;
-  --ring: #c6613f;
+  --destructive: #9a3324;
+  --success: #4f6238;
+  --warning: #8a6418;
 
-  --grain-opacity: 0.045;
-  --grain-blend: multiply;
+  --border-subtle: transparent;
+  --border: transparent;
+  --border-strong: #9d957f;
+  --input: #9d957f;
+  --ring: #4f6238;
 
-  --radius: 0.5rem;
+  --radius: 0;
 }
 
 .dark {
-  /* Deep warm obsidian — tuned, not inverted */
-  --background: #161412;
-  --foreground: #ede9df;
-  --ink-soft: #cbc6b9;
+  --background: #1d1d19;
+  --foreground: #e8e2d3;
+  --ink-soft: #d3cdbe;
 
-  --card: #1c1a17;
-  --card-foreground: #ede9df;
-  --popover: #201e1a;
-  --popover-foreground: #ede9df;
-  --sunken: #11100e;
+  --card: #26261f;
+  --card-foreground: #e8e2d3;
+  --popover: #2e2e26;
+  --popover-foreground: #e8e2d3;
+  --sunken: #26261f;
 
-  --primary: #ede9df;
-  --primary-foreground: #161412;
+  --primary: #e8e2d3;
+  --primary-foreground: #1d1d19;
 
-  --secondary: #24211d;
-  --secondary-foreground: #ede9df;
-  --muted: #24211d;
-  --muted-foreground: #a29d91; /* 7:1 on ground */
-  --accent: #2a2722;
-  --accent-foreground: #ede9df;
+  --secondary: #303028;
+  --secondary-foreground: #e8e2d3;
+  --muted: #26261f;
+  --muted-foreground: #aaa596;
+  --accent: #303028;
+  --accent-foreground: #e8e2d3;
 
-  --clay: #d97757;
-  --clay-ink: #e8957a;
-  --clay-strong: #e8957a;
-  --clay-highlight: #e8957a;
-  --clay-foreground: #161412;
-  --clay-soft: #33241c;
+  --clay: #9db57c;
+  --clay-ink: #a9c08a;
+  --clay-strong: #b2c895;
+  --clay-highlight: #b2c895;
+  --clay-foreground: #1d1d19;
+  --clay-soft: #2f3826;
 
-  --oat: #3a352c;
+  --field: #2f4420;
+  --field-ink: #eef0e4;
 
-  --destructive: #e07a63;
-  --success: #86b06f;
+  --oat: #303028;
+
+  --destructive: #e08a75;
+  --success: #9db57c;
   --warning: #d6ab5f;
 
-  --border-subtle: #262320;
-  --border: #322e29;
-  --border-strong: #4a453d;
-  --input: #3a3630;
-  --ring: #d97757;
-
-  --grain-opacity: 0.06;
-  --grain-blend: screen;
+  --border-subtle: transparent;
+  --border: transparent;
+  --border-strong: #5f5c50;
+  --input: #5f5c50;
+  --ring: #9db57c;
 }
 
 @layer base {
@@ -185,22 +174,8 @@
 
   body {
     @apply bg-background text-foreground;
-    font-feature-settings: "cv11", "ss01", "ss03";
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
-  }
-
-  /* Paper grain: a fixed, non-interactive fractal-noise layer printed over the
-     page (below floating layers). Texture, not decoration. */
-  body::after {
-    content: "";
-    position: fixed;
-    inset: 0;
-    z-index: 60;
-    pointer-events: none;
-    opacity: var(--grain-opacity);
-    mix-blend-mode: var(--grain-blend);
-    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 0.5 0 0 0 0 0.45 0 0 0 0 0.4 0 0 0 1 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
   }
 
   ::selection {
@@ -212,7 +187,6 @@
   :focus-visible {
     outline: 2px solid var(--ring);
     outline-offset: 2px;
-    border-radius: 2px;
   }
 
   h1, h2, h3, h4 {
@@ -223,36 +197,30 @@
     text-wrap: pretty;
   }
 
-  kbd {
-    font-family: var(--font-jetbrains), ui-monospace, monospace;
+  body {
+    font-size: 1rem;
+    line-height: 1.5;
   }
 }
 
 /* ───────── Editorial utilities ───────── */
 
-/* Display serif: Newsreader with optical sizing and tight tracking */
+/* Display: Besley 800, tight, sentence case */
 @utility font-display {
-  font-family: var(--font-newsreader), Georgia, ui-serif, serif;
-  font-optical-sizing: auto;
-  font-weight: 400;
-  letter-spacing: -0.022em;
+  font-family: var(--font-display), Georgia, ui-serif, serif;
+  font-weight: 800;
+  letter-spacing: -0.02em;
 }
 
-/* Monospace figures: stats, dates, counts — always aligned */
+/* Figures: text face, tabular */
 @utility num {
-  font-family: var(--font-jetbrains), ui-monospace, monospace;
-  font-variant-numeric: tabular-nums slashed-zero;
-  font-feature-settings: "zero" 1;
-  letter-spacing: -0.01em;
+  font-variant-numeric: tabular-nums;
 }
 
-/* Metadata line: mono, uppercase, tracked — the journal's marginalia */
+/* Secondary line: text face, sentence case, small step */
 @utility meta {
-  font-family: var(--font-jetbrains), ui-monospace, monospace;
-  font-size: 11px;
+  font-size: 13px;
   line-height: 1.4;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
   font-variant-numeric: tabular-nums;
 }
 
@@ -309,102 +277,80 @@
 }
 
 @layer components {
-  /* Primary action: flat ink key, 8px control radius */
+  /* One button shape: a flat square-cornered rectangle. */
   .btn-ink,
-  .btn-claude {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    gap: 0.5rem;
-    border-radius: var(--radius-md);
-    background: var(--primary);
-    color: var(--primary-foreground);
-    font-weight: 500;
-    letter-spacing: -0.005em;
-    transition: transform 160ms var(--ease-out-expo), background-color 160ms var(--ease-out-expo);
-  }
-  .btn-ink:hover,
-  .btn-claude:hover {
-    background: color-mix(in oklab, var(--primary) 86%, var(--clay));
-  }
-  .btn-ink:active,
-  .btn-claude:active {
-    transform: translateY(1px);
-  }
-
-  /* The one clay action per screen */
-  .btn-clay {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    gap: 0.5rem;
-    border-radius: var(--radius-md);
-    background: var(--clay);
-    color: var(--clay-foreground);
-    font-weight: 500;
-    letter-spacing: -0.005em;
-    transition: transform 160ms var(--ease-out-expo), background-color 160ms var(--ease-out-expo);
-  }
-  .btn-clay:hover {
-    background: var(--clay-strong);
-  }
-  .btn-clay:active {
-    transform: translateY(1px);
-  }
-
-  /* Hairline secondary action */
+  .btn-claude,
+  .btn-clay,
   .btn-line {
     display: inline-flex;
     align-items: center;
     justify-content: center;
     gap: 0.5rem;
-    border-radius: var(--radius-md);
-    border: 1px solid var(--border-strong);
-    background: transparent;
-    color: var(--foreground);
-    font-weight: 500;
-    letter-spacing: -0.005em;
-    transition: transform 160ms var(--ease-out-expo), background-color 160ms var(--ease-out-expo), border-color 160ms var(--ease-out-expo);
+    border-radius: 0;
+    font-weight: 600;
+    transition: transform 160ms var(--ease-out-expo), background-color 160ms var(--ease-out-expo), color 160ms var(--ease-out-expo);
   }
-  .btn-line:hover {
-    background: var(--secondary);
-    border-color: color-mix(in oklab, var(--border-strong) 70%, var(--foreground));
-  }
+  .btn-ink:active,
+  .btn-claude:active,
+  .btn-clay:active,
   .btn-line:active {
     transform: translateY(1px);
   }
 
-  /* Keyboard key */
+  .btn-ink,
+  .btn-claude {
+    background: var(--primary);
+    color: var(--primary-foreground);
+  }
+  .btn-ink:hover,
+  .btn-claude:hover {
+    background: color-mix(in oklab, var(--primary) 84%, var(--clay));
+  }
+
+  /* The one accent action: moss */
+  .btn-clay {
+    background: var(--clay);
+    color: var(--clay-foreground);
+  }
+  .btn-clay:hover {
+    background: var(--clay-strong);
+  }
+
+  /* Secondary: filled with the surface tone, no outline */
+  .btn-line {
+    background: var(--secondary);
+    color: var(--foreground);
+  }
+  .btn-line:hover {
+    background: color-mix(in oklab, var(--secondary) 80%, var(--foreground));
+  }
+
+  /* Keyboard key: text face, filled */
   .kbd {
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    min-width: 1.25rem;
-    height: 1.25rem;
-    padding: 0 0.3rem;
-    border-radius: var(--radius-sm);
-    border: 1px solid var(--border);
-    border-bottom-width: 2px;
-    background: var(--card);
-    color: var(--muted-foreground);
-    font-family: var(--font-jetbrains), ui-monospace, monospace;
-    font-size: 11px;
+    min-width: 1.5rem;
+    height: 1.5rem;
+    padding: 0 0.35rem;
+    border-radius: 0;
+    background: var(--secondary);
+    color: var(--ink-soft);
+    font-family: inherit;
+    font-size: 13px;
     line-height: 1;
   }
 
-  /* Tag: a mono stack/spec chip */
+  /* Tag: a filled chip in the text face */
   .tag {
     display: inline-flex;
     align-items: center;
-    height: 1.375rem;
-    padding: 0 0.45rem;
-    border-radius: var(--radius-sm);
-    border: 1px solid var(--border-subtle);
-    background: var(--sunken);
+    height: 1.75rem;
+    padding: 0 0.55rem;
+    border-radius: 0;
+    background: var(--secondary);
     color: var(--ink-soft);
-    font-family: var(--font-jetbrains), ui-monospace, monospace;
-    font-size: 11px;
-    letter-spacing: -0.01em;
+    font-size: 13px;
     white-space: nowrap;
   }
 }
@@ -523,7 +469,7 @@ pre {
   position: absolute;
   left: 0;
   bottom: 0;
-  height: 1px;
+  height: 2px;
   width: 40%;
   background: var(--clay);
   animation: scan 1.2s var(--ease-out-expo) infinite;
@@ -548,5 +494,28 @@ pre {
   *::after {
     scroll-behavior: auto !important;
     transition-duration: 1ms !important;
+  }
+}
+
+/* ───────── Split stage: the photograph that never moves ───────── */
+@keyframes stage-in {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+@keyframes stage-drift {
+  from { transform: scale(1.06); }
+  to { transform: scale(1); }
+}
+.stage-photo {
+  animation: stage-in 1.6s ease-out both;
+}
+.stage-photo img {
+  animation: stage-drift 24s cubic-bezier(0.22, 1, 0.36, 1) both;
+  transform-origin: 50% 60%;
+}
+@media (prefers-reduced-motion: reduce) {
+  .stage-photo,
+  .stage-photo img {
+    animation: none;
   }
 }

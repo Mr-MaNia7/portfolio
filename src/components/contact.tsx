@@ -49,7 +49,7 @@ export function Contact() {
         <h2 className="font-display mt-3 text-[2rem] leading-[1.05] tracking-[-0.03em] sm:text-[2.5rem]">
           Let&apos;s build <em className="italic">something.</em>
         </h2>
-        <p className="measure mt-3 text-[15px] leading-relaxed text-[#f3f0e8]/75">
+        <p className="measure mt-3 text-[16px] leading-relaxed text-[#f3f0e8]/75">
           {availability.open ? availability.headline + '. ' : ''}Tell me what
           you&apos;re building and I&apos;ll come back with concrete next steps.
         </p>
@@ -76,7 +76,7 @@ export function Contact() {
           <p className="meta text-muted-foreground">Email</p>
           <a
             href={`mailto:${contactInfo.email}`}
-            className="font-display mt-1 block truncate text-[1.25rem] leading-snug text-foreground underline decoration-border-strong decoration-1 underline-offset-[5px] transition-colors hover:decoration-clay sm:text-[1.5rem]"
+            className="font-display mt-1 block truncate text-[1.5rem] leading-snug text-foreground underline decoration-border-strong decoration-1 underline-offset-[5px] transition-colors hover:decoration-clay sm:text-[1.5rem]"
           >
             {contactInfo.email}
           </a>
@@ -110,10 +110,10 @@ export function Contact() {
                 className="group flex items-center gap-4 px-5 py-3.5 transition-colors duration-200 hover:bg-sunken sm:px-7"
               >
                 <Icon className="h-4 w-4 shrink-0 text-muted-foreground transition-colors group-hover:text-foreground" />
-                <span className="w-20 shrink-0 text-[14px] font-medium text-foreground">
+                <span className="w-20 shrink-0 text-[16px] font-medium text-foreground">
                   {social.name}
                 </span>
-                <span className="num min-w-0 flex-1 truncate text-[12.5px] text-muted-foreground">
+                <span className="num min-w-0 flex-1 truncate text-[13px] text-muted-foreground">
                   {handleFor(social.name, social.url, personal.upworkBadge)}
                 </span>
                 <ArrowUpRight

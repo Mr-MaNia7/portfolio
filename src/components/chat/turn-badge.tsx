@@ -70,7 +70,7 @@ export function ToolPill({
     <div
       role="status"
       aria-live="polite"
-      className={`num inline-flex max-w-full items-center gap-2 overflow-hidden rounded-md border border-border-subtle bg-sunken py-1 pr-2.5 pl-2 text-[11.5px] text-muted-foreground ${
+      className={`num inline-flex max-w-full items-center gap-2 overflow-hidden rounded-md border border-border-subtle bg-sunken py-1 pr-2.5 pl-2 text-[13px] text-muted-foreground ${
         running ? 'scan-line' : ''
       }`}
     >

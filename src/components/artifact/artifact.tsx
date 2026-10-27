@@ -50,15 +50,15 @@ export function ArtifactHeader({
       )}
     >
       <div className="min-w-0 flex-1 basis-72">
-        <p className="meta text-muted-foreground">{kicker}</p>
-        <h2 className="font-display mt-2 text-[1.75rem] leading-[1.08] text-foreground sm:text-[2rem]">
+        <h2 className="font-display text-[2rem] leading-[1.05] text-foreground">
           {title}
         </h2>
         {standfirst && (
-          <p className="measure mt-2 text-[15px] leading-relaxed text-ink-soft">
+          <p className="measure mt-2 text-[16px] leading-relaxed text-ink-soft">
             {standfirst}
           </p>
         )}
+        <p className="meta mt-2 text-muted-foreground">{kicker}</p>
       </div>
       {aside && <div className="shrink-0">{aside}</div>}
     </header>
@@ -107,6 +107,7 @@ export function splitMetric(metric: string): {
   const m = metric.match(
     /^([~≈$]?\d[\d.,]*\s?(?:%|★|\+|x|k|K|M)*\+?)\s*[—–-]?\s*(.*)$/
   );
-  if (!m) return { caption: metric };
-  return { figure: m[1].trim(), caption: m[2].trim() };
+  if (!m) return { caption: metric.replace(/★/g, '') };
+  // The star glyph reads as decoration: "5.0★" is shown as "5.0/5".
+  return { figure: m[1].trim().replace(/★/g, '/5'), caption: m[2].trim() };
 }

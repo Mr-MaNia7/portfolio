@@ -44,3 +44,6 @@ next-env.d.ts
 
 # landing page repo (separate repository)
 /landing-page/
+
+# design direction scratch
+/.taste-skill/

@@ -135,10 +135,10 @@ export function Hobbies() {
               <Board />
             </div>
             <div className="min-w-0">
-              <h3 id="hobby-chess" className="font-display text-[1.375rem] leading-tight text-foreground">
+              <h3 id="hobby-chess" className="font-display text-[1.5rem] leading-tight text-foreground">
                 Chess
               </h3>
-              <p className="num mt-0.5 truncate text-[12px] text-muted-foreground">
+              <p className="num mt-0.5 truncate text-[13px] text-muted-foreground">
                 chess.com/{chess.username}
               </p>
             </div>
@@ -150,7 +150,7 @@ export function Hobbies() {
               { term: 'League', value: stats.league },
             ].map((s) => (
               <div key={s.term} className="flex min-w-0 flex-col gap-1 bg-card px-4 py-4 sm:px-5">
-                <dt className="text-[12px] text-muted-foreground">{s.term}</dt>
+                <dt className="text-[13px] text-muted-foreground">{s.term}</dt>
                 <dd className="num order-first truncate text-[1.125rem] leading-none text-foreground">
                   {s.value}
                 </dd>
@@ -186,7 +186,7 @@ export function Hobbies() {
               <Pitch label={football.positionShort} />
             </div>
             <div className="min-w-0">
-              <h3 id="hobby-football" className="font-display text-[1.375rem] leading-tight text-foreground">
+              <h3 id="hobby-football" className="font-display text-[1.5rem] leading-tight text-foreground">
                 Football
               </h3>
               <p className="mt-0.5 text-[13px] text-muted-foreground">
@@ -195,21 +195,21 @@ export function Hobbies() {
             </div>
           </div>
           <div className="flex flex-1 flex-col gap-4 px-5 py-4 sm:px-6">
-            <p className="text-[14.5px] leading-relaxed text-ink-soft">{football.note}</p>
+            <p className="text-[16px] leading-relaxed text-ink-soft">{football.note}</p>
             <div>
               <p className="meta mb-2 text-muted-foreground">I support</p>
               <ul className="flex flex-wrap gap-1.5">
                 {football.clubs.map((club) => (
                   <li
                     key={club}
-                    className="flex h-7 items-center rounded-md border border-border-strong px-2.5 text-[13px] font-medium text-foreground"
+                    className="flex h-7 items-center rounded-md border border-transparent px-2.5 text-[13px] font-medium text-foreground"
                   >
                     {club}
                   </li>
                 ))}
               </ul>
             </div>
-            <p className="mt-auto border-l-2 border-clay py-0.5 pl-3 text-[14px] leading-snug text-foreground">
+            <p className="mt-auto border-l-2 border-clay py-0.5 pl-3 text-[16px] leading-snug text-foreground">
               <span className="font-medium">{football.idol.name}.</span>{' '}
               <span className="text-ink-soft">{football.idol.note}</span>
             </p>

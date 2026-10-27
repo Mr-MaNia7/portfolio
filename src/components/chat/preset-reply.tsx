@@ -47,7 +47,7 @@ export function PresetReply({
               onClick={onClose}
               aria-label="Remove this answer from the conversation"
               title="Remove from conversation"
-              className="press flex h-7 items-center gap-1 rounded-md px-2 text-[12px] text-muted-foreground hover:bg-secondary hover:text-foreground"
+              className="press flex h-7 items-center gap-1 rounded-md px-2 text-[13px] text-muted-foreground hover:bg-secondary hover:text-foreground"
             >
               <X className="h-3.5 w-3.5" />
               <span className="hidden sm:inline">Remove</span>
@@ -82,7 +82,7 @@ export function PresetReply({
           )}
         </div>
       ) : (
-        <div className="measure rounded-lg border border-border bg-card p-5 text-[15px] leading-relaxed text-foreground">
+        <div className="measure rounded-lg border border-border bg-card p-5 text-[16px] leading-relaxed text-foreground">
           {reply}
         </div>
       )}

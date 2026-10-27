@@ -1,30 +1,23 @@
 import { Analytics } from '@vercel/analytics/react';
 import type { Metadata, Viewport } from 'next';
-import { Inter, Newsreader, JetBrains_Mono } from 'next/font/google';
+import { Besley, Libre_Franklin } from 'next/font/google';
 import { cn } from '@/lib/utils';
 import { ThemeProvider } from '@/components/theme-provider';
 import { Toaster } from '@/components/ui/sonner';
 import { getConfig } from '@/lib/config-loader';
 import './globals.css';
 
-const inter = Inter({
+// Two faces: Besley 800 for display, Libre Franklin for running text.
+const besley = Besley({
   subsets: ['latin'],
-  variable: '--font-inter',
+  variable: '--font-display',
   display: 'swap',
+  weight: ['800'],
 });
 
-const newsreader = Newsreader({
+const franklin = Libre_Franklin({
   subsets: ['latin'],
-  variable: '--font-newsreader',
-  display: 'swap',
-  style: ['normal', 'italic'],
-  // Optical sizing: tighter, higher-contrast cuts at display sizes.
-  axes: ['opsz'],
-});
-
-const jetbrainsMono = JetBrains_Mono({
-  subsets: ['latin'],
-  variable: '--font-jetbrains',
+  variable: '--font-text',
   display: 'swap',
 });
 
@@ -97,8 +90,8 @@ export const viewport: Viewport = {
   initialScale: 1,
   maximumScale: 1,
   themeColor: [
-    { media: '(prefers-color-scheme: light)', color: '#faf9f5' },
-    { media: '(prefers-color-scheme: dark)', color: '#161412' },
+    { media: '(prefers-color-scheme: light)', color: '#ddd6c6' },
+    { media: '(prefers-color-scheme: dark)', color: '#1d1d19' },
   ],
 };
 
@@ -162,9 +155,8 @@ export default function RootLayout({
       <body
         className={cn(
           'min-h-screen bg-background font-sans antialiased',
-          inter.variable,
-          newsreader.variable,
-          jetbrainsMono.variable
+          besley.variable,
+          franklin.variable
         )}
       >
         <ThemeProvider

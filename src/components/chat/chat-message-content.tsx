@@ -79,17 +79,17 @@ const CodeBlock = ({ content }: { content: string }) => {
 const MARKDOWN: Components = {
   p: ({ children }) => <p className="my-3 first:mt-0 last:mb-0">{children}</p>,
   h1: ({ children }) => (
-    <h3 className="font-display mt-6 mb-2 text-[1.375rem] leading-tight text-foreground first:mt-0">
+    <h3 className="font-display mt-6 mb-2 text-lead leading-tight text-foreground first:mt-0">
       {children}
     </h3>
   ),
   h2: ({ children }) => (
-    <h3 className="font-display mt-6 mb-2 text-[1.25rem] leading-tight text-foreground first:mt-0">
+    <h3 className="font-display mt-6 mb-2 text-lead leading-tight text-foreground first:mt-0">
       {children}
     </h3>
   ),
   h3: ({ children }) => (
-    <h4 className="mt-5 mb-1.5 text-[15px] font-semibold text-foreground first:mt-0">
+    <h4 className="mt-5 mb-1.5 text-[16px] font-semibold text-foreground first:mt-0">
       {children}
     </h4>
   ),
@@ -111,7 +111,7 @@ const MARKDOWN: Components = {
     <em className="font-display text-[1.05em] italic">{children}</em>
   ),
   blockquote: ({ children }) => (
-    <blockquote className="font-display hang my-4 border-l-2 border-clay pl-4 text-[1.125rem] leading-snug text-ink-soft italic">
+    <blockquote className="font-display hang my-4 border-l-2 border-transparent pl-4 text-[16px] leading-snug text-ink-soft italic">
       {children}
     </blockquote>
   ),
@@ -123,7 +123,7 @@ const MARKDOWN: Components = {
   ),
   table: ({ children }) => (
     <div className="scrollbar-subtle my-4 overflow-x-auto rounded-md border border-border">
-      <table className="w-full border-collapse text-left text-[14px]">
+      <table className="w-full border-collapse text-left text-[16px]">
         {children}
       </table>
     </div>
@@ -143,7 +143,7 @@ const MARKDOWN: Components = {
       href={href}
       target="_blank"
       rel="noopener noreferrer"
-      className="text-clay-ink underline decoration-clay/40 underline-offset-[3px] transition-colors hover:decoration-clay"
+      className="text-clay-ink underline decoration-current/40 underline-offset-[3px] transition-colors hover:decoration-current"
     >
       {children}
     </a>
@@ -154,7 +154,7 @@ export default function ChatMessageContent({
   message,
 }: ChatMessageContentProps) {
   return (
-    <div className="measure w-full text-[15.5px] leading-[1.7] text-foreground">
+    <div className="measure w-full text-[16px] leading-[1.7] text-foreground">
       {message.parts?.map((part, partIndex) => {
         if (part.type !== 'text' || !part.text) return null;
 

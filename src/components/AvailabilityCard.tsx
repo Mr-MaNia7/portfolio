@@ -9,7 +9,6 @@ import {
   Artifact,
   ArtifactHeader,
   ArtifactSection,
-  pad2,
 } from '@/components/artifact/artifact';
 import { CopyEmail } from '@/components/artifact/copy-email';
 
@@ -79,10 +78,10 @@ const AvailabilityCard = () => {
               key={s.label}
               className="flex flex-col gap-1.5 bg-card px-5 py-4 sm:px-7"
             >
-              <dt className="text-[12px] leading-snug text-muted-foreground">
+              <dt className="text-[13px] leading-snug text-muted-foreground">
                 {s.label}
               </dt>
-              <dd className="num order-first text-[1.375rem] leading-none text-foreground">
+              <dd className="num order-first text-lead leading-none text-foreground">
                 {s.value}
               </dd>
             </div>
@@ -98,7 +97,7 @@ const AvailabilityCard = () => {
               className="grid gap-1 py-2.5 first:pt-0 last:pb-0 sm:grid-cols-[9rem_1fr] sm:gap-6"
             >
               <dt className="meta pt-[3px] text-muted-foreground">{term}</dt>
-              <dd className="text-[14.5px] leading-relaxed text-foreground">
+              <dd className="text-[16px] leading-relaxed text-foreground">
                 {detail}
               </dd>
             </div>
@@ -108,15 +107,12 @@ const AvailabilityCard = () => {
 
       <ArtifactSection label="Where I add the most value" index={3}>
         <ol>
-          {availability.focusAreas.map((area, i) => (
+          {availability.focusAreas.map((area) => (
             <li
               key={area}
               className="flex items-baseline gap-4 border-b border-border-subtle py-2.5 first:pt-0 last:border-b-0 last:pb-0"
             >
-              <span className="num text-[11px] text-clay-ink">
-                {pad2(i + 1)}
-              </span>
-              <span className="font-display text-[1.125rem] leading-snug text-foreground">
+              <span className="font-display text-[16px] leading-snug text-foreground">
                 {area}
               </span>
             </li>
@@ -125,10 +121,10 @@ const AvailabilityCard = () => {
       </ArtifactSection>
 
       <ArtifactSection index={4}>
-        <p className="measure text-[15px] leading-[1.7] text-ink-soft">
+        <p className="measure text-[16px] leading-[1.7] text-ink-soft">
           {availability.goals}
         </p>
-        <p className="font-display measure mt-3 text-[15px] leading-relaxed text-muted-foreground italic">
+        <p className="font-display measure mt-3 text-[16px] leading-relaxed text-muted-foreground italic">
           {availability.note}
         </p>
       </ArtifactSection>
@@ -154,7 +150,7 @@ const AvailabilityCard = () => {
           href={agency.url}
           target="_blank"
           rel="noopener noreferrer"
-          className="ml-auto flex items-center gap-1 text-[13px] text-ink-soft underline decoration-border-strong underline-offset-4 transition-colors hover:text-foreground hover:decoration-clay"
+          className="ml-auto flex items-center gap-1 text-[13px] text-ink-soft underline decoration-border-strong underline-offset-4 transition-colors hover:text-foreground hover:decoration-current"
         >
           Need a team? {agency.name}
           <ArrowUpRight className="h-3.5 w-3.5" aria-hidden />

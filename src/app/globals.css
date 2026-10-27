@@ -4,16 +4,11 @@
 
 /*
   ────────────────────────────────────────────────────────────────
-  Research journal × tactile editorial artifacts
-  Warm ivory parchment · deep warm obsidian · one terracotta/clay accent.
-  Surfaces separate by small warm luminance steps and 1px hairlines —
-  never by drop-shadows or glow. Shadows exist only on things that truly
-  float (command menu, popovers, dialogs, toasts).
-
-  Faces (next/font): Newsreader for display, Inter for running text,
-  JetBrains Mono for metadata, commands and figures.
-
-  Radius roles: chip/kbd 4px · control 8px · artifact sheet 12px.
+  The pinned poster
+  One mustard field, black ink, royal blue only on the primary action.
+  One face (Switzer). Surfaces separate by a tone step, never by a line
+  or a shadow. Square corners; the hero reel frames take 4px.
+  Shadows exist only on things that truly float (menus, dialogs, toasts).
   ────────────────────────────────────────────────────────────────
 */
 
@@ -21,6 +16,7 @@
   --color-background: var(--background);
   --color-foreground: var(--foreground);
   --color-ink-soft: var(--ink-soft);
+  --color-heading: var(--heading);
 
   --color-card: var(--card);
   --color-card-foreground: var(--card-foreground);
@@ -56,117 +52,123 @@
   --color-input: var(--input);
   --color-ring: var(--ring);
 
-  --font-sans: var(--font-inter), ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
-  --font-serif: var(--font-newsreader), Georgia, "Times New Roman", ui-serif, serif;
-  --font-mono: var(--font-jetbrains), ui-monospace, "SF Mono", Menlo, monospace;
+  --font-sans: var(--font-switzer), ui-sans-serif, system-ui, "Helvetica Neue", Arial, sans-serif;
+  --font-serif: var(--font-switzer), ui-sans-serif, system-ui, "Helvetica Neue", Arial, sans-serif;
+  /* Real code only — a system stack, not a loaded face */
+  --font-mono: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
 
-  --radius-sm: 0.25rem; /* chip · kbd            */
-  --radius-md: 0.5rem;  /* control               */
-  --radius-lg: 0.75rem; /* artifact sheet · card  */
-  --radius-xl: 1rem;    /* dialog                */
+  /* Square everywhere. The hero reel frames set their own 4px. */
+  --radius-xs: 0;
+  --radius-sm: 0;
+  --radius-md: 0;
+  --radius-lg: 0;
+  --radius-xl: 0;
+  --radius-2xl: 0;
+  --radius-3xl: 0;
 
   --ease-out-expo: cubic-bezier(0.22, 1, 0.36, 1);
 
   /* Floating layers only (menus, dialogs, toasts) — never on resting cards. */
-  --shadow-float: 0 1px 0 0 var(--border-subtle), 0 16px 40px -16px rgba(20, 18, 15, 0.22);
+  --shadow-float: 0 18px 48px -18px rgba(11, 11, 11, 0.45);
 }
 
 :root {
-  /* Ground: warm ivory parchment — never pure white */
-  --background: #faf9f5;
-  --foreground: #141413;
-  /* Secondary running text: still near-ink, never washed-out grey */
-  --ink-soft: #3d3b35;
+  /* Type steps: five sizes on the whole page */
+  --step-small: 13px;
+  --step-body: 16px;
+  --step-lead: 1.25rem;
+  --step-head: clamp(2rem, 1.4rem + 1.8vw, 3rem);
+  --step-display: clamp(40px, 4.4vw, 72px);
 
-  /* Card: one warm luminance step above the ground */
-  --card: #fdfcf8;
-  --card-foreground: #141413;
-  --popover: #fdfcf8;
-  --popover-foreground: #141413;
-  /* Sunken: inset wells, code, user turns */
-  --sunken: #f2efe7;
+  /* Mustard field, black ink */
+  --background: #e1ac10;
+  --foreground: #0b0b0b;
+  --ink-soft: #1f1905;
+  --heading: #0b0b0b;
 
-  --primary: #141413;
-  --primary-foreground: #faf9f5;
+  /* Surface: one tone step darker than the field */
+  --card: #cd9d0f;
+  --card-foreground: #0b0b0b;
+  --popover: #e9b82a;
+  --popover-foreground: #0b0b0b;
+  --sunken: #d4a20e;
 
-  --secondary: #f0ede4;
-  --secondary-foreground: #201f1d;
-  --muted: #f0ede4;
-  --muted-foreground: #6b6960; /* 5.3:1 on ground */
-  --accent: #f0ede4;
-  --accent-foreground: #201f1d;
+  --primary: #0b0b0b;
+  --primary-foreground: #e1ac10;
 
-  /* Clay — held in reserve for the one action that matters.
-     clay-ink is the AA-safe clay for small text (6.1:1 on ground). */
-  --clay: #c6613f;
-  --clay-ink: #a54a2a;
-  --clay-strong: #a54a2a;
-  --clay-highlight: #d97757;
-  --clay-foreground: #fffdf8;
-  --clay-soft: #f5e7df;
+  --secondary: #cd9d0f;
+  --secondary-foreground: #0b0b0b;
+  --muted: #cd9d0f;
+  --muted-foreground: #44360a; /* 5.3:1 on field, 4.6:1 on surface */
+  --accent: #cd9d0f;
+  --accent-foreground: #0b0b0b;
 
-  --oat: #e3dacc;
+  /* The accent: royal blue, held for the primary action (Hire me).
+     clay-ink is plain ink so small labels never borrow the accent. */
+  --clay: #24338f;
+  --clay-ink: #0b0b0b;
+  --clay-strong: #1b2873;
+  --clay-highlight: #24338f;
+  --clay-foreground: #ffffff;
+  --clay-soft: #cd9d0f;
 
-  --destructive: #b4402e;
-  --success: #4f7a3f;
-  --warning: #b5812a;
+  --oat: #cd9d0f;
 
-  /* Hairlines: subtle (inner dividers) · default · strong (controls) */
-  --border-subtle: #ebe6db;
-  --border: #e0d9cb;
-  --border-strong: #b8b2a5;
-  --input: #d6d0c2;
-  --ring: #c6613f;
+  --destructive: #8f1d12;
+  --success: #1d5a1d;
+  --warning: #6b4a00;
 
-  --grain-opacity: 0.045;
-  --grain-blend: multiply;
+  /* No hairlines: borders match the surface they sit on */
+  --border-subtle: transparent;
+  --border: transparent;
+  --border-strong: #8a6c0c;
+  --input: #8a6c0c;
+  --ring: #0b0b0b;
 
-  --radius: 0.5rem;
+  --radius: 0;
 }
 
 .dark {
-  /* Deep warm obsidian — tuned, not inverted */
-  --background: #161412;
-  --foreground: #ede9df;
-  --ink-soft: #cbc6b9;
+  /* Near-black ground, mustard headings, warm off-white ink */
+  --background: #0e0d0a;
+  --foreground: #f3e6bf;
+  --ink-soft: #dccfa6;
+  --heading: #e1ac10;
 
-  --card: #1c1a17;
-  --card-foreground: #ede9df;
-  --popover: #201e1a;
-  --popover-foreground: #ede9df;
-  --sunken: #11100e;
+  --card: #1a1810;
+  --card-foreground: #f3e6bf;
+  --popover: #1f1c13;
+  --popover-foreground: #f3e6bf;
+  --sunken: #15130d;
 
-  --primary: #ede9df;
-  --primary-foreground: #161412;
+  --primary: #e1ac10;
+  --primary-foreground: #0e0d0a;
 
-  --secondary: #24211d;
-  --secondary-foreground: #ede9df;
-  --muted: #24211d;
-  --muted-foreground: #a29d91; /* 7:1 on ground */
-  --accent: #2a2722;
-  --accent-foreground: #ede9df;
+  --secondary: #24211a;
+  --secondary-foreground: #f3e6bf;
+  --muted: #1a1810;
+  --muted-foreground: #b9a76a; /* 7.9:1 on ground */
+  --accent: #24211a;
+  --accent-foreground: #f3e6bf;
 
-  --clay: #d97757;
-  --clay-ink: #e8957a;
-  --clay-strong: #e8957a;
-  --clay-highlight: #e8957a;
-  --clay-foreground: #161412;
-  --clay-soft: #33241c;
+  --clay: #7d8cf0;
+  --clay-ink: #f3e6bf;
+  --clay-strong: #97a3f4;
+  --clay-highlight: #7d8cf0;
+  --clay-foreground: #0e0d0a;
+  --clay-soft: #1a1810;
 
-  --oat: #3a352c;
+  --oat: #24211a;
 
-  --destructive: #e07a63;
-  --success: #86b06f;
-  --warning: #d6ab5f;
+  --destructive: #f08a76;
+  --success: #8cc27a;
+  --warning: #e1ac10;
 
-  --border-subtle: #262320;
-  --border: #322e29;
-  --border-strong: #4a453d;
-  --input: #3a3630;
-  --ring: #d97757;
-
-  --grain-opacity: 0.06;
-  --grain-blend: screen;
+  --border-subtle: transparent;
+  --border: transparent;
+  --border-strong: #5c5232;
+  --input: #5c5232;
+  --ring: #e1ac10;
 }
 
 @layer base {
@@ -185,34 +187,22 @@
 
   body {
     @apply bg-background text-foreground;
-    font-feature-settings: "cv11", "ss01", "ss03";
+    font-size: var(--step-body);
+    line-height: 1.5;
+    letter-spacing: -0.005em;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
   }
 
-  /* Paper grain: a fixed, non-interactive fractal-noise layer printed over the
-     page (below floating layers). Texture, not decoration. */
-  body::after {
-    content: "";
-    position: fixed;
-    inset: 0;
-    z-index: 60;
-    pointer-events: none;
-    opacity: var(--grain-opacity);
-    mix-blend-mode: var(--grain-blend);
-    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 0.5 0 0 0 0 0.45 0 0 0 0 0.4 0 0 0 1 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
-  }
-
   ::selection {
-    background: color-mix(in oklab, var(--clay) 26%, transparent);
-    color: var(--foreground);
+    background: var(--foreground);
+    color: var(--background);
   }
 
-  /* Keyboard focus — a crisp clay ring, no glow */
+  /* Keyboard focus — a crisp ink ring, no glow */
   :focus-visible {
     outline: 2px solid var(--ring);
     outline-offset: 2px;
-    border-radius: 2px;
   }
 
   h1, h2, h3, h4 {
@@ -224,35 +214,45 @@
   }
 
   kbd {
-    font-family: var(--font-jetbrains), ui-monospace, monospace;
+    font-family: inherit;
   }
 }
 
 /* ───────── Editorial utilities ───────── */
 
-/* Display serif: Newsreader with optical sizing and tight tracking */
+/* Display: Switzer 600, pulled tight, sentence case */
 @utility font-display {
-  font-family: var(--font-newsreader), Georgia, ui-serif, serif;
-  font-optical-sizing: auto;
-  font-weight: 400;
-  letter-spacing: -0.022em;
+  font-family: var(--font-switzer), ui-sans-serif, system-ui, sans-serif;
+  font-weight: 600;
+  letter-spacing: -0.03em;
 }
 
-/* Monospace figures: stats, dates, counts — always aligned */
+@utility text-head {
+  font-size: var(--step-head);
+  line-height: 1;
+  letter-spacing: -0.04em;
+}
+
+@utility text-lead {
+  font-size: var(--step-lead);
+  line-height: 1.3;
+}
+
+@utility text-display {
+  font-size: var(--step-display);
+  line-height: 0.95;
+  letter-spacing: -0.04em;
+}
+
+/* Figures: text face, tabular so they align */
 @utility num {
-  font-family: var(--font-jetbrains), ui-monospace, monospace;
-  font-variant-numeric: tabular-nums slashed-zero;
-  font-feature-settings: "zero" 1;
-  letter-spacing: -0.01em;
+  font-variant-numeric: tabular-nums;
 }
 
-/* Metadata line: mono, uppercase, tracked — the journal's marginalia */
+/* Secondary line: text face, sentence case, the small step */
 @utility meta {
-  font-family: var(--font-jetbrains), ui-monospace, monospace;
-  font-size: 11px;
+  font-size: var(--step-small);
   line-height: 1.4;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
   font-variant-numeric: tabular-nums;
 }
 
@@ -309,102 +309,80 @@
 }
 
 @layer components {
-  /* Primary action: flat ink key, 8px control radius */
+  /* One button shape: square, flat, one fill */
   .btn-ink,
-  .btn-claude {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    gap: 0.5rem;
-    border-radius: var(--radius-md);
-    background: var(--primary);
-    color: var(--primary-foreground);
-    font-weight: 500;
-    letter-spacing: -0.005em;
-    transition: transform 160ms var(--ease-out-expo), background-color 160ms var(--ease-out-expo);
-  }
-  .btn-ink:hover,
-  .btn-claude:hover {
-    background: color-mix(in oklab, var(--primary) 86%, var(--clay));
-  }
-  .btn-ink:active,
-  .btn-claude:active {
-    transform: translateY(1px);
-  }
-
-  /* The one clay action per screen */
-  .btn-clay {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    gap: 0.5rem;
-    border-radius: var(--radius-md);
-    background: var(--clay);
-    color: var(--clay-foreground);
-    font-weight: 500;
-    letter-spacing: -0.005em;
-    transition: transform 160ms var(--ease-out-expo), background-color 160ms var(--ease-out-expo);
-  }
-  .btn-clay:hover {
-    background: var(--clay-strong);
-  }
-  .btn-clay:active {
-    transform: translateY(1px);
-  }
-
-  /* Hairline secondary action */
+  .btn-claude,
+  .btn-clay,
   .btn-line {
     display: inline-flex;
     align-items: center;
     justify-content: center;
     gap: 0.5rem;
-    border-radius: var(--radius-md);
-    border: 1px solid var(--border-strong);
-    background: transparent;
-    color: var(--foreground);
+    border-radius: 0;
     font-weight: 500;
     letter-spacing: -0.005em;
-    transition: transform 160ms var(--ease-out-expo), background-color 160ms var(--ease-out-expo), border-color 160ms var(--ease-out-expo);
+    transition: transform 160ms var(--ease-out-expo), background-color 160ms var(--ease-out-expo), color 160ms var(--ease-out-expo);
   }
-  .btn-line:hover {
-    background: var(--secondary);
-    border-color: color-mix(in oklab, var(--border-strong) 70%, var(--foreground));
-  }
+  .btn-ink:active,
+  .btn-claude:active,
+  .btn-clay:active,
   .btn-line:active {
     transform: translateY(1px);
   }
 
-  /* Keyboard key */
+  /* Ink key */
+  .btn-ink,
+  .btn-claude {
+    background: var(--primary);
+    color: var(--primary-foreground);
+  }
+  .btn-ink:hover,
+  .btn-claude:hover {
+    background: color-mix(in oklab, var(--primary) 82%, var(--background));
+  }
+
+  /* The one accent action: Hire me */
+  .btn-clay {
+    background: var(--clay);
+    color: var(--clay-foreground);
+  }
+  .btn-clay:hover {
+    background: var(--clay-strong);
+  }
+
+  /* Secondary: a filled surface, no outline */
+  .btn-line {
+    background: var(--secondary);
+    color: var(--secondary-foreground);
+  }
+  .btn-line:hover {
+    background: color-mix(in oklab, var(--secondary) 84%, var(--foreground));
+  }
+
+  /* Keyboard key: text face, a tone step */
   .kbd {
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    min-width: 1.25rem;
-    height: 1.25rem;
-    padding: 0 0.3rem;
-    border-radius: var(--radius-sm);
-    border: 1px solid var(--border);
-    border-bottom-width: 2px;
-    background: var(--card);
-    color: var(--muted-foreground);
-    font-family: var(--font-jetbrains), ui-monospace, monospace;
-    font-size: 11px;
+    min-width: 1.5rem;
+    height: 1.5rem;
+    padding: 0 0.35rem;
+    background: var(--sunken);
+    color: var(--foreground);
+    font-family: inherit;
+    font-size: var(--step-small);
     line-height: 1;
   }
 
-  /* Tag: a mono stack/spec chip */
+  /* Tag: a stack/spec chip on a tone step */
   .tag {
     display: inline-flex;
     align-items: center;
-    height: 1.375rem;
-    padding: 0 0.45rem;
-    border-radius: var(--radius-sm);
-    border: 1px solid var(--border-subtle);
+    height: 1.75rem;
+    padding: 0 0.5rem;
     background: var(--sunken);
-    color: var(--ink-soft);
-    font-family: var(--font-jetbrains), ui-monospace, monospace;
-    font-size: 11px;
-    letter-spacing: -0.01em;
+    color: var(--foreground);
+    font-size: var(--step-small);
     white-space: nowrap;
   }
 }
@@ -502,8 +480,7 @@ pre {
   display: inline-block;
   width: 5px;
   height: 5px;
-  border-radius: 1px;
-  background: var(--clay);
+  background: var(--foreground);
   animation: breathe 1.1s ease-in-out infinite;
 }
 .composing span:nth-child(2) { animation-delay: 0.15s; }
@@ -525,7 +502,7 @@ pre {
   bottom: 0;
   height: 1px;
   width: 40%;
-  background: var(--clay);
+  background: var(--foreground);
   animation: scan 1.2s var(--ease-out-expo) infinite;
 }
 
@@ -548,5 +525,172 @@ pre {
   *::after {
     scroll-behavior: auto !important;
     transition-duration: 1ms !important;
+  }
+}
+
+/* Dark: headings take the mustard */
+.dark :is(h1, h2) {
+  color: var(--heading);
+}
+
+/* ───────── The pinned poster (hero) ─────────
+   A sticky stage the height of the scroll area. The sentence is split to the
+   two edges on the centre line; a reel of covers passes between the halves.
+   --pos (set from scroll progress) moves the reel; --stage-h is the stage. */
+.poster {
+  --margin: 32px;
+  --sliver: 60px;
+  --fw: 35vw;
+  --fh: calc(var(--fw) * 9 / 16);
+  --d: calc(var(--stage-h) / 2 - var(--sliver) + var(--fh) / 2);
+}
+.poster-reel {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+}
+.poster-frame {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: var(--fw);
+  aspect-ratio: 16 / 9;
+  overflow: hidden;
+  border-radius: 4px;
+  background: var(--card);
+  cursor: pointer;
+  transform: translate(-50%, -50%) translateY(calc((var(--i) - var(--pos)) * var(--d)));
+  will-change: transform;
+}
+.poster-frame:focus-visible {
+  outline-offset: 4px;
+}
+.poster-title {
+  position: absolute;
+  left: var(--margin);
+  right: var(--margin);
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 2;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  pointer-events: none;
+  white-space: nowrap;
+}
+.poster-caption {
+  position: absolute;
+  left: 50%;
+  top: calc(50% + var(--fh) / 2 + 14px);
+  transform: translateX(-50%);
+  z-index: 3;
+  white-space: nowrap;
+  transition: opacity 120ms linear;
+}
+.poster-lede {
+  position: absolute;
+  left: var(--margin);
+  bottom: var(--margin);
+  z-index: 2;
+  max-width: min(calc(32.5vw - var(--margin) - 32px), 27rem);
+}
+
+/* Tablet and phone: the halves stack around the frame */
+@media (max-width: 1023px) {
+  .poster {
+    --margin: 16px;
+    --sliver: 28px;
+    --gap: 12px;
+    --fw: min(calc(100vw - 32px), calc((var(--stage-h) - 412px) * 4 / 3));
+    --fh: calc(var(--fw) * 3 / 4);
+    --d: calc(var(--fh) + var(--gap));
+  }
+  .poster-stage {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    padding: 20px var(--margin) 24px;
+  }
+  .poster-title {
+    display: contents;
+  }
+  .poster-half {
+    display: block;
+  }
+  .poster-first {
+    order: 1;
+    align-self: flex-start;
+  }
+  .poster-reel {
+    order: 2;
+    position: relative;
+    inset: auto;
+    flex: none;
+    align-self: center;
+    width: var(--fw);
+    height: calc(var(--fh) + 2 * (var(--sliver) + var(--gap)));
+    overflow: hidden;
+  }
+  .poster-frame {
+    aspect-ratio: 4 / 3;
+  }
+  .poster-caption {
+    order: 3;
+    position: static;
+    transform: none;
+    align-self: center;
+    white-space: normal;
+    text-align: center;
+  }
+  .poster-second {
+    order: 4;
+    align-self: flex-end;
+  }
+  .poster-lede {
+    order: 5;
+    position: static;
+    max-width: 34rem;
+    margin-top: auto;
+  }
+  .poster-lede > p {
+    font-size: var(--step-body);
+    line-height: 1.5;
+  }
+}
+
+/* Sections rising into view once (set up by script; content stays visible without it) */
+.rise-ready [data-rise] {
+  opacity: 0;
+  transform: translateY(24px);
+  transition: opacity 600ms var(--ease-out-expo), transform 700ms var(--ease-out-expo);
+  transition-delay: calc(var(--i, 0) * 80ms);
+}
+.rise-ready [data-rise].is-in {
+  opacity: 1;
+  transform: none;
+}
+
+/* Proof band: client names running off both edges */
+@keyframes marquee {
+  from { transform: translateX(0); }
+  to { transform: translateX(-50%); }
+}
+.marquee-track {
+  display: flex;
+  width: max-content;
+  animation: marquee 40s linear infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .rise-ready [data-rise] {
+    opacity: 1;
+    transform: none;
+    transition: none;
+  }
+  .marquee-track {
+    animation: none;
+  }
+  .poster-frame {
+    will-change: auto;
   }
 }

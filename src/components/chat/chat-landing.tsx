@@ -2,17 +2,17 @@
 
 import Image from 'next/image';
 import { ArrowRight, ArrowUpRight, Sparkles } from 'lucide-react';
-import React, { useState, type CSSProperties } from 'react';
+import React, { useEffect, useRef, useState, type CSSProperties } from 'react';
 
-import { pad2, splitMetric } from '@/components/artifact/artifact';
+import { splitMetric } from '@/components/artifact/artifact';
+import { PosterHero, type ReelItem } from '@/components/chat/poster-hero';
 import { ProjectDialog, projectCover } from '@/components/projects/project-dialog';
-import { UpworkBadge } from '@/components/ui/upwork-badge';
-import { useLocalTime } from '@/hooks/use-local-time';
 import { presetReplies, getConfig } from '@/lib/config-loader';
 import type { Command } from '@/lib/commands';
 import type { Project } from '@/types/portfolio';
 
 interface ChatLandingProps {
+  scrollRef: React.RefObject<HTMLDivElement | null>;
   submitQuery: (query: string) => void;
   handlePresetReply?: (question: string, reply: string, tool: string) => void;
   onOpenCommand?: () => void;
@@ -28,12 +28,17 @@ const LIVE_EXAMPLES = [
   'Why should I hire you over another senior engineer?',
 ];
 
+const RASTER = /\.(png|jpe?g|webp)$/;
+const REEL_LENGTH = 5;
+
 /**
- * The landing page is the path a client takes without typing — who I am,
- * proof, what I can do for you, what clients say, how to hire me — with the
- * chat as the layer on top. Every section ends somewhere useful.
+ * The landing: a pinned poster (the sentence held at the edges while the
+ * work passes between its halves), then the path a client takes without
+ * typing — proof, the flagship, selected work, what I can do, what clients
+ * say, how to ask — in one narrow column, with the chat as the layer on top.
  */
 const ChatLanding: React.FC<ChatLandingProps> = ({
+  scrollRef,
   submitQuery,
   handlePresetReply,
   onOpenCommand,
@@ -42,25 +47,32 @@ const ChatLanding: React.FC<ChatLandingProps> = ({
 }) => {
   const config = getConfig();
   const { personal, stats, availability, projects, reviews, agency } = config;
-  const time = useLocalTime(personal.timezone);
   const [openIndex, setOpenIndex] = useState<number | null>(null);
+  const rootRef = useRef<HTMLDivElement>(null);
 
   const flagshipIndex = Math.max(
     0,
     projects.findIndex((p) => p.flagship)
   );
   const flagship = projects[flagshipIndex];
-  // The next two projects with real covers.
-  const selected = projects
+  const withCovers = projects
     .map((p, i) => ({ p, i }))
-    .filter(({ p, i }) => i !== flagshipIndex && /\.(png|jpe?g|webp)$/.test(p.cover ?? ''))
-    .slice(0, 2);
+    .filter(({ p, i }) => i !== flagshipIndex && RASTER.test(p.cover ?? ''));
+  const selected = withCovers.slice(0, 2);
+  const reel: ReelItem[] = [
+    { project: flagship, index: flagshipIndex },
+    ...withCovers.slice(0, REEL_LENGTH - 1).map(({ p, i }) => ({ project: p, index: i })),
+  ];
   const clients = config.experience
     .map((e) => e.company)
     .filter((c) => !['Upwork', 'Eaglix Tech', 'Hiya General Trading PLC'].includes(c));
   const index = commands.filter((c) => c.group === 'Ask');
   const [lead, ...moreQuotes] = reviews.quotes;
   const shortQuotes = moreQuotes.filter((q) => q.text.length < 140).slice(0, 2);
+
+  const city = personal.location.split(',')[0];
+  const standing = personal.upworkBadge.replace(' · ', ', ');
+  const lede = `Senior full-stack engineer in ${city} building AI voice platforms and multi-tenant SaaS. ${standing}.`;
 
   const ask = (q: string) => {
     const preset = presetReplies[q as keyof typeof presetReplies];
@@ -71,351 +83,312 @@ const ChatLanding: React.FC<ChatLandingProps> = ({
     }
   };
 
-  const city = personal.location.split(',')[0];
-  const offset = personal.timezone.split('·').pop()?.trim();
+  // Each section's parts rise once as they enter the scroll area. Without the
+  // script (or with reduced motion) nothing is ever hidden.
+  useEffect(() => {
+    const el = rootRef.current;
+    const root = scrollRef.current;
+    if (!el || !root) return;
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+    const io = new IntersectionObserver(
+      (entries) => {
+        for (const e of entries) {
+          if (e.isIntersecting) {
+            e.target.classList.add('is-in');
+            io.unobserve(e.target);
+          }
+        }
+      },
+      { root, rootMargin: '0px 0px -8% 0px' }
+    );
+    el.querySelectorAll('[data-rise]').forEach((t) => io.observe(t));
+    el.classList.add('rise-ready');
+    return () => {
+      io.disconnect();
+      el.classList.remove('rise-ready');
+    };
+  }, [scrollRef]);
 
   return (
-    <div className="mx-auto w-full py-8 sm:py-12">
-      {/* ── Hero ─────────────────────────────────────────── */}
-      <section aria-labelledby="hero-heading" className="grid gap-8 sm:grid-cols-[1fr_10.5rem] sm:items-end sm:gap-10">
-        <div className="min-w-0">
-          <div
-            className="reveal flex items-center gap-3"
-            style={{ '--i': 0 } as CSSProperties}
-          >
-            <span className="relative h-12 w-12 shrink-0 overflow-hidden rounded-md border border-border sm:hidden">
-              <Image src={personal.photo} alt={personal.name} fill sizes="48px" className="object-cover" priority />
-            </span>
-            {availability.open && (
-              <p className="meta flex items-center gap-2 text-ink-soft">
-                <span className="status-dot" aria-hidden />
-                {availability.headline}
-              </p>
-            )}
-          </div>
+    <div ref={rootRef} className="w-full pb-24">
+      <PosterHero
+        items={reel}
+        scrollRef={scrollRef}
+        lede={lede}
+        onHire={onHire}
+        onOpen={(i) => setOpenIndex(i)}
+      />
 
-          <h1
-            id="hero-heading"
-            className="reveal font-display mt-5 text-[2.75rem] leading-[1] tracking-[-0.035em] text-balance text-foreground sm:text-[3.875rem]"
-            style={{ '--i': 1 } as CSSProperties}
-          >
-            {personal.headline}
-          </h1>
-
-          <p
-            className="reveal measure mt-5 text-[1.0625rem] leading-[1.55] text-ink-soft sm:text-[1.1875rem]"
-            style={{ '--i': 2 } as CSSProperties}
-          >
-            {personal.tagline}
-            {personal.currently && (
-              <>
-                {' '}Currently {personal.currently.role.toLowerCase()} at{' '}
-                <a
-                  href={personal.currently.url}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="font-medium text-foreground underline decoration-clay/50 underline-offset-4 hover:decoration-clay"
-                >
-                  {personal.currently.company}
-                </a>
-                .
-              </>
-            )}
-          </p>
-
-          <div
-            className="reveal mt-7 flex flex-wrap items-center gap-2.5"
-            style={{ '--i': 3 } as CSSProperties}
-          >
-            <button type="button" onClick={onHire} aria-haspopup="dialog" className="btn-clay h-11 px-5 text-[15px]">
-              Hire me
-              <ArrowUpRight className="h-4 w-4" aria-hidden />
-            </button>
-            <button
-              type="button"
-              onClick={() => setOpenIndex(flagshipIndex)}
-              aria-haspopup="dialog"
-              className="btn-line h-11 px-5 text-[15px]"
-            >
-              See the {flagship.client ?? 'flagship'} case study
-            </button>
-          </div>
-          <div className="reveal mt-4" style={{ '--i': 4 } as CSSProperties}>
-            <UpworkBadge className="!text-[13px]" />
+      {/* ── Proof: the names running off both edges ───────── */}
+      <section aria-labelledby="proof-heading" className="mt-8">
+        <div className="overflow-hidden bg-card py-10 sm:py-14" aria-hidden>
+          <div className="marquee-track">
+            {[0, 1].map((copy) => (
+              <span key={copy} className="flex shrink-0 items-center">
+                {clients.map((c) => (
+                  <span
+                    key={c}
+                    className="font-display text-display flex items-center whitespace-nowrap text-foreground"
+                  >
+                    {c}
+                    <span className="mx-[0.45em] inline-block h-[0.22em] w-[0.22em] rounded-full bg-foreground" />
+                  </span>
+                ))}
+              </span>
+            ))}
           </div>
         </div>
-
-        {/* Portrait */}
-        <figure className="reveal hidden sm:block" style={{ '--i': 2 } as CSSProperties}>
-          <div className="relative aspect-[4/5] overflow-hidden rounded-lg border border-border">
-            <Image src={personal.photo} alt={personal.name} fill sizes="168px" className="object-cover" priority />
+        <Column>
+          <div className="mt-12 grid gap-10 sm:mt-16 lg:grid-cols-[1fr_1.1fr] lg:gap-16">
+            <div data-rise style={{ '--i': 0 } as CSSProperties}>
+              <h2 id="proof-heading" className="font-display text-head text-heading">
+                Who I’ve shipped for
+              </h2>
+              <p className="mt-5 text-[16px] text-foreground">
+                {clients.join(', ')}. {reviews.summary}.
+              </p>
+            </div>
+            <dl className="grid grid-cols-2 gap-x-8 gap-y-8 self-end">
+              {stats.map((s, i) => (
+                <div
+                  key={s.label}
+                  className="flex flex-col gap-2"
+                  data-rise
+                  style={{ '--i': i + 1 } as CSSProperties}
+                >
+                  <dt className="text-[13px] text-muted-foreground">{s.label}</dt>
+                  <dd className="num font-display order-first text-head text-foreground">{s.value}</dd>
+                </div>
+              ))}
+            </dl>
           </div>
-          <figcaption className="meta mt-2.5 text-muted-foreground">
-            {city}{' '}
-            <span className="num text-foreground" suppressHydrationWarning>
-              {time?.label ?? '--:--'}
-            </span>{' '}
-            {offset}
-          </figcaption>
-        </figure>
+        </Column>
       </section>
 
-      {/* ── Telemetry ────────────────────────────────────── */}
-      <dl
-        className="reveal mt-10 grid grid-cols-2 gap-px border-y border-border bg-border-subtle sm:grid-cols-4"
-        style={{ '--i': 5 } as CSSProperties}
-      >
-        {stats.map((s) => (
-          <div
-            key={s.label}
-            className="flex flex-col gap-1.5 bg-background py-4 pr-3 pl-4 max-sm:odd:pl-0 sm:first:pl-0"
+      <Column>
+        {/* ── Flagship ─────────────────────────────────────── */}
+        <Section title="Flagship case study" id="flagship">
+          <button
+            type="button"
+            onClick={() => setOpenIndex(flagshipIndex)}
+            aria-haspopup="dialog"
+            data-rise
+            style={{ '--i': 1 } as CSSProperties}
+            className="group grid w-full overflow-hidden bg-card text-left transition-colors hover:bg-sunken lg:grid-cols-[1.2fr_1fr]"
           >
-            <dt className="text-[13px] leading-snug text-muted-foreground">{s.label}</dt>
-            <dd className="num order-first text-[1.375rem] leading-none text-foreground">{s.value}</dd>
-          </div>
-        ))}
-      </dl>
-
-      {/* ── Trusted by ───────────────────────────────────── */}
-      <div className="reveal mt-6 flex flex-wrap items-baseline gap-x-5 gap-y-2" style={{ '--i': 6 } as CSSProperties}>
-        <span className="meta text-muted-foreground">Shipped for</span>
-        {clients.map((c) => (
-          <span key={c} className="font-display text-[1.125rem] leading-none text-ink-soft">
-            {c}
-          </span>
-        ))}
-      </div>
-
-      {/* ── 01 Flagship ──────────────────────────────────── */}
-      <Section index={1} title="Flagship case study" id="flagship">
-        <button
-          type="button"
-          onClick={() => setOpenIndex(flagshipIndex)}
-          aria-haspopup="dialog"
-          className="group grid w-full overflow-hidden rounded-lg border border-border bg-card text-left transition-colors hover:border-border-strong sm:grid-cols-[1.15fr_1fr]"
-        >
-          {/* The 4:3 cover, centred in a sunken frame that matches the text's height */}
-          <span className="flex items-center border-b border-border bg-sunken sm:border-r sm:border-b-0 sm:p-4">
-            <span className="relative block aspect-[4/3] w-full overflow-hidden sm:rounded-md sm:border sm:border-border-subtle">
+            <span className="relative block aspect-[4/3] w-full overflow-hidden">
               <Image
                 src={projectCover(flagship)}
                 alt={`${flagship.title} — cover`}
                 fill
-                sizes="(min-width: 640px) 400px, 100vw"
-                className="object-cover transition-transform duration-[240ms] ease-[cubic-bezier(0.22,1,0.36,1)] group-hover:scale-[1.02] motion-reduce:transition-none motion-reduce:group-hover:scale-100"
+                sizes="(min-width: 1024px) 480px, 100vw"
+                className="object-cover transition-transform duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] group-hover:scale-[1.03] motion-reduce:transition-none motion-reduce:group-hover:scale-100"
               />
             </span>
-          </span>
-          <span className="flex min-w-0 flex-col gap-3 p-5 sm:p-6">
-            <span className="meta flex items-center justify-between gap-2 text-muted-foreground">
-              <span className="text-clay-ink">{flagship.category}</span>
-              <span className="num normal-case tracking-normal">{flagship.date}</span>
+            <span className="flex min-w-0 flex-col gap-4 p-6 sm:p-8">
+              <span className="meta flex items-center justify-between gap-2 text-muted-foreground">
+                <span>{flagship.category}</span>
+                <span className="num">{flagship.date}</span>
+              </span>
+              <span className="font-display text-lead text-foreground">{flagship.title}</span>
+              <ul className="space-y-2">
+                {flagship.highlights?.slice(0, 4).map((h) => (
+                  <li key={h} className="text-[16px] leading-snug text-foreground">
+                    {h}
+                  </li>
+                ))}
+              </ul>
+              <Metrics project={flagship} />
+              <span className="mt-auto flex items-center gap-1.5 pt-2 text-[16px] font-medium text-foreground">
+                Read the case study
+                <ArrowRight aria-hidden className="h-4 w-4 transition-transform group-hover:translate-x-1" />
+              </span>
             </span>
-            <span className="font-display text-[1.5rem] leading-[1.1] text-foreground">
-              {flagship.title}
-            </span>
-            <ul className="space-y-1.5">
-              {flagship.highlights?.slice(0, 4).map((h) => (
-                <li key={h} className="flex gap-2 text-[14px] leading-snug text-ink-soft">
-                  <span aria-hidden className="text-clay">–</span>
-                  {h}
-                </li>
-              ))}
-            </ul>
-            <Metrics project={flagship} />
-            <span className="mt-auto flex items-center gap-1.5 pt-1 text-[13.5px] font-medium text-foreground">
-              Read the case study
-              <ArrowRight aria-hidden className="h-4 w-4 transition-transform group-hover:translate-x-0.5 group-hover:text-clay" />
-            </span>
-          </span>
-        </button>
-      </Section>
-
-      {/* ── 02 Selected work ─────────────────────────────── */}
-      <Section
-        index={2}
-        title="Selected work"
-        id="work"
-        action={
-          <button
-            type="button"
-            onClick={() => ask('What projects are you most proud of?')}
-            className="press flex items-center gap-1 text-[13px] text-muted-foreground hover:text-foreground"
-          >
-            All {projects.length} case studies <ArrowRight className="h-3.5 w-3.5" aria-hidden />
           </button>
-        }
-      >
-        <ul className="grid gap-4 sm:grid-cols-2">
-          {selected.map(({ p, i }) => (
-            <li key={p.title} className="flex">
-              <WorkTile project={p} onOpen={() => setOpenIndex(i)} />
-            </li>
-          ))}
-        </ul>
-      </Section>
+        </Section>
 
-      {/* ── 03 What I can do for you ─────────────────────── */}
-      <Section index={3} title="What I can do for you" id="services">
-        <ol className="border-y border-border">
-          {availability.focusAreas.map((area, i) => (
-            <li key={area} className="border-b border-border-subtle last:border-b-0">
-              <button
-                type="button"
-                onClick={() => submitQuery(`How would you help with this: ${area}?`)}
-                className="group flex w-full items-baseline gap-4 py-3.5 text-left"
-              >
-                <span className="num text-[11px] text-clay-ink">{pad2(i + 1)}</span>
-                <span className="font-display flex-1 text-[1.1875rem] leading-snug text-foreground">
-                  {area}
-                </span>
-                <span className="flex shrink-0 items-center gap-1 text-[12.5px] text-muted-foreground transition-colors group-hover:text-foreground">
-                  <span className="hidden sm:inline">Ask how</span>
-                  <Sparkles aria-hidden className="h-3.5 w-3.5 group-hover:text-clay" />
-                </span>
-              </button>
-            </li>
-          ))}
-        </ol>
-
-        <a
-          href={agency.url}
-          target="_blank"
-          rel="noopener noreferrer"
-          className="group mt-4 flex flex-col gap-3 rounded-lg border border-border bg-sunken p-5 transition-colors hover:border-border-strong sm:flex-row sm:items-center sm:justify-between"
+        {/* ── Selected work ────────────────────────────────── */}
+        <Section
+          title="Selected work"
+          id="work"
+          action={
+            <button
+              type="button"
+              onClick={() => ask('What projects are you most proud of?')}
+              className="press flex items-center gap-1 text-[16px] text-foreground underline decoration-current/30 underline-offset-4 hover:decoration-current"
+            >
+              All {projects.length} case studies <ArrowRight className="h-4 w-4" aria-hidden />
+            </button>
+          }
         >
-          <span className="min-w-0">
-            <span className="meta text-muted-foreground">Bigger build?</span>
-            <span className="font-display mt-1 block text-[1.25rem] leading-tight text-foreground">
-              Need a team? Meet {agency.name}.
-            </span>
-            <span className="measure mt-1 block text-[14px] leading-relaxed text-ink-soft">
-              {agency.pitch}
-            </span>
-          </span>
-          <span className="btn-line h-9 shrink-0 self-start px-4 text-[13px] sm:self-auto">
-            {new URL(agency.url).hostname.replace('www.', '')}
-            <ArrowUpRight className="h-4 w-4" aria-hidden />
-          </span>
-        </a>
-      </Section>
+          <ul className="grid gap-6 sm:grid-cols-2">
+            {selected.map(({ p, i }, n) => (
+              <li key={p.title} className="flex" data-rise style={{ '--i': n + 1 } as CSSProperties}>
+                <WorkTile project={p} onOpen={() => setOpenIndex(i)} />
+              </li>
+            ))}
+          </ul>
+        </Section>
 
-      {/* ── 04 What clients say ──────────────────────────── */}
-      <Section
-        index={4}
-        title="What clients say"
-        id="reviews"
-        action={
-          <button
-            type="button"
-            onClick={() => ask('What do clients say about you?')}
-            className="press flex items-center gap-1 text-[13px] text-muted-foreground hover:text-foreground"
+        {/* ── What I can do for you ────────────────────────── */}
+        <Section title="What I can do for you" id="services">
+          <ul className="flex flex-col gap-1">
+            {availability.focusAreas.map((area, i) => (
+              <li key={area} data-rise style={{ '--i': i + 1 } as CSSProperties}>
+                <button
+                  type="button"
+                  onClick={() => submitQuery(`How would you help with this: ${area}?`)}
+                  className="group flex w-full items-center gap-4 bg-card px-5 py-4 text-left transition-colors hover:bg-sunken sm:px-6"
+                >
+                  <span className="font-display text-lead flex-1 text-foreground">{area}</span>
+                  <span className="flex shrink-0 items-center gap-1.5 text-[13px] text-muted-foreground transition-colors group-hover:text-foreground">
+                    <span className="hidden sm:inline">Ask how</span>
+                    <Sparkles aria-hidden className="h-4 w-4" />
+                  </span>
+                </button>
+              </li>
+            ))}
+          </ul>
+
+          <a
+            href={agency.url}
+            target="_blank"
+            rel="noopener noreferrer"
+            data-rise
+            className="group mt-6 flex flex-col gap-4 bg-foreground p-6 text-background transition-opacity hover:opacity-95 sm:flex-row sm:items-end sm:justify-between sm:p-8 dark:bg-card dark:text-foreground"
           >
-            All reviews <ArrowRight className="h-3.5 w-3.5" aria-hidden />
-          </button>
-        }
-      >
-        <figure>
-          <blockquote className="font-display hang measure text-[1.375rem] leading-[1.4] text-foreground sm:text-[1.625rem]">
-            “{lead.text}”
-          </blockquote>
-          <figcaption className="mt-3 text-[13.5px] text-muted-foreground">
-            <span className="font-medium text-foreground">{lead.author}</span> · {lead.engagement} ·{' '}
-            <span className="num">{lead.date}</span>
-          </figcaption>
-        </figure>
-        <ul className="mt-6 grid gap-px overflow-hidden rounded-lg border border-border bg-border sm:grid-cols-2">
-          {shortQuotes.map((q) => (
-            <li key={q.text} className="bg-card p-5">
-              <p className="text-[15px] leading-relaxed text-foreground">“{q.text}”</p>
-              <p className="mt-2 text-[13px] text-muted-foreground">
-                {q.engagement} · <span className="num">{q.date}</span>
-              </p>
-            </li>
-          ))}
-        </ul>
-        <p className="mt-4 flex flex-wrap items-center gap-x-2 text-[13.5px] text-ink-soft">
-          <span className="num text-foreground">{reviews.rating}★</span>
-          from {reviews.ratings.map((r) => r.client).join(', ')} · {reviews.summary}
-        </p>
-      </Section>
+            <span className="min-w-0">
+              <span className="font-display text-lead block">Need a team? Meet {agency.name}.</span>
+              <span className="measure mt-2 block text-[16px] opacity-85">{agency.pitch}</span>
+            </span>
+            <span className="flex shrink-0 items-center gap-1 text-[16px] font-medium underline underline-offset-4">
+              {new URL(agency.url).hostname.replace('www.', '')}
+              <ArrowUpRight className="h-4 w-4" aria-hidden />
+            </span>
+          </a>
+        </Section>
 
-      {/* ── 05 Ask me ────────────────────────────────────── */}
-      <Section
-        index={5}
-        title="Ask me anything"
-        id="ask"
-        action={
-          <button
-            onClick={onOpenCommand}
-            className="press flex items-center gap-1.5 rounded-sm text-[13px] text-muted-foreground hover:text-foreground"
-          >
-            Every command <kbd className="kbd">⌘K</kbd>
-          </button>
-        }
-      >
-        <p className="measure mb-4 text-[14.5px] leading-relaxed text-ink-soft">
-          This site is a conversation. The cards below answer instantly; anything
-          you type goes to a live model that answers as me.
-        </p>
-        <ol className="grid grid-cols-2 gap-px overflow-hidden rounded-lg border border-border bg-border sm:grid-cols-4">
-          {index.map((cmd, i) => (
-            <li key={cmd.id} className="flex">
-              <button
-                onClick={() => ask(cmd.payload || cmd.label)}
-                className="group flex min-h-[7rem] w-full flex-col justify-between gap-3 bg-card p-4 text-left transition-colors duration-200 hover:bg-background focus-visible:z-10 focus-visible:outline-offset-[-2px]"
-              >
-                <span className="flex w-full items-center justify-between gap-2">
-                  <span className="num text-[11px] text-muted-foreground">{pad2(i + 1)}</span>
-                  <span className="num text-[12px] text-clay-ink">{cmd.slash}</span>
-                </span>
-                <span className="font-display text-[1.0625rem] leading-[1.22] text-foreground">
-                  {cmd.label}
-                </span>
-              </button>
-            </li>
-          ))}
-        </ol>
-        <ul className="mt-4">
-          {LIVE_EXAMPLES.map((q) => (
-            <li key={q} className="border-b border-border-subtle last:border-b-0">
-              <button
-                onClick={() => submitQuery(q)}
-                className="group flex w-full items-center gap-3 py-2.5 text-left text-[14px] text-ink-soft transition-colors duration-200 hover:text-foreground"
-              >
-                <Sparkles aria-hidden className="h-3.5 w-3.5 shrink-0 text-border-strong transition-colors group-hover:text-clay" />
-                <span className="flex-1">{q}</span>
-                <ArrowRight aria-hidden className="h-3.5 w-3.5 shrink-0 opacity-0 transition-opacity group-hover:opacity-100" />
-              </button>
-            </li>
-          ))}
-        </ul>
-      </Section>
+        {/* ── What clients say ─────────────────────────────── */}
+        <Section
+          title="What clients say"
+          id="reviews"
+          action={
+            <button
+              type="button"
+              onClick={() => ask('What do clients say about you?')}
+              className="press flex items-center gap-1 text-[16px] text-foreground underline decoration-current/30 underline-offset-4 hover:decoration-current"
+            >
+              All reviews <ArrowRight className="h-4 w-4" aria-hidden />
+            </button>
+          }
+        >
+          <figure data-rise style={{ '--i': 1 } as CSSProperties}>
+            <blockquote className="hang measure text-lead font-medium text-foreground">
+              “{lead.text}”
+            </blockquote>
+            <figcaption className="mt-4 text-[16px] text-muted-foreground">
+              <span className="font-medium text-foreground">{lead.author}</span> · {lead.engagement} ·{' '}
+              <span className="num">{lead.date}</span>
+            </figcaption>
+          </figure>
+          <ul className="mt-10 grid gap-6 sm:grid-cols-2">
+            {shortQuotes.map((q, n) => (
+              <li key={q.text} className="bg-card p-6" data-rise style={{ '--i': n + 2 } as CSSProperties}>
+                <p className="text-[16px] text-foreground">“{q.text}”</p>
+                <p className="mt-3 text-[13px] text-muted-foreground">
+                  {q.engagement} · <span className="num">{q.date}</span>
+                </p>
+              </li>
+            ))}
+          </ul>
+          <p className="mt-6 text-[16px] text-foreground">
+            Rated <span className="num font-medium">{reviews.rating}</span> out of 5 by{' '}
+            {reviews.ratings.map((r) => r.client).join(', ')} · {reviews.summary}
+          </p>
+        </Section>
 
-      {/* ── Close ────────────────────────────────────────── */}
+        {/* ── Ask me ───────────────────────────────────────── */}
+        <Section
+          title="Ask me anything"
+          id="ask"
+          action={
+            <button
+              onClick={onOpenCommand}
+              className="press flex items-center gap-2 text-[16px] text-foreground"
+            >
+              Every command <kbd className="kbd">⌘K</kbd>
+            </button>
+          }
+        >
+          <p className="measure mb-6 text-[16px] text-foreground">
+            This site is a conversation. These answer instantly; anything you
+            type goes to a live model that answers as me.
+          </p>
+          <ul className="grid grid-cols-2 gap-1 sm:grid-cols-4">
+            {index.map((cmd, n) => (
+              <li key={cmd.id} className="flex" data-rise style={{ '--i': n } as CSSProperties}>
+                <button
+                  onClick={() => ask(cmd.payload || cmd.label)}
+                  className="group flex min-h-[7.5rem] w-full flex-col justify-between gap-3 bg-card p-4 text-left transition-colors duration-200 hover:bg-sunken focus-visible:z-10 focus-visible:outline-offset-[-2px]"
+                >
+                  <span className="text-[13px] text-muted-foreground">{cmd.slash}</span>
+                  <span className="font-display text-[16px] leading-snug text-foreground">{cmd.label}</span>
+                </button>
+              </li>
+            ))}
+          </ul>
+          <ul className="mt-6 flex flex-col gap-1">
+            {LIVE_EXAMPLES.map((q) => (
+              <li key={q}>
+                <button
+                  onClick={() => submitQuery(q)}
+                  className="group flex w-full items-center gap-3 py-2 text-left text-[16px] text-foreground transition-colors duration-200"
+                >
+                  <Sparkles aria-hidden className="h-4 w-4 shrink-0 text-muted-foreground transition-colors group-hover:text-foreground" />
+                  <span className="flex-1 underline decoration-transparent underline-offset-4 transition-colors group-hover:decoration-current">
+                    {q}
+                  </span>
+                  <ArrowRight aria-hidden className="h-4 w-4 shrink-0 opacity-0 transition-opacity group-hover:opacity-100" />
+                </button>
+              </li>
+            ))}
+          </ul>
+        </Section>
+      </Column>
+
+      {/* ── Close: the address as display type ─────────────── */}
       <section
         aria-labelledby="close-heading"
-        className="mt-14 rounded-lg bg-[#141413] px-6 py-8 text-[#f3f0e8] sm:px-8 sm:py-10 dark:border dark:border-border dark:bg-sunken"
+        className="mt-32 bg-foreground text-background dark:bg-card dark:text-foreground"
       >
-        <h2 id="close-heading" className="font-display text-[2rem] leading-[1.05] tracking-[-0.03em] sm:text-[2.5rem]">
-          Have something to build?
-        </h2>
-        <p className="measure mt-3 text-[15px] leading-relaxed text-[#f3f0e8]/75">
-          {availability.headline}. Send me the shape of it and I&apos;ll reply
-          within 0–4 hours with questions and an honest fit check.
-        </p>
-        <div className="mt-6 flex flex-wrap gap-2.5">
-          <button type="button" onClick={onHire} aria-haspopup="dialog" className="btn-clay h-11 px-5 text-[15px]">
-            Hire me
-            <ArrowUpRight className="h-4 w-4" aria-hidden />
-          </button>
-          <a
-            href={`mailto:${personal.email}`}
-            className="inline-flex h-11 items-center rounded-md border border-[#f3f0e8]/30 px-5 text-[15px] font-medium text-[#f3f0e8] transition-colors hover:border-[#f3f0e8]/60"
-          >
-            {personal.email}
-          </a>
-        </div>
+        <Column>
+          <div className="py-20 sm:py-28">
+            <h2 id="close-heading" className="font-display text-head" data-rise>
+              Have something to build?
+            </h2>
+            <p className="measure mt-5 text-[16px] opacity-85" data-rise style={{ '--i': 1 } as CSSProperties}>
+              {availability.headline}. Send me the shape of it and I&apos;ll reply
+              within 0–4 hours with questions and an honest fit check.
+            </p>
+            <a
+              href={`mailto:${personal.email}`}
+              className="font-display text-display mt-10 block break-words underline decoration-transparent underline-offset-[0.12em] transition-colors hover:decoration-current"
+              data-rise
+              style={{ '--i': 2 } as CSSProperties}
+            >
+              {personal.email}
+            </a>
+            <div className="mt-10 flex flex-wrap items-center gap-6" data-rise style={{ '--i': 3 } as CSSProperties}>
+              <button type="button" onClick={onHire} aria-haspopup="dialog" className="btn-clay h-12 px-6 text-[16px]">
+                Hire me
+                <ArrowUpRight className="h-4 w-4" aria-hidden />
+              </button>
+              <span className="text-[16px] opacity-85">
+                {personal.location} · {personal.timezone}
+              </span>
+            </div>
+          </div>
+        </Column>
       </section>
 
       <ProjectDialog
@@ -428,25 +401,27 @@ const ChatLanding: React.FC<ChatLandingProps> = ({
   );
 };
 
+/** The narrow column every section after the poster sits in. */
+function Column({ children }: { children: React.ReactNode }) {
+  return <div className="mx-auto w-full max-w-[60rem] px-4 sm:px-8">{children}</div>;
+}
+
 function Section({
-  index,
   title,
   id,
   action,
   children,
 }: {
-  index: number;
   title: string;
   id: string;
   action?: React.ReactNode;
   children: React.ReactNode;
 }) {
   return (
-    <section aria-labelledby={`${id}-heading`} className="mt-14">
-      <div className="mb-4 flex items-baseline justify-between gap-4">
-        <h2 id={`${id}-heading`} className="meta text-muted-foreground">
-          <span className="num text-clay-ink">{pad2(index)}</span>{' '}
-          <span className="text-border-strong">/</span> {title}
+    <section aria-labelledby={`${id}-heading`} id={id} className="mt-24 sm:mt-36">
+      <div className="mb-8 flex flex-wrap items-end justify-between gap-x-6 gap-y-3" data-rise>
+        <h2 id={`${id}-heading`} className="font-display text-head text-heading">
+          {title}
         </h2>
         {action}
       </div>
@@ -458,12 +433,12 @@ function Section({
 function Metrics({ project }: { project: Project }) {
   if (!project.metrics?.length) return null;
   return (
-    <span className="flex flex-wrap gap-x-5 gap-y-2 border-l-2 border-clay py-0.5 pl-3">
+    <span className="flex flex-wrap gap-x-6 gap-y-2">
       {project.metrics.map((m) => {
         const { figure, caption } = splitMetric(m);
         return (
           <span key={m} className="flex items-baseline gap-1.5">
-            {figure && <span className="num text-[1.0625rem] leading-none text-foreground">{figure}</span>}
+            {figure && <span className="num text-[16px] font-semibold leading-none text-foreground">{figure}</span>}
             <span className="text-[13px] text-muted-foreground">{caption}</span>
           </span>
         );
@@ -478,24 +453,24 @@ function WorkTile({ project, onOpen }: { project: Project; onOpen: () => void })
       type="button"
       onClick={onOpen}
       aria-haspopup="dialog"
-      className="group flex w-full flex-col overflow-hidden rounded-lg border border-border bg-card text-left transition-colors hover:border-border-strong"
+      className="group flex w-full flex-col overflow-hidden bg-card text-left transition-colors hover:bg-sunken"
     >
-      <span className="relative block aspect-[4/3] overflow-hidden border-b border-border bg-sunken">
+      <span className="relative block aspect-[4/3] overflow-hidden">
         <Image
           src={projectCover(project)}
           alt={`${project.title} — cover`}
           fill
-          sizes="(min-width: 640px) 360px, 100vw"
-          className="object-cover transition-transform duration-[240ms] ease-[cubic-bezier(0.22,1,0.36,1)] group-hover:scale-[1.02] motion-reduce:transition-none motion-reduce:group-hover:scale-100"
+          sizes="(min-width: 640px) 440px, 100vw"
+          className="object-cover transition-transform duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] group-hover:scale-[1.03] motion-reduce:transition-none motion-reduce:group-hover:scale-100"
         />
       </span>
-      <span className="flex flex-1 flex-col gap-2.5 p-5">
+      <span className="flex flex-1 flex-col gap-3 p-6">
         <span className="meta flex items-center justify-between gap-2 text-muted-foreground">
-          <span className="truncate text-clay-ink">{project.category}</span>
-          <span className="num shrink-0 normal-case tracking-normal">{project.date}</span>
+          <span className="truncate">{project.category}</span>
+          <span className="num shrink-0">{project.date}</span>
         </span>
-        <span className="font-display text-[1.25rem] leading-[1.15] text-foreground">{project.title}</span>
-        <span className="line-clamp-2 text-[14px] leading-relaxed text-ink-soft">{project.description}</span>
+        <span className="font-display text-lead text-foreground">{project.title}</span>
+        <span className="line-clamp-3 text-[16px] text-foreground">{project.description}</span>
         <span className="mt-auto pt-1">
           <Metrics project={project} />
         </span>

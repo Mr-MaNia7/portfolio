@@ -8,7 +8,6 @@ import type { Project } from '@/types/portfolio';
 import {
   Artifact,
   ArtifactHeader,
-  pad2,
   splitMetric,
 } from '@/components/artifact/artifact';
 import { ProjectDialog, projectCover } from './project-dialog';
@@ -48,9 +47,9 @@ export default function AllProjects() {
         title="Things I've built"
         standfirst="Client work and research — open any file for the full dossier."
         aside={
-          <p className="num text-right text-[12px] leading-relaxed text-muted-foreground">
-            <span className="block text-[1.75rem] leading-none text-foreground">
-              {pad2(projects.length)}
+          <p className="num text-right text-[13px] leading-relaxed text-muted-foreground">
+            <span className="block text-head leading-none text-foreground">
+              {projects.length}
             </span>
             case studies
           </p>
@@ -179,7 +178,6 @@ const ProjectTile = React.forwardRef<
       >
         <span className="meta flex items-center justify-between gap-3 text-muted-foreground">
           <span className="truncate">
-            {pad2(index + 1)} <span className="text-border-strong">{'//'}</span>{' '}
             <span className="text-clay-ink">{project.category}</span>
           </span>
           <span className="num shrink-0 normal-case tracking-normal">
@@ -189,22 +187,22 @@ const ProjectTile = React.forwardRef<
 
         <span
           className={`font-display block leading-[1.12] text-foreground ${
-            lead ? 'text-[1.625rem] sm:text-[1.875rem]' : 'text-[1.25rem]'
+            lead ? 'text-lead' : 'text-lead'
           }`}
         >
           {project.title}
         </span>
 
         {(lead || wide) && (
-          <span className="line-clamp-3 text-[14px] leading-relaxed text-ink-soft">
+          <span className="line-clamp-3 text-[16px] leading-relaxed text-ink-soft">
             {project.description}
           </span>
         )}
 
         {metric && (
-          <span className="flex items-baseline gap-2 border-l-2 border-clay py-0.5 pl-3">
+          <span className="flex items-baseline gap-2 border-l-2 border-transparent py-0.5 pl-3">
             {metric.figure && (
-              <span className="num text-[1.125rem] leading-none text-foreground">
+              <span className="num text-[16px] leading-none text-foreground">
                 {metric.figure}
               </span>
             )}
@@ -223,7 +221,7 @@ const ProjectTile = React.forwardRef<
             ))}
             {more > 0 && <span className="tag !bg-transparent">+{more}</span>}
           </span>
-          <span className="flex shrink-0 items-center gap-1 text-[12px] text-muted-foreground transition-colors group-hover:text-foreground">
+          <span className="flex shrink-0 items-center gap-1 text-[13px] text-muted-foreground transition-colors group-hover:text-foreground">
             <span className={lead ? '' : 'sr-only'}>Open dossier</span>
             <ArrowUpRight
               aria-hidden

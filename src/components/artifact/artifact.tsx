@@ -51,11 +51,11 @@ export function ArtifactHeader({
     >
       <div className="min-w-0 flex-1 basis-72">
         <p className="meta text-muted-foreground">{kicker}</p>
-        <h2 className="font-display mt-2 text-[1.75rem] leading-[1.08] text-foreground sm:text-[2rem]">
+        <h2 className="font-display mt-2 text-head leading-[1.08] text-foreground">
           {title}
         </h2>
         {standfirst && (
-          <p className="measure mt-2 text-[15px] leading-relaxed text-ink-soft">
+          <p className="measure mt-2 text-[16px] leading-relaxed text-ink-soft">
             {standfirst}
           </p>
         )}

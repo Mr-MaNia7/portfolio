@@ -4,7 +4,7 @@ import React, { useId, useMemo, useRef, useState } from 'react';
 import { ArrowRight, Check, Search, Sparkles } from 'lucide-react';
 import { getConfig } from '@/lib/config-loader';
 import { askPortfolio } from '@/lib/portfolio-events';
-import { Artifact, ArtifactHeader, pad2 } from '@/components/artifact/artifact';
+import { Artifact, ArtifactHeader } from '@/components/artifact/artifact';
 
 /**
  * Skills as I actually use them: the languages in my hands, then a capability
@@ -100,13 +100,13 @@ const Skills = () => {
           <dl className="flex gap-6 text-right">
             <div className="flex flex-col gap-1">
               <dt className="meta text-muted-foreground">Capabilities</dt>
-              <dd className="num order-first text-[1.75rem] leading-none text-foreground">
-                {pad2(capabilities.length)}
+              <dd className="num order-first text-head leading-none text-foreground">
+                {capabilities.length}
               </dd>
             </div>
             <div className="flex flex-col gap-1">
               <dt className="meta text-muted-foreground">Tools</dt>
-              <dd className="num order-first text-[1.75rem] leading-none text-foreground">
+              <dd className="num order-first text-head leading-none text-foreground">
                 {toolCount}
               </dd>
             </div>
@@ -123,11 +123,11 @@ const Skills = () => {
         {languages.map((lang) => (
           <li key={lang.name} className="flex flex-col gap-1.5 bg-sunken px-5 py-4 sm:px-6">
             <span className="flex items-center justify-between gap-2">
-              <span className="font-display text-[1.25rem] leading-none text-foreground">
+              <span className="font-display text-lead leading-none text-foreground">
                 {lang.name}
               </span>
               <span
-                className={`num flex items-center gap-1.5 text-[11px] ${lang.usage === 'Daily' ? 'text-clay-ink' : 'text-muted-foreground'}`}
+                className={`num flex items-center gap-1.5 text-[13px] ${lang.usage === 'Daily' ? 'text-clay-ink' : 'text-muted-foreground'}`}
               >
                 <span
                   aria-hidden
@@ -169,17 +169,12 @@ const Skills = () => {
                 tabIndex={selected ? 0 : -1}
                 onClick={() => setActive(i)}
                 onKeyDown={(e) => onTabKey(e, i)}
-                className={`press group flex shrink-0 items-baseline gap-3 rounded-md border px-3 py-2 text-left text-[13.5px] whitespace-nowrap transition-colors sm:rounded-none sm:border-0 sm:border-l-2 sm:px-5 sm:py-3 sm:whitespace-normal ${
+                className={`press group flex shrink-0 items-baseline gap-3 rounded-md border px-3 py-2 text-left text-[16px] whitespace-nowrap transition-colors sm:rounded-none sm:border-0 sm:border-l-2 sm:px-5 sm:py-3 sm:whitespace-normal ${
                   selected
-                    ? 'border-border-strong bg-card text-foreground sm:border-clay'
+                    ? 'border-transparent bg-card text-foreground'
                     : 'border-border bg-transparent text-ink-soft hover:text-foreground sm:border-transparent sm:hover:bg-card/60'
                 }`}
               >
-                <span
-                  className={`num text-[11px] ${selected ? 'text-clay-ink' : 'text-muted-foreground'}`}
-                >
-                  {pad2(i + 1)}
-                </span>
                 <span className={selected ? 'font-medium' : ''}>{cap.name}</span>
               </button>
             );
@@ -194,14 +189,10 @@ const Skills = () => {
         >
           {/* Keyed so the panel re-reveals on every switch */}
           <div key={current.id} className="reveal">
-            <p className="meta text-muted-foreground">
-              Capability <span className="num">{pad2(active + 1)}</span>
-              <span className="text-border-strong"> / {pad2(capabilities.length)}</span>
-            </p>
-            <h3 className="font-display mt-2 text-[1.625rem] leading-[1.1] text-foreground sm:text-[1.875rem]">
+            <h3 className="font-display text-lead leading-[1.1] text-foreground">
               {current.name}
             </h3>
-            <p className="measure mt-2.5 text-[15px] leading-relaxed text-ink-soft">
+            <p className="measure mt-2.5 text-[16px] leading-relaxed text-ink-soft">
               {current.summary}
             </p>
 
@@ -210,7 +201,7 @@ const Skills = () => {
               {current.proof.map((p) => (
                 <li
                   key={p}
-                  className="flex gap-3 border-l-2 border-clay py-0.5 pl-3 text-[14.5px] leading-snug text-foreground"
+                  className="flex gap-3 border-l-2 border-transparent py-0.5 pl-3 text-[16px] leading-snug text-foreground"
                 >
                   {p}
                 </li>
@@ -224,7 +215,7 @@ const Skills = () => {
                   {current.shippedAt.map((s) => (
                     <li
                       key={s}
-                      className="flex h-7 items-center rounded-md border border-border-strong px-2.5 text-[13px] font-medium text-foreground"
+                      className="flex h-7 items-center rounded-md border border-transparent px-2.5 text-[13px] font-medium text-foreground"
                     >
                       {s}
                     </li>
@@ -319,7 +310,7 @@ function ToolLookup({
           placeholder="Type a technology — e.g. Terraform"
           autoComplete="off"
           aria-describedby={listId}
-          className="h-11 w-full rounded-md border border-border-strong bg-card pr-3 pl-9 text-[15px] text-foreground placeholder:text-muted-foreground focus:border-clay focus:outline-none"
+          className="h-11 w-full border-2 border-border-strong bg-card pr-3 pl-9 text-[16px] text-foreground placeholder:text-muted-foreground focus:border-foreground focus:outline-none"
         />
       </div>
 
@@ -332,7 +323,7 @@ function ToolLookup({
                 key={s}
                 type="button"
                 onClick={() => setQuery(s)}
-                className="press tag hover:border-border-strong hover:text-foreground"
+                className="press tag hover:text-foreground"
               >
                 {s}
               </button>
@@ -341,7 +332,7 @@ function ToolLookup({
         ) : matches.length ? (
           <ul className="space-y-2.5">
             {matches.map((m) => (
-              <li key={m.name} className="flex gap-2.5 text-[14px] leading-snug">
+              <li key={m.name} className="flex gap-2.5 text-[16px] leading-snug">
                 <Check className="mt-0.5 h-4 w-4 shrink-0 text-success" aria-hidden />
                 <span className="min-w-0 text-foreground">
                   <span className="font-medium">Yes — {m.name}.</span>{' '}
@@ -355,7 +346,7 @@ function ToolLookup({
                       key={c}
                       type="button"
                       onClick={() => onPick(c)}
-                      className="press mr-1.5 inline-flex items-center gap-1 text-[13px] text-clay-ink underline decoration-clay/40 underline-offset-4 hover:decoration-clay"
+                      className="press mr-1.5 inline-flex items-center gap-1 text-[13px] text-clay-ink underline decoration-current/40 underline-offset-4 hover:decoration-current"
                     >
                       {capabilityNames[c]}
                     </button>
@@ -365,7 +356,7 @@ function ToolLookup({
             ))}
           </ul>
         ) : (
-          <p className="flex flex-wrap items-center gap-x-3 gap-y-2 text-[14px] text-ink-soft">
+          <p className="flex flex-wrap items-center gap-x-3 gap-y-2 text-[16px] text-ink-soft">
             Not on my list — I&apos;d rather tell you honestly than pad it.
             <button
               type="button"

@@ -1,31 +1,22 @@
 import { Analytics } from '@vercel/analytics/react';
 import type { Metadata, Viewport } from 'next';
-import { Inter, Newsreader, JetBrains_Mono } from 'next/font/google';
+import localFont from 'next/font/local';
 import { cn } from '@/lib/utils';
 import { ThemeProvider } from '@/components/theme-provider';
 import { Toaster } from '@/components/ui/sonner';
 import { getConfig } from '@/lib/config-loader';
 import './globals.css';
 
-const inter = Inter({
-  subsets: ['latin'],
-  variable: '--font-inter',
+// One face does everything: Switzer (Fontshare, ITF Free Font License), self-hosted.
+const switzer = localFont({
+  src: [
+    { path: './fonts/Switzer-400.woff2', weight: '400', style: 'normal' },
+    { path: './fonts/Switzer-500.woff2', weight: '500', style: 'normal' },
+    { path: './fonts/Switzer-600.woff2', weight: '600', style: 'normal' },
+  ],
+  variable: '--font-switzer',
   display: 'swap',
-});
-
-const newsreader = Newsreader({
-  subsets: ['latin'],
-  variable: '--font-newsreader',
-  display: 'swap',
-  style: ['normal', 'italic'],
-  // Optical sizing: tighter, higher-contrast cuts at display sizes.
-  axes: ['opsz'],
-});
-
-const jetbrainsMono = JetBrains_Mono({
-  subsets: ['latin'],
-  variable: '--font-jetbrains',
-  display: 'swap',
+  fallback: ['ui-sans-serif', 'system-ui', 'Helvetica Neue', 'Arial', 'sans-serif'],
 });
 
 const config = getConfig();
@@ -97,8 +88,8 @@ export const viewport: Viewport = {
   initialScale: 1,
   maximumScale: 1,
   themeColor: [
-    { media: '(prefers-color-scheme: light)', color: '#faf9f5' },
-    { media: '(prefers-color-scheme: dark)', color: '#161412' },
+    { media: '(prefers-color-scheme: light)', color: '#e1ac10' },
+    { media: '(prefers-color-scheme: dark)', color: '#0e0d0a' },
   ],
 };
 
@@ -162,9 +153,7 @@ export default function RootLayout({
       <body
         className={cn(
           'min-h-screen bg-background font-sans antialiased',
-          inter.variable,
-          newsreader.variable,
-          jetbrainsMono.variable
+          switzer.variable
         )}
       >
         <ThemeProvider

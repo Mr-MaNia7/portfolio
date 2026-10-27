@@ -80,6 +80,7 @@ const Chat = () => {
   const nextOrder = () => orderRef.current++;
 
   const bottomRef = useRef<HTMLDivElement>(null);
+  const scrollRef = useRef<HTMLDivElement>(null);
   const reduceMotion = useReducedMotion();
 
   const { messages, status, stop, regenerate, sendMessage, setMessages } =
@@ -347,16 +348,17 @@ const Chat = () => {
         />
 
         {/* Scrollable content */}
-        <div className="scrollbar-subtle flex-1 overflow-y-auto">
-          <div className="mx-auto flex min-h-full max-w-3xl flex-col px-4 sm:px-6">
+        <div ref={scrollRef} className="scrollbar-subtle flex-1 overflow-y-auto">
+          <div className="flex min-h-full flex-col">
             <AnimatePresence mode="wait">
               {isEmptyState ? (
                 <motion.div
                   key="landing"
-                  className="flex min-h-full flex-1 items-center"
+                  className="flex min-h-full w-full flex-1 flex-col"
                   {...MOTION_CONFIG}
                 >
                   <ChatLanding
+                    scrollRef={scrollRef}
                     submitQuery={submitQuery}
                     handlePresetReply={handlePresetReply}
                     onOpenCommand={() => setPaletteOpen(true)}
@@ -367,7 +369,7 @@ const Chat = () => {
               ) : (
                 <motion.div
                   key="conversation"
-                  className="flex flex-col gap-10 pt-8 pb-10"
+                  className="mx-auto flex w-full max-w-3xl flex-col gap-10 px-4 pt-8 pb-10 sm:px-6"
                   {...MOTION_CONFIG}
                 >
                   <AnimatePresence initial={false}>
@@ -510,7 +512,7 @@ function UserBubble({ text }: { text: string }) {
   if (!text.trim()) return null;
   return (
     <div className="reveal flex justify-end">
-      <p className="max-w-[85%] rounded-lg rounded-br-sm border border-border-subtle bg-sunken px-4 py-2.5 text-[15px] leading-relaxed break-words whitespace-pre-wrap text-foreground">
+      <p className="max-w-[85%] bg-sunken px-4 py-2.5 text-[16px] leading-relaxed break-words whitespace-pre-wrap text-foreground">
         <span className="sr-only">You asked: </span>
         {text}
       </p>
@@ -535,10 +537,10 @@ function QuotaNotice({
           </span>
         </div>
         <div className="px-5 py-4">
-          <h3 className="font-display text-[1.25rem] leading-tight text-foreground">
+          <h3 className="font-display text-lead leading-tight text-foreground">
             The live model is resting.
           </h3>
-          <p className="measure mt-1.5 text-[14px] leading-relaxed text-ink-soft">
+          <p className="measure mt-1.5 text-[16px] leading-relaxed text-ink-soft">
             Free-form AI answers are momentarily unavailable (rate limits on the
             hosted model). Everything else still works instantly — the quick
             answers and the ⌘K menu read from curated notes, no API call.

@@ -168,7 +168,7 @@ export function CommandPalette({
             }}
             transition={{ duration: 0.2, ease: EASE }}
             style={{ transformOrigin: '50% 0%' }}
-            className="relative w-full max-w-xl overflow-hidden rounded-lg border border-border-strong bg-popover shadow-[var(--shadow-float)]"
+            className="relative w-full max-w-xl overflow-hidden rounded-lg border border-transparent bg-popover shadow-[var(--shadow-float)]"
             role="dialog"
             aria-modal="true"
             aria-label="Command menu"
@@ -189,7 +189,7 @@ export function CommandPalette({
                 aria-controls="cmd-listbox"
                 aria-activedescendant={activeId}
                 aria-autocomplete="list"
-                className="h-[3.25rem] w-full bg-transparent text-[15px] text-foreground placeholder:text-muted-foreground focus:outline-none focus-visible:outline-none"
+                className="h-[3.25rem] w-full bg-transparent text-[16px] text-foreground placeholder:text-muted-foreground focus:outline-none focus-visible:outline-none"
               />
               <kbd className="kbd hidden sm:inline-flex">esc</kbd>
             </div>
@@ -203,7 +203,7 @@ export function CommandPalette({
               className="scrollbar-subtle max-h-[52vh] overflow-y-auto p-1.5"
             >
               {flat.length === 0 && (
-                <div className="px-3 py-10 text-center text-sm text-muted-foreground">
+                <div className="px-3 py-10 text-center text-[16px] text-muted-foreground">
                   Nothing matches “{query}”. Try{' '}
                   <span className="text-foreground">projects</span> or{' '}
                   <span className="text-foreground">contact</span>.
@@ -234,9 +234,9 @@ export function CommandPalette({
                         data-index={index}
                         onMouseMove={() => setActive(index)}
                         onClick={() => onRun(cmd)}
-                        className={`flex cursor-pointer items-center gap-3 rounded-md px-3 py-2 text-[14px] transition-colors duration-150 ${
+                        className={`flex cursor-pointer items-center gap-3 rounded-md px-3 py-2 text-[16px] transition-colors duration-150 ${
                           isActive
-                            ? 'bg-secondary text-foreground shadow-[inset_2px_0_0_var(--clay)]'
+                            ? 'bg-secondary text-foreground'
                             : 'text-ink-soft'
                         }`}
                       >
@@ -247,12 +247,12 @@ export function CommandPalette({
                           {cmd.label}
                         </span>
                         {cmd.hint && (
-                          <span className="hidden max-w-[12rem] shrink-0 truncate text-[12px] text-muted-foreground sm:block">
+                          <span className="hidden max-w-[12rem] shrink-0 truncate text-[13px] text-muted-foreground sm:block">
                             {cmd.hint}
                           </span>
                         )}
                         {cmd.slash && (
-                          <span className="num w-[4.75rem] shrink-0 text-right text-[12px] text-muted-foreground">
+                          <span className="num w-[4.75rem] shrink-0 text-right text-[13px] text-muted-foreground">
                             {cmd.slash}
                           </span>
                         )}
@@ -266,7 +266,7 @@ export function CommandPalette({
             {/* Footer */}
             <div className="flex items-center justify-between border-t border-border-subtle px-4 py-2.5 text-muted-foreground">
               <span className="meta">Command menu</span>
-              <span className="hidden items-center gap-3 text-[12px] sm:flex">
+              <span className="hidden items-center gap-3 text-[13px] sm:flex">
                 <span className="flex items-center gap-1">
                   <kbd className="kbd">↑</kbd>
                   <kbd className="kbd">↓</kbd>

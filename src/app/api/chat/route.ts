@@ -67,6 +67,9 @@ export async function POST(req: Request) {
       }),
       tools,
       stopWhen: stepCountIs(2),
+      // The free tier is small. A failed call is reported once, not tried three times:
+      // retrying a rate limit only spends more of the quota that ran out.
+      maxRetries: 0,
       // The visitor pressing stop also stops the model, so it stops spending quota.
       abortSignal: req.signal,
       // The model sends bursts. Release them word by word so the text arrives evenly.

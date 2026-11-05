@@ -93,7 +93,7 @@ const Skills = () => {
             Skills
           </>
         }
-        title="What I actually build."
+        title="What I build, with proof I&apos;ve shipped it"
         standfirst={skills.intro}
         aside={
           <dl className="flex gap-6 text-right">

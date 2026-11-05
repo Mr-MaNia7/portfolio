@@ -113,8 +113,9 @@
 
   /* Rhythm */
   --nav: 72px;
-  --gut: 80px;
-  --wrap: max(1600px, 80vw);
+  /* Balanced frame: 896 at 1024, 1200 at 1440, 1360 at 1920, 1536 at 2560 */
+  --gut: max(64px, calc(20vw - 168px));
+  --wrap: max(1360px, 60vw);
   --padt: 112px;
   --padb: 72px;
   --bar: 72px;
@@ -548,7 +549,7 @@
       min-height: calc(100svh - var(--nav) - 80px);
     }
     .hero__text { flex: none; }
-    .hero__art { flex: 1; height: auto; min-height: 420px; padding: 24px; }
+    .hero__art { flex: 1; height: auto; min-height: 380px; padding: 24px; }
   }
   @media (max-width: 639px) {
     .hero { padding-top: calc(var(--nav) + 16px); padding-bottom: 8px; }

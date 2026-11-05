@@ -44,8 +44,8 @@ export default function AllProjects() {
             Selected work
           </>
         }
-        title="Things I've built"
-        standfirst="Client work and research — open any card for the full case study."
+        title="Products I've shipped"
+        standfirst="Client work and research. Open any card for the full case study."
         aside={
           <p className="num text-right text-[13px] leading-relaxed text-muted-foreground">
             <span className="block text-[1.75rem] leading-none text-foreground">

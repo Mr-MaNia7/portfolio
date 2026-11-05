@@ -432,10 +432,10 @@ const Chat = () => {
                             onQuick={() => {
                               setErrorItem(null);
                               const preset =
-                                presetReplies['How can I reach you?'];
+                                presetReplies['How do we get started?'];
                               if (preset)
                                 addPreset(
-                                  'How can I reach you?',
+                                  'How do we get started?',
                                   preset.reply,
                                   preset.tool
                                 );

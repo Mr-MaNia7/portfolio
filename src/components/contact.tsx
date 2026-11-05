@@ -47,11 +47,11 @@ export function Contact() {
           Contact
         </p>
         <h2 className="font-display mt-3 text-[2rem] leading-[1.05] tracking-[-0.03em] sm:text-[2.5rem]">
-          Let&apos;s build <em className="italic">something.</em>
+          Let&apos;s talk about your project
         </h2>
         <p className="measure mt-3 text-[16px] leading-relaxed text-[var(--band-ink)]/75">
           {availability.open ? availability.headline + '. ' : ''}Tell me what
-          you&apos;re building and I&apos;ll come back with concrete next steps.
+          you need built and I&apos;ll come back with concrete next steps.
         </p>
         <p className="meta mt-5 flex flex-wrap items-center gap-x-3 gap-y-1 text-[var(--band-ink)]/60">
           <span>{personal.location}</span>

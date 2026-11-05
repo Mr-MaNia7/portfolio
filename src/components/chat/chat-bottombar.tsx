@@ -30,10 +30,10 @@ interface ChatBottombarProps {
 // Example questions. Tab (or the "Use an example" button) drops the next one
 // into the empty field, so visitors discover it answers free-form questions.
 const EXAMPLES = [
-  'How did you make AIVI multi-tenant on Supabase?',
-  'How do multi-region cells route requests?',
+  'How would you make my SaaS multi-tenant without a rewrite?',
+  'How would you run my product across multiple regions?',
   'Could you get my product ready for SOC 2?',
-  'How does the voice agent drive a co-browsing widget?',
+  'What would you do in your first two weeks on my product?',
   'Why should I hire you over another senior engineer?',
 ];
 

@@ -27,7 +27,7 @@ interface ChatLandingProps {
 // Free-form prompts with no preset. Clicking one answers live via the AI, so
 // visitors discover that this is a real conversation, not a fixed FAQ.
 const LIVE_EXAMPLES = [
-  'How did you make AIVI’s backend multi-tenant on Supabase?',
+  'How would you make my SaaS multi-tenant without a rewrite?',
   'What would it take to get my product ready for SOC 2?',
   'Why should I hire you over another senior engineer?',
 ];
@@ -123,14 +123,14 @@ const ChatLanding: React.FC<ChatLandingProps> = ({
                 </p>
               )}
               <h1 id="hero-heading" className="mt-4 text-foreground">
-                The AI twin of a senior <span className="whitespace-nowrap">full-stack</span> engineer
+                Interview my AI twin before you hire me
               </h1>
               <p className="hero__lead">
-                Ask my twin about the AI products I&apos;ve shipped, how I work and whether I fit your project.
-                It answers as me, any hour.
+                I&apos;m a senior full-stack and AI engineer. I take AI products to production and get them ready for enterprise buyers.
+                Ask my twin what you&apos;d ask in a first call.
                 {personal.currently && (
                   <span className="max-sm:hidden">
-                    {' '}I&apos;m currently a {personal.currently.role.toLowerCase()} at{' '}
+                    {' '}Right now I&apos;m building AI voice agents at{' '}
                     <a href={personal.currently.url} target="_blank" rel="noopener noreferrer" className="link text-foreground">
                       {personal.currently.company}
                     </a>
@@ -180,16 +180,16 @@ const ChatLanding: React.FC<ChatLandingProps> = ({
 
                 <div className="scrollbar-subtle flex min-h-0 flex-1 flex-col gap-3 overflow-y-auto px-4 py-4 sm:px-5 sm:py-5">
                   <p className="max-w-[34rem] rounded-2xl rounded-tl-md bg-sunken px-4 py-3 text-[16px] leading-[1.45] text-foreground">
-                    I&apos;m {personal.shortName}&apos;s AI twin. Ask me about my projects, stack, reviews or
-                    availability, and I&apos;ll answer the way {personal.shortName} would.
+                    I&apos;m {personal.shortName}&apos;s AI twin. Ask what you&apos;d ask in a first interview: what
+                    I&apos;ve shipped, how I&apos;d handle your project, whether I&apos;m the right fit.
                   </p>
                   {/* A real exchange from the instant answers, so the window shows what it does. */}
                   <div className="hidden flex-col gap-3 xl:flex [@media(max-height:760px)]:hidden">
                     <p className="ml-auto max-w-[80%] rounded-2xl rounded-br-md bg-brand px-4 py-2.5 text-[16px] leading-[1.45] text-brand-foreground">
-                      What are you working on right now?
+                      Can I trust you with a production system?
                     </p>
                     <div className="max-w-[34rem] rounded-2xl rounded-tl-md bg-sunken px-4 py-3 text-[16px] leading-[1.45] text-foreground">
-                      Right now, {flagship.client}. {flagship.description?.split('. ')[0]}. I&apos;m at {flagship.metrics?.[0]} so far.{' '}
+                      {flagship.client} hired me on a 45-day trial to make its backend multi-tenant. Since June 2025 my scope has grown to the whole platform, with {flagship.metrics?.[0]} so far.{' '}
                       <button type="button" onClick={() => setOpenIndex(flagshipIndex)} aria-haspopup="dialog" className="link">
                         Read the case study
                       </button>
@@ -226,9 +226,11 @@ const ChatLanding: React.FC<ChatLandingProps> = ({
             <div className="section__head">
               <div>
                 <h2 id="flagship-heading" className="title">
-                  {flagship.client}, my flagship case study
+                  From a 45-day trial to the whole {flagship.client} platform
                 </h2>
-                <p className="section__lead">{flagship.description?.split('. ')[0]}.</p>
+                <p className="section__lead">
+                  {flagship.client} builds AI voice agents for lending, insurance and contact centers. I came in to fix the backend and now work across the whole stack, including the security and SOC 2 work enterprise buyers ask for.
+                </p>
               </div>
             </div>
             <button
@@ -268,12 +270,12 @@ const ChatLanding: React.FC<ChatLandingProps> = ({
           <div className="wrap">
             <div className="section__head">
               <div>
-                <h2 id="work-heading" className="title">More shipped products</h2>
+                <h2 id="work-heading" className="title">Products I&apos;ve shipped for other teams</h2>
                 <p className="section__lead">
-                  Shipped for {clients.join(', ')}.
+                  Work shipped for {clients.slice(0, -1).join(', ')} and {clients[clients.length - 1]}.
                 </p>
               </div>
-              <button type="button" onClick={() => ask('What projects are you most proud of?')} className="btn btn--secondary max-sm:w-full">
+              <button type="button" onClick={() => ask('What have you shipped?')} className="btn btn--secondary max-sm:w-full">
                 See all {projects.length} case studies
               </button>
             </div>
@@ -292,8 +294,8 @@ const ChatLanding: React.FC<ChatLandingProps> = ({
           <div className="wrap">
             <div className="section__head">
               <div>
-                <h2 id="services-heading" className="title">What I build for clients</h2>
-                <p className="section__lead">Pick the one closest to your project. My twin explains how I would approach it.</p>
+                <h2 id="services-heading" className="title">Where I can help your team</h2>
+                <p className="section__lead">Pick the problem closest to yours. My twin explains how I&apos;d approach it.</p>
               </div>
             </div>
             <div className="grid-12">
@@ -316,7 +318,7 @@ const ChatLanding: React.FC<ChatLandingProps> = ({
               </ol>
               <div className="col-span-12 flex flex-col gap-6 max-sm:gap-3 lg:col-span-5">
                 <div className="card p-6">
-                  <h3 className="font-display text-[20px] leading-tight">Tools I ship with</h3>
+                  <h3 className="font-display text-[20px] leading-tight">The stack I ship with</h3>
                   <ul className="mt-5 grid grid-cols-4 gap-x-2 gap-y-5">
                     {TOOLS.map((t) => (
                       <li key={t.name} className="flex flex-col items-center gap-2 text-center">
@@ -344,13 +346,13 @@ const ChatLanding: React.FC<ChatLandingProps> = ({
           <div className="wrap">
             <div className="section__head">
               <div>
-                <h2 id="reviews-heading" className="title">Client reviews on Upwork</h2>
+                <h2 id="reviews-heading" className="title">What clients say after working with me</h2>
                 <p className="section__lead">
                   <span className="num font-medium text-foreground">{reviews.rating}★</span> from{' '}
                   {reviews.ratings.map((r) => r.client).join(', ')}. {reviews.summary}
                 </p>
               </div>
-              <button type="button" onClick={() => ask('What do clients say about you?')} className="btn btn--secondary max-sm:w-full">
+              <button type="button" onClick={() => ask('What do past clients say?')} className="btn btn--secondary max-sm:w-full">
                 See all reviews
               </button>
             </div>
@@ -384,9 +386,9 @@ const ChatLanding: React.FC<ChatLandingProps> = ({
           <div className="wrap">
             <div className="section__head">
               <div>
-                <h2 id="questions-heading" className="title">Questions clients ask my twin</h2>
+                <h2 id="questions-heading" className="title">Questions to ask before you hire me</h2>
                 <p className="section__lead">
-                  These cards answer instantly. Anything you type goes to a live model that answers as me.
+                  These cards answer instantly. Type anything else and my twin answers live.
                 </p>
               </div>
               <button
@@ -394,7 +396,7 @@ const ChatLanding: React.FC<ChatLandingProps> = ({
                 onClick={onOpenCommand}
                 className="btn btn--secondary max-sm:w-full"
               >
-                See every command
+                See all questions
                 <kbd className="kbd max-[1023px]:hidden">⌘K</kbd>
               </button>
             </div>
@@ -438,10 +440,10 @@ const ChatLanding: React.FC<ChatLandingProps> = ({
         <div className="wrap">
           <div>
             <h2 id="close-heading" className="max-w-[16ch] text-[clamp(44px,1rem+5vw,96px)] leading-[1] font-medium tracking-[-0.04em]">
-              A project to build with me
+              Tell me what you need built
             </h2>
             <p className="mt-6 max-w-[62ch] text-[18px] leading-relaxed text-[var(--band-muted)]">
-              {availability.headline}. Send me the outline and I&apos;ll reply within 0–4 hours with questions and an honest fit check.
+              Send a few lines about the project. I reply within 0–4 hours with questions and an honest read on whether I&apos;m the right fit.
             </p>
             <div className="mt-8 flex flex-wrap gap-3 max-sm:flex-col">
               <button type="button" onClick={onHire} aria-haspopup="dialog" className="btn btn--primary">

@@ -66,7 +66,7 @@ export function PresetReply({
               style={{ '--i': 4 } as React.CSSProperties}
             >
               <p className="text-[14px] text-muted-foreground">
-                This one is pre-written. Want a live answer in my own words?
+                Want an answer specific to your project? Ask my twin live.
               </p>
               <button
                 onClick={handleGetAIResponse}

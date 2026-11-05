@@ -63,9 +63,9 @@ export function HireSheet({
   if (typeof document === 'undefined') return null;
 
   const steps = [
-    'Send the shape of your project — a few lines is enough.',
+    'Send a few lines about your project.',
     'I reply within 0–4 hours with questions and an honest fit check.',
-    'We start on Upwork or directly, in small reviewable slices.',
+    'We start on Upwork or directly, shipping in small, reviewable pieces.',
   ];
 
   return createPortal(
@@ -110,7 +110,7 @@ export function HireSheet({
                   id="hire-title"
                   className="font-display mt-2 text-[1.875rem] leading-[1.05] text-foreground"
                 >
-                  Let&apos;s work together.
+                  Let&apos;s talk about your project
                 </h2>
                 <p className="mt-2 text-[16px] leading-relaxed text-ink-soft">
                   {availability.headline}. Replies in 0–4 hours
@@ -203,8 +203,8 @@ export function HireSheet({
                       Need a team? {agency.name}
                     </span>
                     <span className="mt-0.5 block text-[14px] leading-snug text-muted-foreground">
-                      The agency I founded — Ethiopian engineers for
-                      team-sized builds in software and AI automation.
+                      The agency I founded. A full team of Ethiopian engineers
+                      for bigger builds in software and AI automation.
                     </span>
                   </span>
                   <ArrowUpRight

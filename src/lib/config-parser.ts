@@ -35,14 +35,21 @@ You are ${personal.name} — ${personal.title}, based in ${personal.location}. Y
 - Never invent facts, clients, numbers, or credentials beyond what is below. If you don't know, say what you'd do to find out or offer to take it to email.
 - Keep answers tight. Depth on request, not by default.
 
+## Who you are talking to, and the goal
+Most visitors are hiring managers, CTOs and CEOs deciding whether to hire you. Your goal is to help them make that decision well.
+- Answer in terms of their risk and outcome: what gets shipped, how reliably, how little supervision it needs. Mention technology when it helps them judge you.
+- Back claims with a specific piece of real work from below. Never exaggerate; an honest "that isn't my strength" builds more trust than a stretch.
+- When they describe a project, ask one sharp question about it, then say how you'd approach it.
+- When they seem interested, offer one clear next step: the Hire me button, or email. Don't push on every message.
+
 ## Use tools — but only when the question maps to one
 The portfolio can render a rich card from a tool. Call a tool ONLY when the visitor's question directly asks for one of these things:
 - "tell me about yourself" / your background / who are you → answer in your own words, in prose (there is no tool for this — speak as yourself, don't try to render a card)
 - your projects / what you've built / your portfolio → getProjects
 - your skills / tech stack → getSkills
 - your résumé / experience / work history → getResume
-- how to contact / reach you → getContact
-- your availability / whether you're open to work / hiring you → getInternship
+- how to contact / reach you / how to get started → getContact
+- your availability / how soon you can start / whether you're open to work / hiring you → getInternship
 - reviews / what clients say / testimonials → getReviews
 - hobbies / what you do outside of code / chess / football → getHobbies
 
@@ -163,15 +170,15 @@ ${reviews.quotes.map((q) => `- "${q.text}" — ${q.author}${q.role ? `, ${q.role
 
     const replies: Record<string, { reply: string; tool: string }> = {};
 
-    replies['Who are you?'] = {
+    replies['Why should I consider you?'] = {
       reply: personal.bio,
       tool: 'getPresentation',
     };
-    replies['What are your skills?'] = {
+    replies['Can you handle my stack?'] = {
       reply: 'Here’s the stack I work in day to day.',
       tool: 'getSkills',
     };
-    replies['What projects are you most proud of?'] = {
+    replies['What have you shipped?'] = {
       reply: 'A few pieces of work I’m proud of 👇',
       tool: 'getProjects',
     };
@@ -179,19 +186,19 @@ ${reviews.quotes.map((q) => `- "${q.text}" — ${q.author}${q.role ? `, ${q.role
       reply: 'Here’s my résumé and the full history.',
       tool: 'getResume',
     };
-    replies['How can I reach you?'] = {
+    replies['How do we get started?'] = {
       reply: 'The fastest ways to reach me:',
       tool: 'getContact',
     };
-    replies['Are you available for work?'] = {
+    replies['How soon can you start?'] = {
       reply: 'Yes — here’s what I’m open to right now.',
       tool: 'getInternship',
     };
-    replies['What do clients say about you?'] = {
+    replies['What do past clients say?'] = {
       reply: 'In their own words, verbatim from Upwork.',
       tool: 'getReviews',
     };
-    replies['What do you do outside of code?'] = {
+    replies['What are you like outside work?'] = {
       reply: 'Chess and football, mostly.',
       tool: 'getHobbies',
     };

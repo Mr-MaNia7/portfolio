@@ -52,11 +52,11 @@ const AvailabilityCard = () => {
           <span className="flex items-center gap-2">
             {availability.open && <span className="status-dot" aria-hidden />}
             {availability.open
-              ? 'Accepting engagements'
+              ? 'Taking new work'
               : 'Not taking new work'}
           </span>
         }
-        title={availability.open ? 'Commission a build.' : 'Currently booked.'}
+        title={availability.open ? 'Available to start now' : 'Currently booked.'}
         standfirst={availability.headline + '. ' + availability.workStyle}
       />
 
@@ -89,7 +89,7 @@ const AvailabilityCard = () => {
         </dl>
       </div>
 
-      <ArtifactSection label="Terms" index={2}>
+      <ArtifactSection label="How we can work together" index={2}>
         <dl className="divide-y divide-border-subtle">
           {terms.map(({ term, detail }) => (
             <div

@@ -11,7 +11,7 @@
     "email": "hello@abdulkarimg.com",
     "handle": "@abdulkarimgmohammed",
     "upworkBadge": "Top Rated Plus · 100% Job Success",
-    "upworkBadgeImage": "https://www.upworkmrr.com/badges/top-rated-plus-badge.svg",
+    "upworkBadgeImage": "/icons/top-rated-plus-badge.svg",
     "bio": "I'm Abdulkarim, a senior full-stack and AI engineer based in Addis Ababa, working hours that overlap with US and EU teams. I've shipped software for clients around the world for 5+ years. On Upwork I'm Top Rated Plus with a 100% Job Success score: $60K+ earned across 26 jobs.\n\nSince June 2025 I've been building AIVI, a platform of AI voice agents and CRM for lending, insurance and contact centers. They brought me in on a 45-day trial to make the backend properly multi-tenant on Supabase, and my scope kept growing from there. Today I work across the backend, frontend, DevOps, security and SOC 2: multi-region cells, a micro-frontend platform, voice-guided co-browsing, and a reinforcement-learning policy that learns from call quality. That's 500+ merged PRs so far.\n\nBefore that I rebuilt Svetness's legacy system as Supabase microservices with a Next.js front end, led the frontend of Aladia's learning platform, trained Google's Bard (now Gemini) through Turing, and built a real-time call-center platform for Canal+. I also founded Eaglix Tech, an agency that brings Ethiopian engineers to enterprise software and AI work.\n\nOff the clock you'll find me at the chessboard or in central midfield.",
     "currently": {
       "role": "Software Engineer",

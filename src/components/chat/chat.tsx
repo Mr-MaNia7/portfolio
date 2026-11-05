@@ -8,6 +8,7 @@ import {
   useReducedMotion,
 } from 'framer-motion';
 import { useTheme } from 'next-themes';
+import Image from 'next/image';
 import { useSearchParams } from 'next/navigation';
 import React, {
   useCallback,
@@ -30,14 +31,6 @@ import { TurnHeader } from './turn-badge';
 import { presetReplies, getConfig } from '@/lib/config-loader';
 import { buildCommands, type Command } from '@/lib/commands';
 import { onAsk, onHire } from '@/lib/portfolio-events';
-
-// Landing ⇄ conversation swap. Exit only — entrances are CSS `.reveal`.
-const MOTION_CONFIG = {
-  initial: false,
-  animate: { opacity: 1, y: 0 },
-  exit: { opacity: 0, y: -6 },
-  transition: { duration: 0.18, ease: [0.22, 1, 0.36, 1] },
-} as const;
 
 type PresetItem = {
   id: string;
@@ -71,6 +64,7 @@ const Chat = () => {
   const [paletteOpen, setPaletteOpen] = useState(false);
   const [hireOpen, setHireOpen] = useState(false);
   const [input, setInput] = useState('');
+  const [heroComposerVisible, setHeroComposerVisible] = useState(true);
   const [presetItems, setPresetItems] = useState<PresetItem[]>([]);
   const [errorItem, setErrorItem] = useState<ErrorItem | null>(null);
 
@@ -328,48 +322,107 @@ const Chat = () => {
   const removePreset = (id: string) =>
     setPresetItems((prev) => prev.filter((p) => p.id !== id));
 
+  const composerProps = {
+    input,
+    handleInputChange,
+    handleSubmit: onSubmit,
+    isLoading,
+    stop: handleStop,
+    isToolInProgress,
+    commands,
+    onRunCommand: runCommand,
+    onOpenCommand: () => setPaletteOpen(true),
+  };
+
   return (
     <MotionConfig reducedMotion="user">
-      <div className="relative flex h-svh flex-col overflow-hidden bg-background">
-        <CommandPalette
-          commands={commands}
-          open={paletteOpen}
-          onOpenChange={setPaletteOpen}
-          onRun={runCommand}
-        />
+      <CommandPalette
+        commands={commands}
+        open={paletteOpen}
+        onOpenChange={setPaletteOpen}
+        onRun={runCommand}
+      />
 
-        <HireSheet open={hireOpen} onClose={() => setHireOpen(false)} />
+      <HireSheet open={hireOpen} onClose={() => setHireOpen(false)} />
 
-        <TopBar
-          onOpenCommand={() => setPaletteOpen(true)}
-          onHome={goHome}
-          onHire={() => setHireOpen(true)}
-        />
+      {isEmptyState ? (
+        <>
+          <TopBar
+            onOpenCommand={() => setPaletteOpen(true)}
+            onHome={goHome}
+            onHire={() => setHireOpen(true)}
+          />
+          <ChatLanding
+            submitQuery={submitQuery}
+            handlePresetReply={handlePresetReply}
+            onOpenCommand={() => setPaletteOpen(true)}
+            onHire={() => setHireOpen(true)}
+            commands={commands}
+            onComposerVisible={setHeroComposerVisible}
+            composer={
+              <ChatBottombar
+                {...composerProps}
+                variant="window"
+                menuEnabled={heroComposerVisible}
+                focusOnMount
+              />
+            }
+          />
+          {/* Once the hero scrolls off, the twin stays one tap away. */}
+          {!heroComposerVisible && (
+            <div className="dock">
+              <div className="wrap">
+                <ChatBottombar {...composerProps} variant="dock" />
+              </div>
+            </div>
+          )}
+        </>
+      ) : (
+        <div className="flex h-dvh flex-col overflow-hidden bg-background">
+          <TopBar
+            conversation
+            onOpenCommand={() => setPaletteOpen(true)}
+            onHome={goHome}
+            onHire={() => setHireOpen(true)}
+          />
 
-        {/* Scrollable content */}
-        <div className="scrollbar-subtle flex-1 overflow-y-auto">
-          <div className="mx-auto flex min-h-full max-w-3xl flex-col px-4 sm:px-6">
-            <AnimatePresence mode="wait">
-              {isEmptyState ? (
-                <motion.div
-                  key="landing"
-                  className="flex min-h-full flex-1 items-center"
-                  {...MOTION_CONFIG}
-                >
-                  <ChatLanding
-                    submitQuery={submitQuery}
-                    handlePresetReply={handlePresetReply}
-                    onOpenCommand={() => setPaletteOpen(true)}
-                    onHire={() => setHireOpen(true)}
-                    commands={commands}
-                  />
-                </motion.div>
-              ) : (
-                <motion.div
-                  key="conversation"
-                  className="flex flex-col gap-10 pt-8 pb-10"
-                  {...MOTION_CONFIG}
-                >
+          <main className="wrap flex min-h-0 flex-1 gap-10">
+            {/* Who you are talking to, always in view on a desktop */}
+            <aside
+              aria-label="About this twin"
+              className="scrollbar-subtle hidden w-[320px] shrink-0 flex-col gap-6 overflow-y-auto py-8 lg:flex"
+            >
+              <div className="flex items-center gap-3">
+                <span className="relative h-12 w-12 shrink-0 overflow-hidden rounded-xl">
+                  <Image src={config.personal.avatar} alt="" fill sizes="48px" className="object-cover" />
+                </span>
+                <span className="min-w-0">
+                  <span className="block text-[18px] leading-tight font-medium">
+                    {config.personal.shortName}&apos;s AI twin
+                  </span>
+                  <span className="text-[14px] text-muted-foreground">Answers as me</span>
+                </span>
+              </div>
+              {config.availability.open && (
+                <p className="flex gap-2 text-[14px] leading-snug text-ink-soft">
+                  <span className="status-dot mt-1.5" aria-hidden />
+                  {config.availability.headline}
+                </p>
+              )}
+              <div>
+                <p className="mb-3 text-[14px] font-medium text-muted-foreground">Ask about</p>
+                <HelperBoost
+                  variant="rail"
+                  submitQuery={submitQuery}
+                  handlePresetReply={handlePresetReply}
+                  commands={commands}
+                />
+              </div>
+            </aside>
+
+            <div className="flex min-h-0 min-w-0 flex-1 flex-col">
+              <div className="scrollbar-subtle min-h-0 flex-1 overflow-y-auto">
+                <div className="flex flex-col gap-8 pt-6 pb-8 sm:gap-10 sm:pt-8 lg:pr-4">
                   <AnimatePresence initial={false}>
                     {timeline.map((entry) => {
                       if (entry.kind === 'error') {
@@ -416,9 +469,8 @@ const Chat = () => {
                               canEscalate={p.id === latestPresetId}
                               onGetAIResponse={(q) => {
                                 // Escalating replaces the instant card with the
-                                // live answer — otherwise the AI re-renders the same
-                                // tool card (and echoes the question), showing it
-                                // twice.
+                                // live answer. Otherwise the AI re-renders the same
+                                // tool card and shows it twice.
                                 removePreset(p.id);
                                 handleGetAIResponse(q);
                               }}
@@ -451,57 +503,40 @@ const Chat = () => {
                   </AnimatePresence>
 
                   {loadingSubmit && (
-                    <div className="reveal flex flex-col gap-3" role="status">
+                    <div className="reveal flex flex-col gap-2" role="status">
                       <TurnHeader kind="ai" />
                       <div className="flex items-center gap-2.5 py-1">
-                        <span
-                          className="composing flex items-center gap-1"
-                          aria-hidden
-                        >
+                        <span className="composing flex items-center gap-1" aria-hidden>
                           <span />
                           <span />
                           <span />
                         </span>
-                        <span className="meta text-muted-foreground">
-                          Composing
-                        </span>
+                        <span className="text-[14px] text-muted-foreground">Thinking</span>
                       </div>
                     </div>
                   )}
 
                   <div ref={bottomRef} className="h-px w-full" />
-                </motion.div>
-              )}
-            </AnimatePresence>
-          </div>
-        </div>
+                </div>
+              </div>
 
-        {/* Composer */}
-        <div className="relative z-30 shrink-0 bg-background pb-[env(safe-area-inset-bottom)]">
-          <div className="mx-auto w-full max-w-3xl px-4 pt-2 pb-4 sm:px-6">
-            <div className="flex flex-col gap-2.5">
-              {!isEmptyState && (
-                <HelperBoost
-                  submitQuery={submitQuery}
-                  handlePresetReply={handlePresetReply}
-                  commands={commands}
-                />
-              )}
-              <ChatBottombar
-                input={input}
-                handleInputChange={handleInputChange}
-                handleSubmit={onSubmit}
-                isLoading={isLoading}
-                stop={handleStop}
-                isToolInProgress={isToolInProgress}
-                commands={commands}
-                onRunCommand={runCommand}
-                onOpenCommand={() => setPaletteOpen(true)}
-              />
+              {/* Composer */}
+              <div className="relative z-30 shrink-0 bg-background pb-[env(safe-area-inset-bottom)] lg:pr-4">
+                <div className="flex flex-col gap-2 pt-2 pb-2">
+                  <div className="hidden sm:block lg:hidden">
+                    <HelperBoost
+                      submitQuery={submitQuery}
+                      handlePresetReply={handlePresetReply}
+                      commands={commands}
+                    />
+                  </div>
+                  <ChatBottombar {...composerProps} variant="shell" focusOnMount />
+                </div>
+              </div>
             </div>
-          </div>
+          </main>
         </div>
-      </div>
+      )}
     </MotionConfig>
   );
 };
@@ -510,7 +545,7 @@ function UserBubble({ text }: { text: string }) {
   if (!text.trim()) return null;
   return (
     <div className="reveal flex justify-end">
-      <p className="max-w-[85%] rounded-lg rounded-br-sm border border-border-subtle bg-sunken px-4 py-2.5 text-[15px] leading-relaxed break-words whitespace-pre-wrap text-foreground">
+      <p className="max-w-[85%] rounded-2xl rounded-br-md bg-brand px-4 py-2.5 text-[16px] leading-relaxed break-words whitespace-pre-wrap text-brand-foreground lg:max-w-[70%]">
         <span className="sr-only">You asked: </span>
         {text}
       </p>
@@ -531,27 +566,26 @@ function QuotaNotice({
         <div className="flex items-center gap-2 border-b border-border-subtle px-5 py-2.5">
           <span aria-hidden className="h-1.5 w-1.5 rounded-full bg-warning" />
           <span className="meta text-muted-foreground">
-            Live model · rate-limited
+            Live answers paused
           </span>
         </div>
         <div className="px-5 py-4">
           <h3 className="font-display text-[1.25rem] leading-tight text-foreground">
-            The live model is resting.
+            Live answers are paused for a moment
           </h3>
           <p className="measure mt-1.5 text-[14px] leading-relaxed text-ink-soft">
-            Free-form AI answers are momentarily unavailable (rate limits on the
-            hosted model). Everything else still works instantly — the quick
-            answers and the ⌘K menu read from curated notes, no API call.
+            The AI model hit its rate limit. Everything else still works: the
+            instant answers and the search menu are pre-written and need no AI call.
           </p>
           <div className="mt-4 flex flex-wrap gap-2">
-            <button onClick={onQuick} className="btn-ink h-9 px-4 text-[13px]">
+            <button onClick={onQuick} className="btn btn--primary">
               How to reach me
             </button>
             <button
               onClick={onCommand}
-              className="btn-line h-9 px-4 text-[13px]"
+              className="btn btn--secondary"
             >
-              Open the ⌘K menu
+              Open the search menu
             </button>
           </div>
         </div>

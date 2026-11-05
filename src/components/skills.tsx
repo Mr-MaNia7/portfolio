@@ -90,8 +90,7 @@ const Skills = () => {
       <ArtifactHeader
         kicker={
           <>
-            Skills <span className="text-border-strong">{'//'}</span>{' '}
-            what-i-do.json
+            Skills
           </>
         }
         title="What I actually build."
@@ -127,11 +126,11 @@ const Skills = () => {
                 {lang.name}
               </span>
               <span
-                className={`num flex items-center gap-1.5 text-[11px] ${lang.usage === 'Daily' ? 'text-clay-ink' : 'text-muted-foreground'}`}
+                className={`num flex items-center gap-1.5 text-[13px] ${lang.usage === 'Daily' ? 'text-brand-ink' : 'text-muted-foreground'}`}
               >
                 <span
                   aria-hidden
-                  className={`h-1.5 w-1.5 rounded-full ${lang.usage === 'Daily' ? 'bg-clay' : 'bg-border-strong'}`}
+                  className={`h-1.5 w-1.5 rounded-full ${lang.usage === 'Daily' ? 'bg-brand' : 'bg-border-strong'}`}
                 />
                 {lang.usage}
               </span>
@@ -169,14 +168,14 @@ const Skills = () => {
                 tabIndex={selected ? 0 : -1}
                 onClick={() => setActive(i)}
                 onKeyDown={(e) => onTabKey(e, i)}
-                className={`press group flex shrink-0 items-baseline gap-3 rounded-md border px-3 py-2 text-left text-[13.5px] whitespace-nowrap transition-colors sm:rounded-none sm:border-0 sm:border-l-2 sm:px-5 sm:py-3 sm:whitespace-normal ${
+                className={`press group flex shrink-0 items-baseline gap-3 rounded-md border px-3 py-2 text-left text-[14px] whitespace-nowrap transition-colors sm:rounded-none sm:border-0 sm:border-l-2 sm:px-5 sm:py-3 sm:whitespace-normal ${
                   selected
-                    ? 'border-border-strong bg-card text-foreground sm:border-clay'
+                    ? 'border-border-strong bg-card text-foreground sm:border-brand'
                     : 'border-border bg-transparent text-ink-soft hover:text-foreground sm:border-transparent sm:hover:bg-card/60'
                 }`}
               >
                 <span
-                  className={`num text-[11px] ${selected ? 'text-clay-ink' : 'text-muted-foreground'}`}
+                  className={`num text-[13px] ${selected ? 'text-brand-ink' : 'text-muted-foreground'}`}
                 >
                   {pad2(i + 1)}
                 </span>
@@ -201,7 +200,7 @@ const Skills = () => {
             <h3 className="font-display mt-2 text-[1.625rem] leading-[1.1] text-foreground sm:text-[1.875rem]">
               {current.name}
             </h3>
-            <p className="measure mt-2.5 text-[15px] leading-relaxed text-ink-soft">
+            <p className="measure mt-2.5 text-[16px] leading-relaxed text-ink-soft">
               {current.summary}
             </p>
 
@@ -210,7 +209,7 @@ const Skills = () => {
               {current.proof.map((p) => (
                 <li
                   key={p}
-                  className="flex gap-3 border-l-2 border-clay py-0.5 pl-3 text-[14.5px] leading-snug text-foreground"
+                  className="flex gap-3 border-l-2 border-brand py-0.5 pl-3 text-[16px] leading-snug text-foreground"
                 >
                   {p}
                 </li>
@@ -253,8 +252,8 @@ const Skills = () => {
               }
               className="press mt-6 -ml-1 flex items-center gap-1.5 rounded-sm px-1 py-0.5 text-[13px] text-ink-soft hover:text-foreground"
             >
-              <Sparkles className="h-3.5 w-3.5 text-clay" aria-hidden />
-              Ask the live AI how I did it
+              <Sparkles className="h-3.5 w-3.5 text-brand" aria-hidden />
+              Ask my twin how I did it
               <ArrowRight className="h-3.5 w-3.5" aria-hidden />
             </button>
           </div>
@@ -319,7 +318,7 @@ function ToolLookup({
           placeholder="Type a technology — e.g. Terraform"
           autoComplete="off"
           aria-describedby={listId}
-          className="h-11 w-full rounded-md border border-border-strong bg-card pr-3 pl-9 text-[15px] text-foreground placeholder:text-muted-foreground focus:border-clay focus:outline-none"
+          className="h-11 w-full rounded-md border border-border-strong bg-card pr-3 pl-9 text-[16px] text-foreground placeholder:text-muted-foreground focus:border-brand focus:outline-none"
         />
       </div>
 
@@ -355,7 +354,7 @@ function ToolLookup({
                       key={c}
                       type="button"
                       onClick={() => onPick(c)}
-                      className="press mr-1.5 inline-flex items-center gap-1 text-[13px] text-clay-ink underline decoration-clay/40 underline-offset-4 hover:decoration-clay"
+                      className="press mr-1.5 inline-flex items-center gap-1 text-[13px] text-brand-ink underline decoration-brand/40 underline-offset-4 hover:decoration-brand"
                     >
                       {capabilityNames[c]}
                     </button>
@@ -375,9 +374,9 @@ function ToolLookup({
                   true
                 )
               }
-              className="btn-line h-8 px-3 text-[13px]"
+              className="btn btn--secondary"
             >
-              <Sparkles className="h-3.5 w-3.5 text-clay" aria-hidden />
+              <Sparkles className="h-3.5 w-3.5 text-brand" aria-hidden />
               Ask me about {query.trim()}
             </button>
           </p>

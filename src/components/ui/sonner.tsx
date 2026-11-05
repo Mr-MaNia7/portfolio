@@ -16,7 +16,7 @@ const Toaster = ({ ...props }: ToasterProps) => {
         classNames: {
           toast:
             "!rounded-md !border !border-border-strong !bg-popover !text-popover-foreground !shadow-[var(--shadow-float)] !font-sans !text-[13px] !gap-2.5 !py-2.5 !px-3.5",
-          icon: "!text-clay",
+          icon: "!text-brand",
           description: "!text-muted-foreground",
         },
       }}

@@ -56,7 +56,7 @@ export default function ToolRenderer({ toolInvocations }: ToolRendererProps) {
                   {JSON.stringify(tool.result, null, 2)}
                 </pre>
               ) : (
-                <p className="text-[15px] text-foreground">
+                <p className="text-[16px] text-foreground">
                   {String(tool.result)}
                 </p>
               )}

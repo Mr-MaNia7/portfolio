@@ -89,12 +89,12 @@ const MARKDOWN: Components = {
     </h3>
   ),
   h3: ({ children }) => (
-    <h4 className="mt-5 mb-1.5 text-[15px] font-semibold text-foreground first:mt-0">
+    <h4 className="mt-5 mb-1.5 text-[16px] font-semibold text-foreground first:mt-0">
       {children}
     </h4>
   ),
   ul: ({ children }) => (
-    <ul className="hang my-3 list-disc space-y-1.5 pl-5 marker:text-clay">
+    <ul className="hang my-3 list-disc space-y-1.5 pl-5 marker:text-brand">
       {children}
     </ul>
   ),
@@ -111,7 +111,7 @@ const MARKDOWN: Components = {
     <em className="font-display text-[1.05em] italic">{children}</em>
   ),
   blockquote: ({ children }) => (
-    <blockquote className="font-display hang my-4 border-l-2 border-clay pl-4 text-[1.125rem] leading-snug text-ink-soft italic">
+    <blockquote className="font-display hang my-4 border-l-2 border-brand pl-4 text-[1.125rem] leading-snug text-ink-soft italic">
       {children}
     </blockquote>
   ),
@@ -143,7 +143,7 @@ const MARKDOWN: Components = {
       href={href}
       target="_blank"
       rel="noopener noreferrer"
-      className="text-clay-ink underline decoration-clay/40 underline-offset-[3px] transition-colors hover:decoration-clay"
+      className="text-brand-ink underline decoration-brand/40 underline-offset-[3px] transition-colors hover:decoration-brand"
     >
       {children}
     </a>

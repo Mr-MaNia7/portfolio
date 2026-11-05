@@ -41,14 +41,13 @@ export default function AllProjects() {
       <ArtifactHeader
         kicker={
           <>
-            Selected work <span className="text-border-strong">{'//'}</span>{' '}
-            projects.json
+            Selected work
           </>
         }
         title="Things I've built"
-        standfirst="Client work and research — open any file for the full dossier."
+        standfirst="Client work and research — open any card for the full case study."
         aside={
-          <p className="num text-right text-[12px] leading-relaxed text-muted-foreground">
+          <p className="num text-right text-[13px] leading-relaxed text-muted-foreground">
             <span className="block text-[1.75rem] leading-none text-foreground">
               {pad2(projects.length)}
             </span>
@@ -179,8 +178,7 @@ const ProjectTile = React.forwardRef<
       >
         <span className="meta flex items-center justify-between gap-3 text-muted-foreground">
           <span className="truncate">
-            {pad2(index + 1)} <span className="text-border-strong">{'//'}</span>{' '}
-            <span className="text-clay-ink">{project.category}</span>
+            <span className="text-brand-ink">{project.category}</span>
           </span>
           <span className="num shrink-0 normal-case tracking-normal">
             {project.date}
@@ -202,7 +200,7 @@ const ProjectTile = React.forwardRef<
         )}
 
         {metric && (
-          <span className="flex items-baseline gap-2 border-l-2 border-clay py-0.5 pl-3">
+          <span className="flex items-baseline gap-2 border-l-2 border-brand py-0.5 pl-3">
             {metric.figure && (
               <span className="num text-[1.125rem] leading-none text-foreground">
                 {metric.figure}
@@ -223,11 +221,11 @@ const ProjectTile = React.forwardRef<
             ))}
             {more > 0 && <span className="tag !bg-transparent">+{more}</span>}
           </span>
-          <span className="flex shrink-0 items-center gap-1 text-[12px] text-muted-foreground transition-colors group-hover:text-foreground">
-            <span className={lead ? '' : 'sr-only'}>Open dossier</span>
+          <span className="flex shrink-0 items-center gap-1 text-[13px] text-muted-foreground transition-colors group-hover:text-foreground">
+            <span className={lead ? '' : 'sr-only'}>Open case study</span>
             <ArrowUpRight
               aria-hidden
-              className="h-4 w-4 transition-[color,transform] duration-200 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 group-hover:text-clay"
+              className="h-4 w-4 transition-[color,transform] duration-200 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 group-hover:text-brand"
             />
           </span>
         </span>

@@ -55,7 +55,7 @@ export function ArtifactHeader({
           {title}
         </h2>
         {standfirst && (
-          <p className="measure mt-2 text-[15px] leading-relaxed text-ink-soft">
+          <p className="measure mt-2 text-[16px] leading-relaxed text-ink-soft">
             {standfirst}
           </p>
         )}

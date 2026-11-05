@@ -1,0 +1,98 @@
+[
+  {
+    "file": "go.svg",
+    "icon": "logos:go",
+    "name": "Go",
+    "kind": "colour",
+    "source": "gilbarbara/logos@d6960edc1b7309d392c76e40d3a320df7f9ff85c",
+    "author": "Gil Barbara",
+    "licence": "CC0-1.0",
+    "url": "https://github.com/gilbarbara/logos",
+    "trademark": true,
+    "markUrl": "https://golang.org/"
+  },
+  {
+    "file": "kubernetes.svg",
+    "icon": "logos:kubernetes",
+    "name": "Kubernetes",
+    "kind": "colour",
+    "source": "gilbarbara/logos@d6960edc1b7309d392c76e40d3a320df7f9ff85c",
+    "author": "Gil Barbara",
+    "licence": "CC0-1.0",
+    "url": "https://github.com/gilbarbara/logos",
+    "trademark": true,
+    "markUrl": "https://kubernetes.io/"
+  },
+  {
+    "file": "nextjs-icon.svg",
+    "icon": "logos:nextjs-icon",
+    "name": "Nextjs",
+    "kind": "colour",
+    "source": "gilbarbara/logos@d6960edc1b7309d392c76e40d3a320df7f9ff85c",
+    "author": "Gil Barbara",
+    "licence": "CC0-1.0",
+    "url": "https://github.com/gilbarbara/logos",
+    "trademark": true,
+    "markUrl": "https://vercel.com/solutions/nextjs"
+  },
+  {
+    "file": "postgresql.svg",
+    "icon": "logos:postgresql",
+    "name": "Postgresql",
+    "kind": "colour",
+    "source": "gilbarbara/logos@d6960edc1b7309d392c76e40d3a320df7f9ff85c",
+    "author": "Gil Barbara",
+    "licence": "CC0-1.0",
+    "url": "https://github.com/gilbarbara/logos",
+    "trademark": true,
+    "markUrl": "https://www.postgresql.org/"
+  },
+  {
+    "file": "python.svg",
+    "icon": "logos:python",
+    "name": "Python",
+    "kind": "colour",
+    "source": "gilbarbara/logos@d6960edc1b7309d392c76e40d3a320df7f9ff85c",
+    "author": "Gil Barbara",
+    "licence": "CC0-1.0",
+    "url": "https://github.com/gilbarbara/logos",
+    "trademark": true,
+    "markUrl": "https://www.python.org/"
+  },
+  {
+    "file": "supabase-icon.svg",
+    "icon": "logos:supabase-icon",
+    "name": "Supabase",
+    "kind": "colour",
+    "source": "gilbarbara/logos@d6960edc1b7309d392c76e40d3a320df7f9ff85c",
+    "author": "Gil Barbara",
+    "licence": "CC0-1.0",
+    "url": "https://github.com/gilbarbara/logos",
+    "trademark": true,
+    "markUrl": "https://supabase.com/"
+  },
+  {
+    "file": "terraform-icon.svg",
+    "icon": "logos:terraform-icon",
+    "name": "Terraform",
+    "kind": "colour",
+    "source": "gilbarbara/logos@d6960edc1b7309d392c76e40d3a320df7f9ff85c",
+    "author": "Gil Barbara",
+    "licence": "CC0-1.0",
+    "url": "https://github.com/gilbarbara/logos",
+    "trademark": true,
+    "markUrl": "https://www.terraform.io/"
+  },
+  {
+    "file": "typescript-icon.svg",
+    "icon": "logos:typescript-icon",
+    "name": "Typescript",
+    "kind": "colour",
+    "source": "gilbarbara/logos@d6960edc1b7309d392c76e40d3a320df7f9ff85c",
+    "author": "Gil Barbara",
+    "licence": "CC0-1.0",
+    "url": "https://github.com/gilbarbara/logos",
+    "trademark": true,
+    "markUrl": "https://www.typescriptlang.org/"
+  }
+]

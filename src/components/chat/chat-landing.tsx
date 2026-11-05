@@ -1,10 +1,10 @@
 'use client';
 
 import Image from 'next/image';
-import { ArrowRight, ArrowUpRight, Sparkles } from 'lucide-react';
-import React, { useState, type CSSProperties } from 'react';
+import { ArrowRight, ArrowUpRight } from 'lucide-react';
+import React, { useEffect, useRef, useState } from 'react';
 
-import { pad2, splitMetric } from '@/components/artifact/artifact';
+import { splitMetric } from '@/components/artifact/artifact';
 import { ProjectDialog, projectCover } from '@/components/projects/project-dialog';
 import { UpworkBadge } from '@/components/ui/upwork-badge';
 import { useLocalTime } from '@/hooks/use-local-time';
@@ -18,9 +18,13 @@ interface ChatLandingProps {
   onOpenCommand?: () => void;
   onHire: () => void;
   commands: Command[];
+  /** The live composer, rendered inside the hero's chat window. */
+  composer: React.ReactNode;
+  /** Tells the parent whether the hero's composer is on screen, so the dock can take over. */
+  onComposerVisible: (visible: boolean) => void;
 }
 
-// Free-form prompts with no preset — clicking one answers live via the AI, so
+// Free-form prompts with no preset. Clicking one answers live via the AI, so
 // visitors discover that this is a real conversation, not a fixed FAQ.
 const LIVE_EXAMPLES = [
   'How did you make AIVI’s backend multi-tenant on Supabase?',
@@ -28,10 +32,21 @@ const LIVE_EXAMPLES = [
   'Why should I hire you over another senior engineer?',
 ];
 
+const TOOLS = [
+  { name: 'Supabase', src: '/icons/supabase-icon.svg' },
+  { name: 'Postgres', src: '/icons/postgresql.svg' },
+  { name: 'Next.js', src: '/icons/nextjs-icon.svg' },
+  { name: 'TypeScript', src: '/icons/typescript-icon.svg' },
+  { name: 'Python', src: '/icons/python.svg' },
+  { name: 'Go', src: '/icons/go.svg' },
+  { name: 'Kubernetes', src: '/icons/kubernetes.svg' },
+  { name: 'Terraform', src: '/icons/terraform-icon.svg' },
+];
+
 /**
- * The landing page is the path a client takes without typing — who I am,
- * proof, what I can do for you, what clients say, how to hire me — with the
- * chat as the layer on top. Every section ends somewhere useful.
+ * The first screen is the twin: a real, working chat window beside the plain
+ * statement of who it speaks for. Every section below is the path a client takes
+ * without typing, and every one of them leads back into the conversation.
  */
 const ChatLanding: React.FC<ChatLandingProps> = ({
   submitQuery,
@@ -39,22 +54,30 @@ const ChatLanding: React.FC<ChatLandingProps> = ({
   onOpenCommand,
   onHire,
   commands,
+  composer,
+  onComposerVisible,
 }) => {
   const config = getConfig();
-  const { personal, stats, availability, projects, reviews, agency } = config;
+  const { personal, stats, availability, projects, reviews, agency, social, resume } = config;
   const time = useLocalTime(personal.timezone);
   const [openIndex, setOpenIndex] = useState<number | null>(null);
+  const composerRef = useRef<HTMLDivElement>(null);
 
-  const flagshipIndex = Math.max(
-    0,
-    projects.findIndex((p) => p.flagship)
-  );
+  useEffect(() => {
+    const el = composerRef.current;
+    if (!el) return;
+    const io = new IntersectionObserver(([e]) => onComposerVisible(e.isIntersecting), { threshold: 0.4 });
+    io.observe(el);
+    return () => io.disconnect();
+  }, [onComposerVisible]);
+
+  const flagshipIndex = Math.max(0, projects.findIndex((p) => p.flagship));
   const flagship = projects[flagshipIndex];
-  // The next two projects with real covers.
+  // The next three projects with real covers.
   const selected = projects
     .map((p, i) => ({ p, i }))
     .filter(({ p, i }) => i !== flagshipIndex && /\.(png|jpe?g|webp)$/.test(p.cover ?? ''))
-    .slice(0, 2);
+    .slice(0, 3);
   const clients = config.experience
     .map((e) => e.company)
     .filter((c) => !['Upwork', 'Eaglix Tech', 'Hiya General Trading PLC'].includes(c));
@@ -74,349 +97,376 @@ const ChatLanding: React.FC<ChatLandingProps> = ({
   const city = personal.location.split(',')[0];
   const offset = personal.timezone.split('·').pop()?.trim();
 
+  const statList = (
+    <>
+      {stats.map((s) => (
+        <div key={s.label} className="flex flex-col gap-1">
+          <dt className="text-[14px] leading-snug text-muted-foreground">{s.label}</dt>
+          <dd className="num order-first text-[28px] leading-none font-medium tracking-tight text-foreground">{s.value}</dd>
+        </div>
+      ))}
+    </>
+  );
+
   return (
-    <div className="mx-auto w-full py-8 sm:py-12">
-      {/* ── Hero ─────────────────────────────────────────── */}
-      <section aria-labelledby="hero-heading" className="grid gap-8 sm:grid-cols-[1fr_10.5rem] sm:items-end sm:gap-10">
-        <div className="min-w-0">
-          <div
-            className="reveal flex items-center gap-3"
-            style={{ '--i': 0 } as CSSProperties}
-          >
-            <span className="relative h-12 w-12 shrink-0 overflow-hidden rounded-md border border-border sm:hidden">
-              <Image src={personal.photo} alt={personal.name} fill sizes="48px" className="object-cover" priority />
-            </span>
-            {availability.open && (
-              <p className="meta flex items-center gap-2 text-ink-soft">
-                <span className="status-dot" aria-hidden />
-                {availability.headline}
+    <>
+      <main>
+        {/* ── The twin ─────────────────────────────────────── */}
+        <section id="twin" aria-labelledby="hero-heading" className="hero">
+          <div className="wrap">
+            <div className="hero-text">
+            <div className="hero__text">
+              {availability.open && (
+                <p className="hero__notice flex items-center gap-2 text-[14px] font-medium text-ink-soft">
+                  <span className="status-dot" aria-hidden />
+                  {availability.headline}
+                </p>
+              )}
+              <h1 id="hero-heading" className="mt-4 text-foreground">
+                The AI twin of a senior <span className="whitespace-nowrap">full-stack</span> engineer
+              </h1>
+              <p className="hero__lead">
+                Ask my twin about the AI products I&apos;ve shipped, how I work and whether I fit your project.
+                It answers as me, any hour.
+                {personal.currently && (
+                  <span className="max-sm:hidden">
+                    {' '}I&apos;m currently a {personal.currently.role.toLowerCase()} at{' '}
+                    <a href={personal.currently.url} target="_blank" rel="noopener noreferrer" className="link text-foreground">
+                      {personal.currently.company}
+                    </a>
+                    .
+                  </span>
+                )}
               </p>
-            )}
+              <div className="mt-7 flex flex-wrap gap-3 max-sm:hidden">
+                <button type="button" onClick={onHire} aria-haspopup="dialog" className="btn btn--primary">
+                  Hire me
+                  <ArrowUpRight className="h-4 w-4" aria-hidden />
+                </button>
+                <button type="button" onClick={() => setOpenIndex(flagshipIndex)} aria-haspopup="dialog" className="btn btn--secondary">
+                  See the {flagship.client ?? 'flagship'} case study
+                </button>
+              </div>
+              <div className="mt-4 max-sm:hidden">
+                <UpworkBadge className="!text-[14px]" />
+              </div>
+              <dl className="mt-auto hidden grid-cols-2 gap-x-6 gap-y-5 pt-8 lg:grid [@media(max-height:820px)]:hidden">
+                {statList}
+              </dl>
+            </div>
+
+            <div className="hero__art">
+              <div className="twin">
+                <div className="flex items-center gap-3 border-b border-border px-4 py-3 sm:px-5">
+                  <span className="relative h-10 w-10 shrink-0 overflow-hidden rounded-xl">
+                    <Image src={personal.avatar} alt="" fill sizes="40px" className="object-cover" priority />
+                  </span>
+                  <span className="min-w-0 flex-1">
+                    <span className="block truncate text-[16px] leading-tight font-medium text-foreground">
+                      {personal.shortName}&apos;s AI twin
+                    </span>
+                    <span className="flex items-center gap-1.5 text-[13px] text-muted-foreground">
+                      <span className="status-dot !h-1.5 !w-1.5" aria-hidden />
+                      Online
+                    </span>
+                  </span>
+                  <span className="text-right text-[13px] leading-tight text-muted-foreground" suppressHydrationWarning>
+                    {city}
+                    <span className="num block text-foreground" suppressHydrationWarning>
+                      {time?.label ?? '--:--'} {offset}
+                    </span>
+                  </span>
+                </div>
+
+                <div className="scrollbar-subtle flex min-h-0 flex-1 flex-col gap-3 overflow-y-auto px-4 py-4 sm:px-5 sm:py-5">
+                  <p className="max-w-[34rem] rounded-2xl rounded-tl-md bg-sunken px-4 py-3 text-[16px] leading-[1.45] text-foreground">
+                    I&apos;m {personal.shortName}&apos;s AI twin. Ask me about my projects, stack, reviews or
+                    availability, and I&apos;ll answer the way {personal.shortName} would.
+                  </p>
+                  {/* A real exchange from the instant answers, so the window shows what it does. */}
+                  <div className="hidden flex-col gap-3 xl:flex [@media(max-height:760px)]:hidden">
+                    <p className="ml-auto max-w-[80%] rounded-2xl rounded-br-md bg-brand px-4 py-2.5 text-[16px] leading-[1.45] text-brand-foreground">
+                      What are you working on right now?
+                    </p>
+                    <div className="max-w-[34rem] rounded-2xl rounded-tl-md bg-sunken px-4 py-3 text-[16px] leading-[1.45] text-foreground">
+                      Right now, {flagship.client}. {flagship.description?.split('. ')[0]}. I&apos;m at {flagship.metrics?.[0]} so far.{' '}
+                      <button type="button" onClick={() => setOpenIndex(flagshipIndex)} aria-haspopup="dialog" className="link">
+                        Read the case study
+                      </button>
+                    </div>
+                  </div>
+                  <ul className="twin-chips mt-auto flex flex-wrap gap-2 pt-1" aria-label="Suggested questions">
+                    {index.slice(0, 3).map((cmd) => (
+                      <li key={cmd.id}>
+                        <button type="button" onClick={() => ask(cmd.payload || cmd.label)} className="chip">
+                          {cmd.label}
+                        </button>
+                      </li>
+                    ))}
+                    <li className="hidden sm:max-lg:block xl:block">
+                      <button type="button" onClick={() => submitQuery(LIVE_EXAMPLES[2])} className="chip">
+                        {LIVE_EXAMPLES[2]}
+                      </button>
+                    </li>
+                  </ul>
+                </div>
+
+                <div ref={composerRef} className="px-3 pb-2 sm:px-4">
+                  {composer}
+                </div>
+              </div>
+            </div>
+            </div>
           </div>
+        </section>
 
-          <h1
-            id="hero-heading"
-            className="reveal font-display mt-5 text-[2.75rem] leading-[1] tracking-[-0.035em] text-balance text-foreground sm:text-[3.875rem]"
-            style={{ '--i': 1 } as CSSProperties}
-          >
-            {personal.headline}
-          </h1>
-
-          <p
-            className="reveal measure mt-5 text-[1.0625rem] leading-[1.55] text-ink-soft sm:text-[1.1875rem]"
-            style={{ '--i': 2 } as CSSProperties}
-          >
-            {personal.tagline}
-            {personal.currently && (
-              <>
-                {' '}Currently {personal.currently.role.toLowerCase()} at{' '}
-                <a
-                  href={personal.currently.url}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="font-medium text-foreground underline decoration-clay/50 underline-offset-4 hover:decoration-clay"
-                >
-                  {personal.currently.company}
-                </a>
-                .
-              </>
-            )}
-          </p>
-
-          <div
-            className="reveal mt-7 flex flex-wrap items-center gap-2.5"
-            style={{ '--i': 3 } as CSSProperties}
-          >
-            <button type="button" onClick={onHire} aria-haspopup="dialog" className="btn-clay h-11 px-5 text-[15px]">
-              Hire me
-              <ArrowUpRight className="h-4 w-4" aria-hidden />
-            </button>
+        {/* ── Flagship ─────────────────────────────────────── */}
+        <section id="flagship" aria-labelledby="flagship-heading" className="section">
+          <div className="wrap">
+            <div className="section__head">
+              <div>
+                <h2 id="flagship-heading" className="title">
+                  {flagship.client}, my flagship case study
+                </h2>
+                <p className="section__lead">{flagship.description?.split('. ')[0]}.</p>
+              </div>
+            </div>
             <button
               type="button"
               onClick={() => setOpenIndex(flagshipIndex)}
               aria-haspopup="dialog"
-              className="btn-line h-11 px-5 text-[15px]"
+              className="card card--link w-full lg:grid lg:grid-cols-12 lg:items-stretch lg:gap-6"
             >
-              See the {flagship.client ?? 'flagship'} case study
+              <span className="relative block aspect-[4/3] w-full overflow-hidden lg:col-span-6 lg:self-center">
+                <Image src={projectCover(flagship)} alt={`${flagship.title} cover`} fill sizes="(min-width: 1024px) 50vw, 100vw" className="zoom object-cover" />
+              </span>
+              <span className="flex min-w-0 flex-col gap-4 p-6 lg:col-span-6 lg:py-8 lg:pr-8 lg:pl-2">
+                <span className="flex items-center justify-between gap-3 text-[14px] text-muted-foreground">
+                  <span className="font-medium text-brand-ink">{flagship.category}</span>
+                  <span className="num shrink-0">{flagship.date}</span>
+                </span>
+                <span className="font-display text-[24px] leading-[1.15] text-foreground">{flagship.title}</span>
+                <ul className="flex flex-col gap-2">
+                  {flagship.highlights?.slice(0, 4).map((h) => (
+                    <li key={h} className="text-[16px] leading-snug text-ink-soft">
+                      {h}
+                    </li>
+                  ))}
+                </ul>
+                <Metrics project={flagship} />
+                <span className="mt-auto flex items-center gap-1.5 pt-2 text-[16px] font-medium text-foreground">
+                  Read the case study
+                  <ArrowRight aria-hidden className="h-4 w-4" />
+                </span>
+              </span>
             </button>
           </div>
-          <div className="reveal mt-4" style={{ '--i': 4 } as CSSProperties}>
-            <UpworkBadge className="!text-[13px]" />
-          </div>
-        </div>
+        </section>
 
-        {/* Portrait */}
-        <figure className="reveal hidden sm:block" style={{ '--i': 2 } as CSSProperties}>
-          <div className="relative aspect-[4/5] overflow-hidden rounded-lg border border-border">
-            <Image src={personal.photo} alt={personal.name} fill sizes="168px" className="object-cover" priority />
-          </div>
-          <figcaption className="meta mt-2.5 text-muted-foreground">
-            {city}{' '}
-            <span className="num text-foreground" suppressHydrationWarning>
-              {time?.label ?? '--:--'}
-            </span>{' '}
-            {offset}
-          </figcaption>
-        </figure>
-      </section>
-
-      {/* ── Telemetry ────────────────────────────────────── */}
-      <dl
-        className="reveal mt-10 grid grid-cols-2 gap-px border-y border-border bg-border-subtle sm:grid-cols-4"
-        style={{ '--i': 5 } as CSSProperties}
-      >
-        {stats.map((s) => (
-          <div
-            key={s.label}
-            className="flex flex-col gap-1.5 bg-background py-4 pr-3 pl-4 max-sm:odd:pl-0 sm:first:pl-0"
-          >
-            <dt className="text-[13px] leading-snug text-muted-foreground">{s.label}</dt>
-            <dd className="num order-first text-[1.375rem] leading-none text-foreground">{s.value}</dd>
-          </div>
-        ))}
-      </dl>
-
-      {/* ── Trusted by ───────────────────────────────────── */}
-      <div className="reveal mt-6 flex flex-wrap items-baseline gap-x-5 gap-y-2" style={{ '--i': 6 } as CSSProperties}>
-        <span className="meta text-muted-foreground">Shipped for</span>
-        {clients.map((c) => (
-          <span key={c} className="font-display text-[1.125rem] leading-none text-ink-soft">
-            {c}
-          </span>
-        ))}
-      </div>
-
-      {/* ── 01 Flagship ──────────────────────────────────── */}
-      <Section index={1} title="Flagship case study" id="flagship">
-        <button
-          type="button"
-          onClick={() => setOpenIndex(flagshipIndex)}
-          aria-haspopup="dialog"
-          className="group grid w-full overflow-hidden rounded-lg border border-border bg-card text-left transition-colors hover:border-border-strong sm:grid-cols-[1.15fr_1fr]"
-        >
-          {/* The 4:3 cover, centred in a sunken frame that matches the text's height */}
-          <span className="flex items-center border-b border-border bg-sunken sm:border-r sm:border-b-0 sm:p-4">
-            <span className="relative block aspect-[4/3] w-full overflow-hidden sm:rounded-md sm:border sm:border-border-subtle">
-              <Image
-                src={projectCover(flagship)}
-                alt={`${flagship.title} — cover`}
-                fill
-                sizes="(min-width: 640px) 400px, 100vw"
-                className="object-cover transition-transform duration-[240ms] ease-[cubic-bezier(0.22,1,0.36,1)] group-hover:scale-[1.02] motion-reduce:transition-none motion-reduce:group-hover:scale-100"
-              />
-            </span>
-          </span>
-          <span className="flex min-w-0 flex-col gap-3 p-5 sm:p-6">
-            <span className="meta flex items-center justify-between gap-2 text-muted-foreground">
-              <span className="text-clay-ink">{flagship.category}</span>
-              <span className="num normal-case tracking-normal">{flagship.date}</span>
-            </span>
-            <span className="font-display text-[1.5rem] leading-[1.1] text-foreground">
-              {flagship.title}
-            </span>
-            <ul className="space-y-1.5">
-              {flagship.highlights?.slice(0, 4).map((h) => (
-                <li key={h} className="flex gap-2 text-[14px] leading-snug text-ink-soft">
-                  <span aria-hidden className="text-clay">–</span>
-                  {h}
+        {/* ── More work ────────────────────────────────────── */}
+        <section id="work" aria-labelledby="work-heading" className="section section--alt">
+          <div className="wrap">
+            <div className="section__head">
+              <div>
+                <h2 id="work-heading" className="title">More shipped products</h2>
+                <p className="section__lead">
+                  Shipped for {clients.join(', ')}.
+                </p>
+              </div>
+              <button type="button" onClick={() => ask('What projects are you most proud of?')} className="btn btn--secondary max-sm:w-full">
+                See all {projects.length} case studies
+              </button>
+            </div>
+            <ul className="grid gap-6 max-sm:gap-3 lg:grid-cols-3">
+              {selected.map(({ p, i }) => (
+                <li key={p.title} className="flex">
+                  <WorkTile project={p} onOpen={() => setOpenIndex(i)} />
                 </li>
               ))}
             </ul>
-            <Metrics project={flagship} />
-            <span className="mt-auto flex items-center gap-1.5 pt-1 text-[13.5px] font-medium text-foreground">
-              Read the case study
-              <ArrowRight aria-hidden className="h-4 w-4 transition-transform group-hover:translate-x-0.5 group-hover:text-clay" />
-            </span>
-          </span>
-        </button>
-      </Section>
+          </div>
+        </section>
 
-      {/* ── 02 Selected work ─────────────────────────────── */}
-      <Section
-        index={2}
-        title="Selected work"
-        id="work"
-        action={
-          <button
-            type="button"
-            onClick={() => ask('What projects are you most proud of?')}
-            className="press flex items-center gap-1 text-[13px] text-muted-foreground hover:text-foreground"
-          >
-            All {projects.length} case studies <ArrowRight className="h-3.5 w-3.5" aria-hidden />
-          </button>
-        }
-      >
-        <ul className="grid gap-4 sm:grid-cols-2">
-          {selected.map(({ p, i }) => (
-            <li key={p.title} className="flex">
-              <WorkTile project={p} onOpen={() => setOpenIndex(i)} />
-            </li>
-          ))}
-        </ul>
-      </Section>
+        {/* ── Services ─────────────────────────────────────── */}
+        <section id="services" aria-labelledby="services-heading" className="section">
+          <div className="wrap">
+            <div className="section__head">
+              <div>
+                <h2 id="services-heading" className="title">What I build for clients</h2>
+                <p className="section__lead">Pick the one closest to your project. My twin explains how I would approach it.</p>
+              </div>
+            </div>
+            <div className="grid-12">
+              <ol className="col-span-12 lg:col-span-7">
+                {availability.focusAreas.map((area) => (
+                  <li key={area} className="border-b border-border">
+                    <button
+                      type="button"
+                      onClick={() => submitQuery(`How would you help with this: ${area}?`)}
+                      className="group flex min-h-[72px] w-full items-center gap-4 py-3 text-left"
+                    >
+                      <span className="font-display flex-1 text-[20px] leading-snug text-foreground sm:text-[24px]">{area}</span>
+                      <span className="flex shrink-0 items-center gap-1.5 text-[15px] font-medium text-brand-ink">
+                        <span className="hidden sm:inline">Ask my twin</span>
+                        <ArrowRight aria-hidden className="h-4 w-4 transition-transform duration-150 group-hover:translate-x-[3px]" />
+                      </span>
+                    </button>
+                  </li>
+                ))}
+              </ol>
+              <div className="col-span-12 flex flex-col gap-6 max-sm:gap-3 lg:col-span-5">
+                <div className="card p-6">
+                  <h3 className="font-display text-[20px] leading-tight">Tools I ship with</h3>
+                  <ul className="mt-5 grid grid-cols-4 gap-x-2 gap-y-5">
+                    {TOOLS.map((t) => (
+                      <li key={t.name} className="flex flex-col items-center gap-2 text-center">
+                        <Image src={t.src} alt="" width={32} height={32} unoptimized className="h-8 w-8 object-contain dark:[&[src*='nextjs']]:invert" />
+                        <span className="text-[13px] leading-tight text-ink-soft">{t.name}</span>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+                <a href={agency.url} target="_blank" rel="noopener noreferrer" className="card card--link flex-1 gap-3 p-6">
+                  <span className="font-display text-[20px] leading-tight text-foreground">Need a team? Meet {agency.name}.</span>
+                  <span className="text-[16px] leading-relaxed text-ink-soft">{agency.pitch}</span>
+                  <span className="mt-auto flex items-center gap-1.5 pt-1 text-[16px] font-medium text-foreground">
+                    {new URL(agency.url).hostname.replace('www.', '')}
+                    <ArrowUpRight className="h-4 w-4" aria-hidden />
+                  </span>
+                </a>
+              </div>
+            </div>
+          </div>
+        </section>
 
-      {/* ── 03 What I can do for you ─────────────────────── */}
-      <Section index={3} title="What I can do for you" id="services">
-        <ol className="border-y border-border">
-          {availability.focusAreas.map((area, i) => (
-            <li key={area} className="border-b border-border-subtle last:border-b-0">
+        {/* ── Reviews ──────────────────────────────────────── */}
+        <section id="reviews" aria-labelledby="reviews-heading" className="section section--alt">
+          <div className="wrap">
+            <div className="section__head">
+              <div>
+                <h2 id="reviews-heading" className="title">Client reviews on Upwork</h2>
+                <p className="section__lead">
+                  <span className="num font-medium text-foreground">{reviews.rating}★</span> from{' '}
+                  {reviews.ratings.map((r) => r.client).join(', ')}. {reviews.summary}
+                </p>
+              </div>
+              <button type="button" onClick={() => ask('What do clients say about you?')} className="btn btn--secondary max-sm:w-full">
+                See all reviews
+              </button>
+            </div>
+            <div className="grid-12">
+              <figure className="col-span-12 lg:col-span-7">
+                <blockquote className="font-display text-[24px] leading-[1.3] tracking-[-0.02em] text-foreground sm:text-[32px]">
+                  “{lead.text}”
+                </blockquote>
+                <figcaption className="mt-5 text-[15px] text-muted-foreground">
+                  <span className="font-medium text-foreground">{lead.author}</span> · {lead.engagement} ·{' '}
+                  <span className="num">{lead.date}</span>
+                </figcaption>
+              </figure>
+              <ul className="col-span-12 flex flex-col gap-6 max-sm:gap-3 lg:col-span-5">
+                {shortQuotes.map((q) => (
+                  <li key={q.text} className="card flex-1 justify-between gap-3 p-6">
+                    <p className="text-[16px] leading-relaxed text-foreground">“{q.text}”</p>
+                    <p className="text-[14px] text-muted-foreground">
+                      {q.engagement} · <span className="num">{q.date}</span>
+                    </p>
+                  </li>
+                ))}
+              </ul>
+            </div>
+            <dl className="mt-10 grid grid-cols-2 gap-x-6 gap-y-6 lg:hidden">{statList}</dl>
+          </div>
+        </section>
+
+        {/* ── Questions ────────────────────────────────────── */}
+        <section id="questions" aria-labelledby="questions-heading" className="section">
+          <div className="wrap">
+            <div className="section__head">
+              <div>
+                <h2 id="questions-heading" className="title">Questions clients ask my twin</h2>
+                <p className="section__lead">
+                  These cards answer instantly. Anything you type goes to a live model that answers as me.
+                </p>
+              </div>
               <button
                 type="button"
-                onClick={() => submitQuery(`How would you help with this: ${area}?`)}
-                className="group flex w-full items-baseline gap-4 py-3.5 text-left"
+                onClick={onOpenCommand}
+                className="btn btn--secondary max-sm:w-full"
               >
-                <span className="num text-[11px] text-clay-ink">{pad2(i + 1)}</span>
-                <span className="font-display flex-1 text-[1.1875rem] leading-snug text-foreground">
-                  {area}
-                </span>
-                <span className="flex shrink-0 items-center gap-1 text-[12.5px] text-muted-foreground transition-colors group-hover:text-foreground">
-                  <span className="hidden sm:inline">Ask how</span>
-                  <Sparkles aria-hidden className="h-3.5 w-3.5 group-hover:text-clay" />
-                </span>
+                See every command
+                <kbd className="kbd max-[1023px]:hidden">⌘K</kbd>
               </button>
-            </li>
-          ))}
-        </ol>
+            </div>
+            <ul className="grid grid-cols-2 gap-6 max-sm:gap-3 lg:grid-cols-4">
+              {index.map((cmd) => (
+                <li key={cmd.id} className="flex">
+                  <button
+                    type="button"
+                    onClick={() => ask(cmd.payload || cmd.label)}
+                    className="card card--link min-h-[104px] w-full justify-between gap-3 p-4 sm:p-5"
+                  >
+                    <span className="font-display text-[18px] leading-[1.2] text-foreground sm:text-[20px]">{cmd.label}</span>
+                    <span className="flex items-center gap-1 text-[14px] font-medium text-brand-ink">
+                      Get the answer
+                      <ArrowRight aria-hidden className="h-4 w-4" />
+                    </span>
+                  </button>
+                </li>
+              ))}
+            </ul>
+            <ul className="mt-6">
+              {LIVE_EXAMPLES.map((q) => (
+                <li key={q} className="border-b border-border">
+                  <button
+                    type="button"
+                    onClick={() => submitQuery(q)}
+                    className="group flex min-h-12 w-full items-center gap-3 py-1 text-left text-[16px] text-ink-soft hover:text-foreground"
+                  >
+                    <span className="flex-1">{q}</span>
+                    <ArrowRight aria-hidden className="h-4 w-4 shrink-0 text-brand-ink transition-transform duration-150 group-hover:translate-x-[3px]" />
+                  </button>
+                </li>
+              ))}
+            </ul>
+          </div>
+        </section>
+      </main>
 
-        <a
-          href={agency.url}
-          target="_blank"
-          rel="noopener noreferrer"
-          className="group mt-4 flex flex-col gap-3 rounded-lg border border-border bg-sunken p-5 transition-colors hover:border-border-strong sm:flex-row sm:items-center sm:justify-between"
-        >
-          <span className="min-w-0">
-            <span className="meta text-muted-foreground">Bigger build?</span>
-            <span className="font-display mt-1 block text-[1.25rem] leading-tight text-foreground">
-              Need a team? Meet {agency.name}.
-            </span>
-            <span className="measure mt-1 block text-[14px] leading-relaxed text-ink-soft">
-              {agency.pitch}
-            </span>
-          </span>
-          <span className="btn-line h-9 shrink-0 self-start px-4 text-[13px] sm:self-auto">
-            {new URL(agency.url).hostname.replace('www.', '')}
-            <ArrowUpRight className="h-4 w-4" aria-hidden />
-          </span>
-        </a>
-      </Section>
-
-      {/* ── 04 What clients say ──────────────────────────── */}
-      <Section
-        index={4}
-        title="What clients say"
-        id="reviews"
-        action={
-          <button
-            type="button"
-            onClick={() => ask('What do clients say about you?')}
-            className="press flex items-center gap-1 text-[13px] text-muted-foreground hover:text-foreground"
-          >
-            All reviews <ArrowRight className="h-3.5 w-3.5" aria-hidden />
-          </button>
-        }
-      >
-        <figure>
-          <blockquote className="font-display hang measure text-[1.375rem] leading-[1.4] text-foreground sm:text-[1.625rem]">
-            “{lead.text}”
-          </blockquote>
-          <figcaption className="mt-3 text-[13.5px] text-muted-foreground">
-            <span className="font-medium text-foreground">{lead.author}</span> · {lead.engagement} ·{' '}
-            <span className="num">{lead.date}</span>
-          </figcaption>
-        </figure>
-        <ul className="mt-6 grid gap-px overflow-hidden rounded-lg border border-border bg-border sm:grid-cols-2">
-          {shortQuotes.map((q) => (
-            <li key={q.text} className="bg-card p-5">
-              <p className="text-[15px] leading-relaxed text-foreground">“{q.text}”</p>
-              <p className="mt-2 text-[13px] text-muted-foreground">
-                {q.engagement} · <span className="num">{q.date}</span>
-              </p>
-            </li>
-          ))}
-        </ul>
-        <p className="mt-4 flex flex-wrap items-center gap-x-2 text-[13.5px] text-ink-soft">
-          <span className="num text-foreground">{reviews.rating}★</span>
-          from {reviews.ratings.map((r) => r.client).join(', ')} · {reviews.summary}
-        </p>
-      </Section>
-
-      {/* ── 05 Ask me ────────────────────────────────────── */}
-      <Section
-        index={5}
-        title="Ask me anything"
-        id="ask"
-        action={
-          <button
-            onClick={onOpenCommand}
-            className="press flex items-center gap-1.5 rounded-sm text-[13px] text-muted-foreground hover:text-foreground"
-          >
-            Every command <kbd className="kbd">⌘K</kbd>
-          </button>
-        }
-      >
-        <p className="measure mb-4 text-[14.5px] leading-relaxed text-ink-soft">
-          This site is a conversation. The cards below answer instantly; anything
-          you type goes to a live model that answers as me.
-        </p>
-        <ol className="grid grid-cols-2 gap-px overflow-hidden rounded-lg border border-border bg-border sm:grid-cols-4">
-          {index.map((cmd, i) => (
-            <li key={cmd.id} className="flex">
-              <button
-                onClick={() => ask(cmd.payload || cmd.label)}
-                className="group flex min-h-[7rem] w-full flex-col justify-between gap-3 bg-card p-4 text-left transition-colors duration-200 hover:bg-background focus-visible:z-10 focus-visible:outline-offset-[-2px]"
-              >
-                <span className="flex w-full items-center justify-between gap-2">
-                  <span className="num text-[11px] text-muted-foreground">{pad2(i + 1)}</span>
-                  <span className="num text-[12px] text-clay-ink">{cmd.slash}</span>
-                </span>
-                <span className="font-display text-[1.0625rem] leading-[1.22] text-foreground">
-                  {cmd.label}
-                </span>
+      {/* ── Close and footer ─────────────────────────────── */}
+      <footer className="closing" aria-labelledby="close-heading">
+        <div className="wrap">
+          <div>
+            <h2 id="close-heading" className="max-w-[16ch] text-[clamp(44px,1rem+5vw,96px)] leading-[1] font-medium tracking-[-0.04em]">
+              A project to build with me
+            </h2>
+            <p className="mt-6 max-w-[62ch] text-[18px] leading-relaxed text-[var(--band-muted)]">
+              {availability.headline}. Send me the outline and I&apos;ll reply within 0–4 hours with questions and an honest fit check.
+            </p>
+            <div className="mt-8 flex flex-wrap gap-3 max-sm:flex-col">
+              <button type="button" onClick={onHire} aria-haspopup="dialog" className="btn btn--primary">
+                Hire me
+                <ArrowUpRight className="h-4 w-4" aria-hidden />
               </button>
-            </li>
-          ))}
-        </ol>
-        <ul className="mt-4">
-          {LIVE_EXAMPLES.map((q) => (
-            <li key={q} className="border-b border-border-subtle last:border-b-0">
-              <button
-                onClick={() => submitQuery(q)}
-                className="group flex w-full items-center gap-3 py-2.5 text-left text-[14px] text-ink-soft transition-colors duration-200 hover:text-foreground"
-              >
-                <Sparkles aria-hidden className="h-3.5 w-3.5 shrink-0 text-border-strong transition-colors group-hover:text-clay" />
-                <span className="flex-1">{q}</span>
-                <ArrowRight aria-hidden className="h-3.5 w-3.5 shrink-0 opacity-0 transition-opacity group-hover:opacity-100" />
-              </button>
-            </li>
-          ))}
-        </ul>
-      </Section>
-
-      {/* ── Close ────────────────────────────────────────── */}
-      <section
-        aria-labelledby="close-heading"
-        className="mt-14 rounded-lg bg-[#141413] px-6 py-8 text-[#f3f0e8] sm:px-8 sm:py-10 dark:border dark:border-border dark:bg-sunken"
-      >
-        <h2 id="close-heading" className="font-display text-[2rem] leading-[1.05] tracking-[-0.03em] sm:text-[2.5rem]">
-          Have something to build?
-        </h2>
-        <p className="measure mt-3 text-[15px] leading-relaxed text-[#f3f0e8]/75">
-          {availability.headline}. Send me the shape of it and I&apos;ll reply
-          within 0–4 hours with questions and an honest fit check.
-        </p>
-        <div className="mt-6 flex flex-wrap gap-2.5">
-          <button type="button" onClick={onHire} aria-haspopup="dialog" className="btn-clay h-11 px-5 text-[15px]">
-            Hire me
-            <ArrowUpRight className="h-4 w-4" aria-hidden />
-          </button>
-          <a
-            href={`mailto:${personal.email}`}
-            className="inline-flex h-11 items-center rounded-md border border-[#f3f0e8]/30 px-5 text-[15px] font-medium text-[#f3f0e8] transition-colors hover:border-[#f3f0e8]/60"
-          >
-            {personal.email}
-          </a>
+              <a href={`mailto:${personal.email}`} className="btn btn--secondary">
+                Email {personal.email}
+              </a>
+            </div>
+          </div>
+          <div className="flex flex-col gap-6 border-t border-[var(--band-line)] pt-6 text-[14px] text-[var(--band-muted)]">
+            <ul className="flex flex-wrap gap-x-8 gap-y-3">
+              {social.github && <li><a className="foot nav__word !text-[var(--band-ink)]" href={social.github} target="_blank" rel="noopener noreferrer">GitHub</a></li>}
+              {social.linkedin && <li><a className="foot nav__word !text-[var(--band-ink)]" href={social.linkedin} target="_blank" rel="noopener noreferrer">LinkedIn</a></li>}
+              {social.upwork && <li><a className="foot nav__word !text-[var(--band-ink)]" href={social.upwork} target="_blank" rel="noopener noreferrer">Upwork</a></li>}
+              <li><a className="foot nav__word !text-[var(--band-ink)]" href={resume.downloadUrl} target="_blank" rel="noopener noreferrer">Résumé</a></li>
+            </ul>
+            <p className="flex flex-wrap justify-between gap-x-6 gap-y-1">
+              <span suppressHydrationWarning>© {new Date().getFullYear()} {personal.name}, {city}</span>
+              <span>Product names and logos are trademarks of their owners</span>
+            </p>
+          </div>
         </div>
-      </section>
+      </footer>
 
       <ProjectDialog
         projects={projects}
@@ -424,47 +474,20 @@ const ChatLanding: React.FC<ChatLandingProps> = ({
         onClose={() => setOpenIndex(null)}
         onNavigate={(i) => setOpenIndex(i)}
       />
-    </div>
+    </>
   );
 };
-
-function Section({
-  index,
-  title,
-  id,
-  action,
-  children,
-}: {
-  index: number;
-  title: string;
-  id: string;
-  action?: React.ReactNode;
-  children: React.ReactNode;
-}) {
-  return (
-    <section aria-labelledby={`${id}-heading`} className="mt-14">
-      <div className="mb-4 flex items-baseline justify-between gap-4">
-        <h2 id={`${id}-heading`} className="meta text-muted-foreground">
-          <span className="num text-clay-ink">{pad2(index)}</span>{' '}
-          <span className="text-border-strong">/</span> {title}
-        </h2>
-        {action}
-      </div>
-      {children}
-    </section>
-  );
-}
 
 function Metrics({ project }: { project: Project }) {
   if (!project.metrics?.length) return null;
   return (
-    <span className="flex flex-wrap gap-x-5 gap-y-2 border-l-2 border-clay py-0.5 pl-3">
+    <span className="flex flex-wrap gap-x-6 gap-y-2">
       {project.metrics.map((m) => {
         const { figure, caption } = splitMetric(m);
         return (
           <span key={m} className="flex items-baseline gap-1.5">
-            {figure && <span className="num text-[1.0625rem] leading-none text-foreground">{figure}</span>}
-            <span className="text-[13px] text-muted-foreground">{caption}</span>
+            {figure && <span className="num text-[20px] leading-none font-medium text-foreground">{figure}</span>}
+            <span className="text-[14px] text-muted-foreground">{caption}</span>
           </span>
         );
       })}
@@ -474,31 +497,17 @@ function Metrics({ project }: { project: Project }) {
 
 function WorkTile({ project, onOpen }: { project: Project; onOpen: () => void }) {
   return (
-    <button
-      type="button"
-      onClick={onOpen}
-      aria-haspopup="dialog"
-      className="group flex w-full flex-col overflow-hidden rounded-lg border border-border bg-card text-left transition-colors hover:border-border-strong"
-    >
-      <span className="relative block aspect-[4/3] overflow-hidden border-b border-border bg-sunken">
-        <Image
-          src={projectCover(project)}
-          alt={`${project.title} — cover`}
-          fill
-          sizes="(min-width: 640px) 360px, 100vw"
-          className="object-cover transition-transform duration-[240ms] ease-[cubic-bezier(0.22,1,0.36,1)] group-hover:scale-[1.02] motion-reduce:transition-none motion-reduce:group-hover:scale-100"
-        />
+    <button type="button" onClick={onOpen} aria-haspopup="dialog" className="card card--link w-full sm:max-lg:flex-row">
+      <span className="relative block aspect-[4/3] w-full shrink-0 overflow-hidden border-b border-border bg-sunken sm:max-lg:w-2/5 sm:max-lg:border-r sm:max-lg:border-b-0">
+        <Image src={projectCover(project)} alt={`${project.title} cover`} fill sizes="(min-width: 1024px) 33vw, (min-width: 640px) 40vw, 100vw" className="zoom object-cover" />
       </span>
-      <span className="flex flex-1 flex-col gap-2.5 p-5">
-        <span className="meta flex items-center justify-between gap-2 text-muted-foreground">
-          <span className="truncate text-clay-ink">{project.category}</span>
-          <span className="num shrink-0 normal-case tracking-normal">{project.date}</span>
+      <span className="flex flex-1 flex-col gap-2.5 p-5 sm:p-6">
+        <span className="flex flex-wrap items-center justify-between gap-x-3 gap-y-0.5 text-[14px] text-muted-foreground">
+          <span className="font-medium text-brand-ink">{project.category}</span>
+          <span className="num shrink-0">{project.date}</span>
         </span>
-        <span className="font-display text-[1.25rem] leading-[1.15] text-foreground">{project.title}</span>
-        <span className="line-clamp-2 text-[14px] leading-relaxed text-ink-soft">{project.description}</span>
-        <span className="mt-auto pt-1">
-          <Metrics project={project} />
-        </span>
+        <span className="font-display text-[20px] leading-[1.2] text-foreground">{project.title}</span>
+        <span className="text-[16px] leading-relaxed text-ink-soft">{project.description?.split('. ')[0]}.</span>
       </span>
     </button>
   );

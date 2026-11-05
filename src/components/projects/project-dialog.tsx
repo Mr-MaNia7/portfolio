@@ -117,7 +117,7 @@ export function ProjectDialog({
         >
           <div
             aria-hidden
-            className="absolute inset-0 bg-[#141413]/45 dark:bg-black/65"
+            className="absolute inset-0 bg-[#0b0c0e]/45 dark:bg-black/65"
             onClick={onClose}
           />
           <motion.div
@@ -145,7 +145,6 @@ export function ProjectDialog({
                   {' '}
                   / {pad2(projects.length)}{' '}
                 </span>
-                <span className="text-border-strong">{'//'}</span> Project dossier
               </p>
               <div className="flex shrink-0 items-center gap-1">
                 {primaryLink && (
@@ -156,7 +155,7 @@ export function ProjectDialog({
                       rel="noopener noreferrer"
                       tabIndex={showTopLink ? undefined : -1}
                       aria-hidden={!showTopLink}
-                      className={`btn-ink h-8 gap-1.5 px-3 text-[12.5px] transition-[opacity,transform] duration-200 ease-[cubic-bezier(0.22,1,0.36,1)] ${
+                      className={`btn btn--primary gap-1.5 px-3 text-[13px] transition-[opacity,transform] duration-200 ease-[cubic-bezier(0.22,1,0.36,1)] ${
                         showTopLink ? '' : 'pointer-events-none -translate-y-1 opacity-0'
                       }`}
                     >
@@ -200,9 +199,8 @@ export function ProjectDialog({
                   type="button"
                   onClick={onClose}
                   aria-label="Close project"
-                  className="press flex h-8 items-center gap-1.5 rounded-md px-2 text-[12px] text-muted-foreground hover:bg-secondary hover:text-foreground"
+                  className="press flex h-8 items-center gap-1.5 rounded-md px-2 text-[13px] text-muted-foreground hover:bg-secondary hover:text-foreground"
                 >
-                  <kbd className="kbd hidden sm:inline-flex">esc</kbd>
                   <X className="h-4 w-4" />
                 </button>
               </div>
@@ -258,7 +256,7 @@ function ProjectBody({
       </div>
 
       <div className="px-5 pt-6 pb-8 sm:px-8 sm:pt-8">
-        <p className="meta text-clay-ink">{project.category}</p>
+        <p className="meta text-brand-ink">{project.category}</p>
         <h2
           id="project-dialog-title"
           className="font-display mt-2 text-[2rem] leading-[1.05] tracking-[-0.03em] text-foreground sm:text-[2.5rem]"
@@ -274,7 +272,7 @@ function ProjectBody({
               className="flex flex-col gap-1 bg-sunken px-3.5 py-3"
             >
               <dt className="meta text-muted-foreground">{term}</dt>
-              <dd className="num text-[12.5px] leading-snug text-foreground">
+              <dd className="num text-[13px] leading-snug text-foreground">
                 {detail}
               </dd>
             </div>
@@ -331,9 +329,9 @@ function ProjectBody({
               {project.highlights.map((h, i) => (
                 <li
                   key={h}
-                  className="flex gap-4 border-b border-border-subtle py-2.5 text-[15px] leading-snug text-foreground last:border-b-0"
+                  className="flex gap-4 border-b border-border-subtle py-2.5 text-[16px] leading-snug text-foreground last:border-b-0"
                 >
-                  <span className="num pt-0.5 text-[11px] text-clay-ink">
+                  <span className="num pt-0.5 text-[13px] text-brand-ink">
                     {pad2(i + 1)}
                   </span>
                   {h}
@@ -351,7 +349,7 @@ function ProjectBody({
             </h3>
             <ul className="flex flex-wrap gap-1.5">
               {project.techStack.map((t) => (
-                <li key={t} className="tag !h-6 !px-2 !text-[12px]">
+                <li key={t} className="tag !h-6 !px-2 !text-[13px]">
                   {t}
                 </li>
               ))}
@@ -371,7 +369,7 @@ function ProjectBody({
                 href={link.url}
                 target="_blank"
                 rel="noopener noreferrer"
-                className={`${i === 0 ? 'btn-ink' : 'btn-line'} h-9 px-4 text-[13px]`}
+                className={`${i === 0 ? 'btn btn--primary' : 'btn btn--secondary'} h-9 px-4 text-[13px]`}
               >
                 {link.name}
                 <ArrowUpRight className="h-4 w-4" aria-hidden />

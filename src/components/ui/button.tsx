@@ -12,8 +12,8 @@ const buttonVariants = cva(
         // Primary CTA: fully-rounded pill with gentle elevation (DESIGN.md)
         default:
           "rounded-full bg-primary text-primary-foreground elevation-card elevation-card-hover hover:bg-primary/90 active:translate-y-px",
-        clay:
-          "rounded-full bg-clay text-clay-foreground elevation-card elevation-card-hover hover:bg-clay-strong active:translate-y-px",
+        brand:
+          "rounded-full bg-brand text-brand-foreground elevation-card elevation-card-hover hover:bg-brand-strong active:translate-y-px",
         flat:
           "rounded-md bg-primary text-primary-foreground hover:bg-primary/90",
         destructive:
@@ -24,7 +24,7 @@ const buttonVariants = cva(
           "rounded-md bg-secondary text-secondary-foreground hover:bg-secondary/70",
         ghost:
           "rounded-md hover:bg-secondary text-foreground",
-        link: "text-clay underline-offset-4 hover:underline decoration-clay/50",
+        link: "text-brand underline-offset-4 hover:underline decoration-brand/50",
       },
       size: {
         default: "h-9 px-4 py-2 has-[>svg]:px-3",

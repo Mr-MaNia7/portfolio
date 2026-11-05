@@ -4,7 +4,7 @@ import { useState } from 'react';
 import { Sparkles, X } from 'lucide-react';
 
 import { renderToolArtifact } from './tool-renderer';
-import { ToolPill, TurnHeader } from './turn-badge';
+import { TurnHeader } from './turn-badge';
 
 interface PresetReplyProps {
   question: string;
@@ -47,7 +47,7 @@ export function PresetReply({
               onClick={onClose}
               aria-label="Remove this answer from the conversation"
               title="Remove from conversation"
-              className="press flex h-7 items-center gap-1 rounded-md px-2 text-[12px] text-muted-foreground hover:bg-secondary hover:text-foreground"
+              className="press flex h-9 items-center gap-1 rounded-lg px-2 text-[14px] text-muted-foreground hover:bg-secondary hover:text-foreground"
             >
               <X className="h-3.5 w-3.5" />
               <span className="hidden sm:inline">Remove</span>
@@ -58,9 +58,6 @@ export function PresetReply({
 
       {component ? (
         <div className="flex w-full flex-col gap-2.5">
-          <div>
-            <ToolPill tool={tool} state="cached" />
-          </div>
           {component}
 
           {showAIOption && canEscalate && (
@@ -68,21 +65,21 @@ export function PresetReply({
               className="reveal flex flex-wrap items-center justify-between gap-x-4 gap-y-2 pt-1"
               style={{ '--i': 4 } as React.CSSProperties}
             >
-              <p className="text-[13px] text-muted-foreground">
-                Curated answer, shown instantly. Want it in my own words?
+              <p className="text-[14px] text-muted-foreground">
+                This one is pre-written. Want a live answer in my own words?
               </p>
               <button
                 onClick={handleGetAIResponse}
-                className="btn-line h-8 px-3 text-[13px]"
+                className="btn btn--secondary"
               >
-                <Sparkles className="h-3.5 w-3.5 text-clay" aria-hidden />
-                Ask the live AI
+                <Sparkles className="h-3.5 w-3.5 text-brand" aria-hidden />
+                Ask my AI twin live
               </button>
             </div>
           )}
         </div>
       ) : (
-        <div className="measure rounded-lg border border-border bg-card p-5 text-[15px] leading-relaxed text-foreground">
+        <div className="measure rounded-lg border border-border bg-card p-5 text-[16px] leading-relaxed text-foreground">
           {reply}
         </div>
       )}

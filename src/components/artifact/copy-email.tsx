@@ -38,7 +38,7 @@ export function CopyEmail({
       type="button"
       onClick={copy}
       aria-label={copied ? 'Email copied' : `${label}: ${email}`}
-      className={cn('btn-line h-9 px-3.5 text-[13px]', className)}
+      className={cn('btn btn--secondary.5 text-[13px]', className)}
     >
       {copied ? (
         <Check className="h-3.5 w-3.5 text-success" aria-hidden />

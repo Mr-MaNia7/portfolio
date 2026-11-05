@@ -7,17 +7,16 @@ interface HelperBoostProps {
   submitQuery?: (query: string) => void;
   handlePresetReply?: (question: string, reply: string, tool: string) => void;
   commands: Command[];
+  /** rail: full questions in the desktop side column. row: short topic chips above the composer. */
+  variant?: 'rail' | 'row';
 }
 
-/**
- * Quick jumps shown above the composer once a conversation is under way — the
- * same six instant answers as the landing index, spelled as their slash commands
- * so visitors learn the shortcut while they click.
- */
+/** Quick answers for a conversation under way: the same instant answers as the landing page. */
 export default function HelperBoost({
   submitQuery,
   handlePresetReply,
   commands,
+  variant = 'row',
 }: HelperBoostProps) {
   const handleClick = (q: string) => {
     const preset = presetReplies[q as keyof typeof presetReplies];
@@ -29,26 +28,22 @@ export default function HelperBoost({
   };
 
   const chips = commands.filter((c) => c.group === 'Ask');
+  const short = (c: Command) => {
+    const s = c.slash?.slice(1) ?? c.label;
+    return s.charAt(0).toUpperCase() + s.slice(1);
+  };
 
   return (
-    <nav
-      aria-label="Quick answers"
-      className="scrollbar-none w-full overflow-x-auto"
-    >
-      <ul className="flex w-max min-w-full items-center gap-1.5">
-        {chips.map((cmd, i) => (
-          <li
-            key={cmd.id}
-            className="reveal"
-            style={{ '--i': i } as React.CSSProperties}
-          >
+    <nav aria-label="Quick answers" className="w-full">
+      <ul className={variant === 'rail' ? 'flex flex-col gap-2' : 'flex flex-wrap gap-2'}>
+        {chips.map((cmd) => (
+          <li key={cmd.id}>
             <button
               onClick={() => handleClick(cmd.payload || cmd.label)}
               title={cmd.label}
-              className="press num flex h-7 shrink-0 items-center rounded-md border border-border bg-card px-2.5 text-[12px] text-ink-soft hover:border-border-strong hover:text-foreground"
+              className={`chip ${variant === 'rail' ? 'w-full' : ''}`}
             >
-              <span className="text-clay-ink">/</span>
-              {cmd.slash?.slice(1)}
+              {variant === 'rail' ? cmd.label : short(cmd)}
             </button>
           </li>
         ))}

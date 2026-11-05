@@ -81,7 +81,7 @@ export function HireSheet({
         >
           <div
             aria-hidden
-            className="absolute inset-0 bg-[#141413]/45 dark:bg-black/65"
+            className="absolute inset-0 bg-[#0b0c0e]/45 dark:bg-black/65"
             onClick={onClose}
           />
           <motion.div
@@ -112,7 +112,7 @@ export function HireSheet({
                 >
                   Let&apos;s work together.
                 </h2>
-                <p className="mt-2 text-[14.5px] leading-relaxed text-ink-soft">
+                <p className="mt-2 text-[16px] leading-relaxed text-ink-soft">
                   {availability.headline}. Replies in 0–4 hours
                   {time ? (
                     <>
@@ -147,24 +147,24 @@ export function HireSheet({
                   rel="noopener noreferrer"
                   className="group flex items-start gap-4 px-5 py-4 transition-colors hover:bg-sunken sm:px-7"
                 >
-                  <span className="mt-0.5 flex h-9 w-9 shrink-0 items-center justify-center rounded-md bg-clay text-clay-foreground">
+                  <span className="mt-0.5 flex h-9 w-9 shrink-0 items-center justify-center rounded-md bg-brand text-brand-foreground">
                     <Briefcase className="h-4 w-4" aria-hidden />
                   </span>
                   <span className="min-w-0 flex-1">
-                    <span className="flex items-center gap-2 text-[15px] font-semibold text-foreground">
+                    <span className="flex items-center gap-2 text-[16px] font-semibold text-foreground">
                       Hire me on Upwork
-                      <span className="tag !h-5 !border-clay/30 !bg-clay-soft !text-clay-ink">
+                      <span className="tag !h-5 !border-brand/30 !bg-brand-soft !text-brand-ink">
                         Recommended
                       </span>
                     </span>
-                    <span className="mt-0.5 block text-[13.5px] leading-snug text-muted-foreground">
+                    <span className="mt-0.5 block text-[14px] leading-snug text-muted-foreground">
                       {personal.upworkBadge} · contracts and payments protected
                       by Upwork.
                     </span>
                   </span>
                   <ArrowUpRight
                     aria-hidden
-                    className="mt-1 h-4 w-4 shrink-0 text-muted-foreground transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5 group-hover:text-clay"
+                    className="mt-1 h-4 w-4 shrink-0 text-muted-foreground transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5 group-hover:text-brand"
                   />
                   <span className="sr-only">(opens in a new tab)</span>
                 </a>
@@ -175,12 +175,12 @@ export function HireSheet({
                   <Mail className="h-4 w-4" aria-hidden />
                 </span>
                 <span className="min-w-0 flex-1">
-                  <span className="block text-[15px] font-semibold text-foreground">
+                  <span className="block text-[16px] font-semibold text-foreground">
                     Email me directly
                   </span>
                   <a
                     href={`mailto:${personal.email}?subject=${encodeURIComponent('Project enquiry')}`}
-                    className="num mt-0.5 block truncate text-[13.5px] text-ink-soft underline decoration-border-strong underline-offset-4 hover:text-foreground hover:decoration-clay"
+                    className="num mt-0.5 block truncate text-[14px] text-ink-soft underline decoration-border-strong underline-offset-4 hover:text-foreground hover:decoration-brand"
                   >
                     {personal.email}
                   </a>
@@ -199,17 +199,17 @@ export function HireSheet({
                     <Users className="h-4 w-4" aria-hidden />
                   </span>
                   <span className="min-w-0 flex-1">
-                    <span className="block text-[15px] font-semibold text-foreground">
+                    <span className="block text-[16px] font-semibold text-foreground">
                       Need a team? {agency.name}
                     </span>
-                    <span className="mt-0.5 block text-[13.5px] leading-snug text-muted-foreground">
+                    <span className="mt-0.5 block text-[14px] leading-snug text-muted-foreground">
                       The agency I founded — Ethiopian engineers for
                       team-sized builds in software and AI automation.
                     </span>
                   </span>
                   <ArrowUpRight
                     aria-hidden
-                    className="mt-1 h-4 w-4 shrink-0 text-muted-foreground transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5 group-hover:text-clay"
+                    className="mt-1 h-4 w-4 shrink-0 text-muted-foreground transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5 group-hover:text-brand"
                   />
                   <span className="sr-only">(opens in a new tab)</span>
                 </a>
@@ -221,8 +221,8 @@ export function HireSheet({
               <p className="meta mb-2.5 text-muted-foreground">What happens next</p>
               <ol className="space-y-1.5">
                 {steps.map((s, i) => (
-                  <li key={s} className="flex gap-3 text-[13.5px] leading-snug text-ink-soft">
-                    <span className="num pt-px text-[11px] text-clay-ink">{pad2(i + 1)}</span>
+                  <li key={s} className="flex gap-3 text-[14px] leading-snug text-ink-soft">
+                    <span className="num pt-px text-[13px] text-brand-ink">{pad2(i + 1)}</span>
                     {s}
                   </li>
                 ))}

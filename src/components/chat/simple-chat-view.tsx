@@ -75,9 +75,6 @@ export function AssistantTurn({
 
       {hasTools && (
         <div className="flex w-full flex-col gap-2.5">
-          <div>
-            <ToolPill tool={currentTool[0].toolName} state="done" />
-          </div>
           <ToolRenderer
             toolInvocations={currentTool}
             messageId={message.id || 'current-msg'}

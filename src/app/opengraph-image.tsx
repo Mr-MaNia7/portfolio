@@ -17,7 +17,7 @@ export default async function OpengraphImage() {
           display: 'flex',
           flexDirection: 'column',
           justifyContent: 'space-between',
-          background: '#faf9f6',
+          background: '#eef0f3',
           padding: 72,
           fontFamily: 'sans-serif',
           position: 'relative',
@@ -31,7 +31,7 @@ export default async function OpengraphImage() {
             left: 0,
             right: 0,
             height: 8,
-            background: '#c15f3c',
+            background: '#1f2de6',
           }}
         />
 
@@ -41,8 +41,8 @@ export default async function OpengraphImage() {
             style={{
               width: 84,
               height: 84,
-              background: '#141413',
-              color: '#faf9f6',
+              background: '#0b0c0e',
+              color: '#eef0f3',
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
@@ -58,11 +58,11 @@ export default async function OpengraphImage() {
               display: 'flex',
               alignItems: 'center',
               gap: 12,
-              border: '1px solid #d6d2c4',
+              border: '1px solid #c6cbd3',
               borderRadius: 6,
               padding: '10px 18px',
               fontSize: 22,
-              color: '#6b6960',
+              color: '#5d6470',
             }}
           >
             <div style={{ width: 12, height: 12, borderRadius: 12, background: '#4f7a3f' }} />
@@ -72,23 +72,23 @@ export default async function OpengraphImage() {
 
         {/* Middle: name + title */}
         <div style={{ display: 'flex', flexDirection: 'column' }}>
-          <div style={{ fontSize: 76, fontWeight: 700, color: '#141413', letterSpacing: -3, lineHeight: 1.05 }}>
+          <div style={{ fontSize: 76, fontWeight: 700, color: '#0b0c0e', letterSpacing: -3, lineHeight: 1.05 }}>
             {personal.name}
           </div>
-          <div style={{ fontSize: 34, color: '#c15f3c', marginTop: 16, fontWeight: 500 }}>
+          <div style={{ fontSize: 34, color: '#1f2de6', marginTop: 16, fontWeight: 500 }}>
             {personal.title}
           </div>
-          <div style={{ fontSize: 26, color: '#6b6960', marginTop: 20, maxWidth: 900, lineHeight: 1.4 }}>
+          <div style={{ fontSize: 26, color: '#5d6470', marginTop: 20, maxWidth: 900, lineHeight: 1.4 }}>
             {personal.headline}
           </div>
         </div>
 
         {/* Bottom: stats */}
-        <div style={{ display: 'flex', gap: 40, borderTop: '1px solid #e7e4da', paddingTop: 28 }}>
+        <div style={{ display: 'flex', gap: 40, borderTop: '1px solid #d3d7de', paddingTop: 28 }}>
           {stats.map((s) => (
             <div key={s.label} style={{ display: 'flex', flexDirection: 'column' }}>
-              <div style={{ fontSize: 30, fontWeight: 700, color: '#141413' }}>{s.value}</div>
-              <div style={{ fontSize: 18, color: '#6b6960', marginTop: 4 }}>{s.label}</div>
+              <div style={{ fontSize: 30, fontWeight: 700, color: '#0b0c0e' }}>{s.value}</div>
+              <div style={{ fontSize: 18, color: '#5d6470', marginTop: 4 }}>{s.label}</div>
             </div>
           ))}
         </div>

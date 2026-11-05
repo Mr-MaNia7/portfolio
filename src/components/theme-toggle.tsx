@@ -23,16 +23,16 @@ export function ThemeToggle({ className = '' }: { className?: string }) {
           : 'Toggle theme'
       }
       onClick={() => setTheme(isDark ? 'light' : 'dark')}
-      className={`press flex h-8 w-8 items-center justify-center rounded-md text-muted-foreground hover:bg-secondary hover:text-foreground ${className}`}
+      className={`icon-btn ${className}`}
     >
       {mounted ? (
         isDark ? (
-          <Sun className="h-[15px] w-[15px]" />
+          <Sun className="h-[18px] w-[18px]" />
         ) : (
-          <Moon className="h-[15px] w-[15px]" />
+          <Moon className="h-[18px] w-[18px]" />
         )
       ) : (
-        <span className="h-[15px] w-[15px]" />
+        <span className="h-[18px] w-[18px]" />
       )}
     </button>
   );

@@ -2,8 +2,8 @@
 
 import { ChatRequestOptions } from 'ai';
 import { AnimatePresence, motion } from 'framer-motion';
-import { ArrowUp, CornerDownLeft, Square } from 'lucide-react';
-import React, { useEffect, useMemo, useRef, useState } from 'react';
+import { ArrowUp, CornerDownLeft, Plus, Square } from 'lucide-react';
+import React, { useEffect, useId, useMemo, useRef, useState } from 'react';
 import type { Command } from '@/lib/commands';
 
 interface ChatBottombarProps {
@@ -19,12 +19,16 @@ interface ChatBottombarProps {
   commands: Command[];
   onRunCommand: (command: Command) => void;
   onOpenCommand: () => void;
+  /** window: inside the hero's chat window. shell: the conversation. dock: the compact bar under the hero. */
+  variant?: 'window' | 'shell' | 'dock';
+  /** Only one composer may show the slash menu at a time. */
+  menuEnabled?: boolean;
+  /** Take focus on mount. Pointer devices only, so a phone's keyboard never jumps open by itself. */
+  focusOnMount?: boolean;
 }
 
-// Rotating example questions shown as ghost text in the empty composer. They
-// double as inline autocomplete suggestions: press Tab (or tap the hint) to
-// drop the current one into the field — the Gmail / Copilot "ghost text"
-// pattern — so visitors discover the composer answers free-form questions live.
+// Example questions. Tab (or the "Use an example" button) drops the next one
+// into the empty field, so visitors discover it answers free-form questions.
 const EXAMPLES = [
   'How did you make AIVI multi-tenant on Supabase?',
   'How do multi-region cells route requests?',
@@ -56,7 +60,12 @@ export default function ChatBottombar({
   commands,
   onRunCommand,
   onOpenCommand,
+  variant = 'shell',
+  menuEnabled = true,
+  focusOnMount = false,
 }: ChatBottombarProps) {
+  const listId = useId();
+  const hintId = useId();
   const inputRef = useRef<HTMLTextAreaElement>(null);
   const [active, setActive] = useState(0);
   const [exampleIdx, setExampleIdx] = useState(0);
@@ -101,21 +110,12 @@ export default function ChatBottombar({
     el.style.height = `${Math.min(el.scrollHeight, MAX_TEXTAREA_HEIGHT)}px`;
   }, [input]);
 
-  // Cycle the suggested example while the field is empty and idle.
-  useEffect(() => {
-    if (!suggestionActive) return;
-    const id = setInterval(
-      () => setExampleIdx((i) => (i + 1) % EXAMPLES.length),
-      4200
-    );
-    return () => clearInterval(id);
-  }, [suggestionActive]);
-
   // Drop the current suggestion into the field, ready to edit or send.
   const acceptSuggestion = () => {
     handleInputChange({
       target: { value: currentExample },
     } as React.ChangeEvent<HTMLTextAreaElement>);
+    setExampleIdx((i) => (i + 1) % EXAMPLES.length);
     requestAnimationFrame(() => {
       const el = inputRef.current;
       if (el) {
@@ -198,16 +198,18 @@ export default function ChatBottombar({
   };
 
   useEffect(() => {
-    inputRef.current?.focus();
-  }, []);
+    if (focusOnMount && window.matchMedia('(pointer: fine)').matches) {
+      inputRef.current?.focus({ preventScroll: true });
+    }
+  }, [focusOnMount]);
 
-  const mode = isLoading
-    ? { label: 'Streaming', tone: 'text-clay-ink' }
+  const status = isLoading
+    ? 'Answering…'
     : isToolInProgress
-      ? { label: 'Running tool', tone: 'text-clay-ink' }
+      ? 'Opening your card…'
       : isSlash
-        ? { label: 'Command', tone: 'text-foreground' }
-        : { label: 'Live model', tone: 'text-muted-foreground' };
+        ? 'Command mode. Press Enter to run it.'
+        : null;
 
   const canSend = !!input.trim() && !isToolInProgress && !isSlash;
 
@@ -215,61 +217,39 @@ export default function ChatBottombar({
     <div className="relative w-full">
       {/* Slash-command menu */}
       <AnimatePresence>
-        {showSlash && (
+        {showSlash && menuEnabled && (
           <motion.div
-            initial={{ opacity: 0, y: 6, scale: 0.985 }}
-            animate={{ opacity: 1, y: 0, scale: 1 }}
+            initial={{ opacity: 0, y: 6 }}
+            animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: 4, transition: { duration: 0.12 } }}
             transition={{ duration: 0.18, ease: EASE }}
-            style={{ transformOrigin: '50% 100%' }}
-            className="absolute bottom-[calc(100%+8px)] left-0 z-30 w-full overflow-hidden rounded-lg border border-border-strong bg-popover shadow-[var(--shadow-float)]"
+            className="absolute bottom-[calc(100%+8px)] left-0 z-30 w-full overflow-hidden rounded-2xl border border-border bg-popover shadow-[var(--shadow-float)]"
           >
-            <div className="flex items-center justify-between border-b border-border-subtle px-3.5 py-2">
-              <span className="meta text-muted-foreground">Commands</span>
-              <span className="meta hidden items-center gap-2 text-muted-foreground sm:flex">
-                <span>↑↓ move</span>
-                <span>↵ run</span>
-                <span>esc clear</span>
-              </span>
-            </div>
             <ul
-              id="slash-listbox"
+              id={listId}
               role="listbox"
               aria-label="Slash commands"
-              className="p-1"
+              className="max-h-[50svh] overflow-y-auto p-1.5"
             >
               {slashMatches.map((cmd, i) => {
                 const selected = i === active;
                 return (
                   <li
                     key={cmd.id}
-                    id={`slash-opt-${cmd.id}`}
+                    id={`${listId}-${cmd.id}`}
                     role="option"
                     aria-selected={selected}
                     onMouseEnter={() => setActive(i)}
                     onMouseDown={(e) => e.preventDefault()}
                     onClick={() => runSlash(cmd)}
-                    className={`flex cursor-pointer items-center gap-3 rounded-md px-3 py-2 text-[14px] transition-colors duration-150 ${
-                      selected
-                        ? 'bg-secondary text-foreground shadow-[inset_2px_0_0_var(--clay)]'
-                        : 'text-ink-soft'
+                    className={`flex min-h-11 cursor-pointer items-center gap-3 rounded-xl px-3 py-2 text-[16px] ${
+                      selected ? 'bg-brand-soft text-foreground' : 'text-ink-soft'
                     }`}
                   >
-                    <span className="num w-[5.5rem] shrink-0 text-[12.5px] text-clay-ink">
-                      {cmd.slash}
-                    </span>
+                    <span className="w-24 shrink-0 font-medium text-brand-ink">{cmd.slash}</span>
                     <span className="min-w-0 flex-1 truncate">{cmd.label}</span>
-                    {cmd.hint && (
-                      <span className="hidden max-w-[11rem] shrink-0 truncate text-[12px] text-muted-foreground sm:block">
-                        {cmd.hint}
-                      </span>
-                    )}
-                    <span className="meta w-10 shrink-0 text-right text-muted-foreground">
-                      {selected ? (
-                        <CornerDownLeft className="ml-auto h-3.5 w-3.5" />
-                      ) : (
-                        KIND_LABEL[cmd.kind]
-                      )}
+                    <span className="meta hidden w-12 shrink-0 text-right text-muted-foreground sm:block">
+                      {selected ? <CornerDownLeft className="ml-auto h-4 w-4" /> : KIND_LABEL[cmd.kind]}
                     </span>
                   </li>
                 );
@@ -280,134 +260,83 @@ export default function ChatBottombar({
       </AnimatePresence>
 
       <form onSubmit={handleSubmit} className="w-full">
-        <div className="rounded-lg border border-border-strong bg-card transition-[border-color,box-shadow] duration-200 focus-within:border-clay">
-          {/* Input row */}
-          <div className="relative flex items-start gap-2.5 px-4 pt-3.5 pb-2">
-            <span
-              aria-hidden
-              className="num select-none pt-[3px] text-[14px] leading-6 text-clay"
-            >
-              ›
-            </span>
-            <div className="relative min-w-0 flex-1">
-              {/* Ghost suggestion — an overlay so it never wraps the field */}
-              {suggestionActive && (
-                <span
-                  key={exampleIdx}
-                  aria-hidden
-                  className="reveal pointer-events-none absolute inset-x-0 top-1 truncate text-[15px] leading-6 text-muted-foreground"
-                >
-                  {currentExample}
-                </span>
-              )}
-              {input.length === 0 && isToolInProgress && (
-                <span
-                  aria-hidden
-                  className="pointer-events-none absolute inset-x-0 top-1 text-[15px] leading-6 text-muted-foreground"
-                >
-                  One moment…
-                </span>
-              )}
-              <textarea
-                ref={inputRef}
-                rows={1}
-                value={input}
-                onChange={handleInputChange}
-                onKeyDown={handleKeyDown}
-                aria-label="Ask a question, or type / for commands"
-                aria-describedby="composer-hint"
-                role="combobox"
-                aria-autocomplete="list"
-                aria-expanded={showSlash}
-                aria-controls={showSlash ? 'slash-listbox' : undefined}
-                aria-activedescendant={
-                  showSlash
-                    ? `slash-opt-${slashMatches[active]?.id}`
-                    : undefined
-                }
-                className="scrollbar-subtle relative block max-h-40 w-full resize-none bg-transparent py-1 text-[15px] leading-6 text-foreground focus:outline-none focus-visible:outline-none disabled:cursor-not-allowed"
-                disabled={isToolInProgress}
-              />
-            </div>
-          </div>
+        <div className="composer">
+          <button
+            type="button"
+            onClick={onOpenCommand}
+            aria-label="Browse questions and commands"
+            title="Browse questions and commands"
+            className="icon-btn"
+          >
+            <Plus className="h-5 w-5" aria-hidden />
+          </button>
 
-          {/* Instrument rail */}
-          <div className="flex items-center justify-between gap-3 border-t border-border-subtle py-1.5 pr-1.5 pl-4">
-            <div
-              id="composer-hint"
-              className="meta flex min-w-0 items-center gap-3 text-muted-foreground"
-            >
-              <span
-                className={`flex shrink-0 items-center gap-1.5 ${mode.tone}`}
-              >
-                <span
-                  aria-hidden
-                  className={`h-1.5 w-1.5 rounded-full ${
-                    isLoading || isToolInProgress
-                      ? 'motion-safe:animate-pulse bg-clay'
-                      : isSlash
-                        ? 'bg-foreground'
-                        : 'bg-success'
-                  }`}
-                />
-                {mode.label}
-              </span>
+          <div className="relative min-w-0 flex-1">
+            {suggestionActive && (
               <span
                 aria-hidden
-                className="hidden h-3 w-px bg-border sm:block"
-              />
-              <span className="hidden truncate normal-case tracking-normal sm:inline">
-                <span className="text-foreground">/</span> commands
+                className="pointer-events-none absolute inset-x-0 top-[10px] truncate text-[16px] leading-6 text-muted-foreground"
+              >
+                Ask my twin anything
               </span>
-              {suggestionActive && (
-                <button
-                  type="button"
-                  onClick={acceptSuggestion}
-                  aria-label={`Use example question: ${currentExample}`}
-                  className="press flex shrink-0 items-center gap-1 rounded-sm normal-case tracking-normal hover:text-foreground"
-                >
-                  <kbd className="kbd">Tab</kbd>
-                  <span className="hidden sm:inline">use example</span>
-                  <span className="sm:hidden">example</span>
-                </button>
-              )}
-            </div>
+            )}
+            {input.length === 0 && isToolInProgress && (
+              <span
+                aria-hidden
+                className="pointer-events-none absolute inset-x-0 top-[10px] text-[16px] leading-6 text-muted-foreground"
+              >
+                One moment…
+              </span>
+            )}
+            <textarea
+              ref={inputRef}
+              rows={1}
+              value={input}
+              onChange={handleInputChange}
+              onKeyDown={handleKeyDown}
+              aria-label="Ask my AI twin a question, or type / for commands"
+              aria-describedby={variant === 'dock' ? undefined : hintId}
+              role="combobox"
+              aria-autocomplete="list"
+              aria-expanded={showSlash}
+              aria-controls={showSlash ? listId : undefined}
+              aria-activedescendant={
+                showSlash ? `${listId}-${slashMatches[active]?.id}` : undefined
+              }
+              className="scrollbar-subtle relative block max-h-40 w-full resize-none bg-transparent py-[10px] text-[16px] leading-6 text-foreground focus:outline-none focus-visible:outline-none disabled:cursor-not-allowed"
+              disabled={isToolInProgress}
+            />
+          </div>
 
-            <div className="flex shrink-0 items-center gap-1.5">
+          {isLoading ? (
+            <button type="button" onClick={stop} aria-label="Stop answering" className="composer__send">
+              <Square className="h-3.5 w-3.5 fill-current" aria-hidden />
+            </button>
+          ) : (
+            <button type="submit" disabled={!canSend} aria-label="Send" className="composer__send">
+              <ArrowUp className="h-5 w-5" aria-hidden />
+            </button>
+          )}
+        </div>
+
+        {variant !== 'dock' && (
+          <div
+            id={hintId}
+            className="flex min-h-9 flex-wrap items-center justify-between gap-x-2 px-1 pt-1.5 text-[13px] leading-snug text-muted-foreground"
+          >
+            <span aria-live="polite">{status ?? 'AI answers. It can make mistakes.'}</span>
+            {suggestionActive && (
               <button
                 type="button"
-                onClick={onOpenCommand}
-                aria-label="Open command menu"
-                className="press hidden h-8 items-center rounded-md px-1.5 text-muted-foreground hover:bg-secondary hover:text-foreground sm:flex"
+                onClick={acceptSuggestion}
+                className="press flex min-h-7 items-center gap-1.5 font-medium text-foreground"
               >
-                <kbd className="kbd">⌘K</kbd>
+                <kbd className="kbd !h-5 max-[1023px]:hidden">Tab</kbd>
+                Use an example
               </button>
-
-              {isLoading ? (
-                <button
-                  type="button"
-                  onClick={stop}
-                  aria-label="Stop generating"
-                  className="btn-ink h-8 px-3 text-[13px]"
-                >
-                  <Square className="h-3 w-3 fill-current" />
-                  <span className="hidden sm:inline">Stop</span>
-                </button>
-              ) : (
-                <button
-                  type="submit"
-                  disabled={!canSend}
-                  aria-label="Send"
-                  className="btn-ink h-8 px-3 text-[13px] disabled:pointer-events-none disabled:bg-secondary disabled:text-muted-foreground"
-                >
-                  <span className="hidden sm:inline">Send</span>
-                  <ArrowUp className="h-3.5 w-3.5 sm:hidden" />
-                  <CornerDownLeft className="hidden h-3.5 w-3.5 sm:block" />
-                </button>
-              )}
-            </div>
+            )}
           </div>
-        </div>
+        )}
       </form>
     </div>
   );

@@ -22,7 +22,7 @@ function Stars({ rating, className = '' }: { rating: number; className?: string 
         <Star
           key={i}
           aria-hidden
-          className={`h-3.5 w-3.5 ${i < Math.round(rating) ? 'fill-clay text-clay' : 'text-border-strong'}`}
+          className={`h-3.5 w-3.5 ${i < Math.round(rating) ? 'fill-brand text-brand' : 'text-border-strong'}`}
         />
       ))}
     </span>
@@ -47,8 +47,7 @@ export function Reviews() {
       <ArtifactHeader
         kicker={
           <>
-            Reviews <span className="text-border-strong">{'//'}</span>{' '}
-            upwork.json
+            Reviews
           </>
         }
         title="In my clients' words."
@@ -74,7 +73,7 @@ export function Reviews() {
           <blockquote className="font-display hang measure text-[1.3125rem] leading-[1.42] text-foreground sm:text-[1.5rem]">
             “{quote.text}”
           </blockquote>
-          <figcaption className="mt-5 flex flex-wrap items-center gap-x-3 gap-y-1.5 text-[13.5px]">
+          <figcaption className="mt-5 flex flex-wrap items-center gap-x-3 gap-y-1.5 text-[14px]">
             <span className="font-medium text-foreground">
               {quote.author}
               {quote.role && (
@@ -98,7 +97,7 @@ export function Reviews() {
                   onClick={() => setI(n)}
                   aria-current={n === i}
                   aria-label={`Quote ${n + 1}: ${q.engagement}`}
-                  className={`press num flex h-7 min-w-7 items-center justify-center rounded-sm px-1.5 text-[11px] ${
+                  className={`press num flex h-7 min-w-7 items-center justify-center rounded-sm px-1.5 text-[13px] ${
                     n === i
                       ? 'bg-primary text-primary-foreground'
                       : 'text-muted-foreground hover:bg-secondary hover:text-foreground'
@@ -114,7 +113,7 @@ export function Reviews() {
               type="button"
               onClick={() => step(-1)}
               aria-label="Previous quote"
-              className="btn-line h-8 w-8"
+              className="btn btn--secondary w-8"
             >
               <ArrowLeft className="h-4 w-4" aria-hidden />
             </button>
@@ -122,7 +121,7 @@ export function Reviews() {
               type="button"
               onClick={() => step(1)}
               aria-label="Next quote"
-              className="btn-line h-8 w-8"
+              className="btn btn--secondary w-8"
             >
               <ArrowRight className="h-4 w-4" aria-hidden />
             </button>
@@ -158,16 +157,16 @@ export function Reviews() {
           {reviews.endorsements.map((e) => (
             <li
               key={e.label}
-              className="grid grid-cols-[9.5rem_1fr_1.5rem] items-center gap-3 text-[13.5px] sm:grid-cols-[11rem_1fr_2rem]"
+              className="grid grid-cols-[9.5rem_1fr_1.5rem] items-center gap-3 text-[14px] sm:grid-cols-[11rem_1fr_2rem]"
             >
               <span className="text-foreground">{e.label}</span>
               <span className="h-1.5 overflow-hidden rounded-full bg-sunken">
                 <span
-                  className="block h-full rounded-full bg-clay"
+                  className="block h-full rounded-full bg-brand"
                   style={{ width: `${(e.count / maxEndorse) * 100}%` }}
                 />
               </span>
-              <span className="num text-right text-[12px] text-muted-foreground">
+              <span className="num text-right text-[13px] text-muted-foreground">
                 ×{e.count}
               </span>
             </li>
@@ -179,14 +178,14 @@ export function Reviews() {
         className="reveal flex flex-wrap items-center gap-2 border-t border-border bg-sunken px-5 py-4 sm:px-7"
         style={{ '--i': 4 } as React.CSSProperties}
       >
-        <button type="button" onClick={openHire} className="btn-clay h-9 px-4 text-[13px]">
+        <button type="button" onClick={openHire} className="btn-brand h-9 px-4 text-[13px]">
           Work with me
         </button>
         <a
           href={reviews.source.url}
           target="_blank"
           rel="noopener noreferrer"
-          className="btn-line h-9 px-4 text-[13px]"
+          className="btn btn--secondary"
         >
           Verify on {reviews.source.name}
           <ArrowUpRight className="h-4 w-4" aria-hidden />

@@ -1,25 +1,16 @@
 import { Analytics } from '@vercel/analytics/react';
 import type { Metadata, Viewport } from 'next';
-import { Inter, Newsreader, JetBrains_Mono } from 'next/font/google';
+import { Host_Grotesk, JetBrains_Mono } from 'next/font/google';
 import { cn } from '@/lib/utils';
 import { ThemeProvider } from '@/components/theme-provider';
 import { Toaster } from '@/components/ui/sonner';
 import { getConfig } from '@/lib/config-loader';
 import './globals.css';
 
-const inter = Inter({
+const hostGrotesk = Host_Grotesk({
   subsets: ['latin'],
-  variable: '--font-inter',
+  variable: '--font-host',
   display: 'swap',
-});
-
-const newsreader = Newsreader({
-  subsets: ['latin'],
-  variable: '--font-newsreader',
-  display: 'swap',
-  style: ['normal', 'italic'],
-  // Optical sizing: tighter, higher-contrast cuts at display sizes.
-  axes: ['opsz'],
 });
 
 const jetbrainsMono = JetBrains_Mono({
@@ -90,15 +81,18 @@ export const metadata: Metadata = {
   manifest: '/manifest.json',
   alternates: { canonical: siteUrl },
   category: 'technology',
+  other: { 'page-type': 'software', 'site-kind': 'software' },
 };
 
 export const viewport: Viewport = {
   width: 'device-width',
   initialScale: 1,
-  maximumScale: 1,
+  // Keep the composer above the on-screen keyboard. Pinch-zoom stays available.
+  interactiveWidget: 'resizes-content',
+  viewportFit: 'cover',
   themeColor: [
-    { media: '(prefers-color-scheme: light)', color: '#faf9f5' },
-    { media: '(prefers-color-scheme: dark)', color: '#161412' },
+    { media: '(prefers-color-scheme: light)', color: '#eef0f3' },
+    { media: '(prefers-color-scheme: dark)', color: '#0b0c0e' },
   ],
 };
 
@@ -106,7 +100,7 @@ export default function RootLayout({
   children,
 }: Readonly<{ children: React.ReactNode }>) {
   return (
-    <html lang="en" suppressHydrationWarning>
+    <html lang="en" data-type="software" data-radius="soft" suppressHydrationWarning>
       <head>
         <script
           type="application/ld+json"
@@ -162,8 +156,7 @@ export default function RootLayout({
       <body
         className={cn(
           'min-h-screen bg-background font-sans antialiased',
-          inter.variable,
-          newsreader.variable,
+          hostGrotesk.variable,
           jetbrainsMono.variable
         )}
       >
@@ -173,7 +166,7 @@ export default function RootLayout({
           enableSystem={false}
           disableTransitionOnChange
         >
-          <main className="flex min-h-screen flex-col">{children}</main>
+          {children}
           <Toaster />
         </ThemeProvider>
         <Analytics />

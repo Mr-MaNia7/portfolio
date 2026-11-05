@@ -33,13 +33,13 @@ function Board() {
   return (
     <svg viewBox="0 0 96 96" aria-hidden className="h-full w-full">
       {squares}
-      <rect x="60" y="60" width="12" height="12" style={{ fill: 'var(--clay)' }} />
+      <rect x="60" y="60" width="12" height="12" style={{ fill: 'var(--brand)' }} />
       <text
         x="66"
         y="70.5"
         textAnchor="middle"
         fontSize="11"
-        style={{ fill: 'var(--clay-foreground)' }}
+        style={{ fill: 'var(--brand-foreground)' }}
       >
         ♞
       </text>
@@ -67,14 +67,14 @@ function Pitch({ label }: { label: string }) {
       {players.map(([x, y, me], i) =>
         me ? (
           <g key={i}>
-            <circle cx={x} cy={y} r="5.2" style={{ fill: 'var(--clay)' }} />
+            <circle cx={x} cy={y} r="5.2" style={{ fill: 'var(--brand)' }} />
             <text
               x={x}
               y={y + 1.9}
               textAnchor="middle"
               fontSize="4.6"
               fontWeight="600"
-              style={{ fill: 'var(--clay-foreground)' }}
+              style={{ fill: 'var(--brand-foreground)' }}
             >
               {label}
             </text>
@@ -115,8 +115,7 @@ export function Hobbies() {
       <ArtifactHeader
         kicker={
           <>
-            Personal <span className="text-border-strong">{'//'}</span>{' '}
-            off-the-clock.md
+            Personal
           </>
         }
         title="Off the clock."
@@ -138,7 +137,7 @@ export function Hobbies() {
               <h3 id="hobby-chess" className="font-display text-[1.375rem] leading-tight text-foreground">
                 Chess
               </h3>
-              <p className="num mt-0.5 truncate text-[12px] text-muted-foreground">
+              <p className="num mt-0.5 truncate text-[13px] text-muted-foreground">
                 chess.com/{chess.username}
               </p>
             </div>
@@ -150,7 +149,7 @@ export function Hobbies() {
               { term: 'League', value: stats.league },
             ].map((s) => (
               <div key={s.term} className="flex min-w-0 flex-col gap-1 bg-card px-4 py-4 sm:px-5">
-                <dt className="text-[12px] text-muted-foreground">{s.term}</dt>
+                <dt className="text-[13px] text-muted-foreground">{s.term}</dt>
                 <dd className="num order-first truncate text-[1.125rem] leading-none text-foreground">
                   {s.value}
                 </dd>
@@ -195,7 +194,7 @@ export function Hobbies() {
             </div>
           </div>
           <div className="flex flex-1 flex-col gap-4 px-5 py-4 sm:px-6">
-            <p className="text-[14.5px] leading-relaxed text-ink-soft">{football.note}</p>
+            <p className="text-[16px] leading-relaxed text-ink-soft">{football.note}</p>
             <div>
               <p className="meta mb-2 text-muted-foreground">I support</p>
               <ul className="flex flex-wrap gap-1.5">
@@ -209,7 +208,7 @@ export function Hobbies() {
                 ))}
               </ul>
             </div>
-            <p className="mt-auto border-l-2 border-clay py-0.5 pl-3 text-[14px] leading-snug text-foreground">
+            <p className="mt-auto border-l-2 border-brand py-0.5 pl-3 text-[14px] leading-snug text-foreground">
               <span className="font-medium">{football.idol.name}.</span>{' '}
               <span className="text-ink-soft">{football.idol.note}</span>
             </p>

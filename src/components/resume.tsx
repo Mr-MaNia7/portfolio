@@ -32,8 +32,7 @@ export function Resume() {
       <ArtifactHeader
         kicker={
           <>
-            Résumé <span className="text-border-strong">{'//'}</span>{' '}
-            experience.json
+            Résumé
           </>
         }
         title="Experience"
@@ -62,7 +61,7 @@ export function Resume() {
           download
           target="_blank"
           rel="noopener noreferrer"
-          className="btn-ink h-9 px-4 text-[13px]"
+          className="btn btn--primary"
         >
           <ArrowDownToLine className="h-4 w-4" aria-hidden />
           Download PDF
@@ -95,7 +94,7 @@ export function Resume() {
             <p className="mt-1 text-[14px] text-ink-soft">
               {education.institution}
             </p>
-            <p className="num mt-2 text-[12px] text-muted-foreground">
+            <p className="num mt-2 text-[13px] text-muted-foreground">
               {[
                 education.stream && `${education.stream} stream`,
                 education.gpa && `GPA ${education.gpa}`,
@@ -122,7 +121,7 @@ export function Resume() {
                   href={education.research.link}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="mt-2 inline-flex items-center gap-1.5 text-[13px] font-medium text-clay-ink underline decoration-clay/40 underline-offset-4 hover:decoration-clay"
+                  className="mt-2 inline-flex items-center gap-1.5 text-[13px] font-medium text-brand-ink underline decoration-brand/40 underline-offset-4 hover:decoration-brand"
                 >
                   <FileText className="size-3.5" aria-hidden />
                   Read the paper · DOI {education.research.link.replace(/^https?:\/\/doi\.org\//, '')}
@@ -141,7 +140,7 @@ export function Resume() {
                 key={a}
                 className="flex gap-3 border-b border-border-subtle py-2.5 text-[14px] leading-snug text-foreground last:border-b-0 sm:[&:nth-last-child(2)]:border-b-0"
               >
-                <span className="num pt-px text-[11px] text-muted-foreground">
+                <span className="num pt-px text-[13px] text-muted-foreground">
                   {pad2(i + 1)}
                 </span>
                 {a}
@@ -175,7 +174,7 @@ function TimelineEntry({
     >
       {/* Date rail */}
       <div className="pt-5 sm:pt-6">
-        <p className="num text-[12.5px] whitespace-nowrap text-foreground">
+        <p className="num text-[13px] whitespace-nowrap text-foreground">
           {exp.duration}
         </p>
         <p className="meta mt-1 text-muted-foreground">{exp.type}</p>
@@ -186,20 +185,20 @@ function TimelineEntry({
         <span
           aria-hidden
           className={`absolute top-[1.85rem] -left-[4px] hidden h-[7px] w-[7px] rounded-[1px] sm:block ${
-            current ? 'bg-clay' : 'border border-border-strong bg-card'
+            current ? 'bg-brand' : 'border border-border-strong bg-card'
           }`}
         />
         <div className="border-b border-border-subtle pt-2 pb-5 sm:pt-5">
           <h3 className="text-[16px] leading-snug font-semibold text-foreground">
             {exp.position}
           </h3>
-          <p className="mt-0.5 text-[14px] text-clay-ink">
+          <p className="mt-0.5 text-[14px] text-brand-ink">
             {exp.company}
             {exp.location && (
               <span className="text-muted-foreground"> · {exp.location}</span>
             )}
           </p>
-          <p className="measure mt-2.5 text-[14.5px] leading-[1.65] text-ink-soft">
+          <p className="measure mt-2.5 text-[16px] leading-[1.65] text-ink-soft">
             {exp.description}
           </p>
 
@@ -210,7 +209,7 @@ function TimelineEntry({
                 onClick={onToggle}
                 aria-expanded={open}
                 aria-controls={panelId}
-                className="press mt-3 -ml-1 flex items-center gap-1.5 rounded-sm px-1 py-0.5 text-[12.5px] text-muted-foreground hover:text-foreground"
+                className="press mt-3 -ml-1 flex items-center gap-1.5 rounded-sm px-1 py-0.5 text-[13px] text-muted-foreground hover:text-foreground"
               >
                 <ChevronDown
                   aria-hidden
@@ -237,7 +236,7 @@ function TimelineEntry({
                           key={h}
                           className="flex gap-2.5 text-[14px] leading-snug text-foreground"
                         >
-                          <span aria-hidden className="text-clay">
+                          <span aria-hidden className="text-brand">
                             –
                           </span>
                           {h}

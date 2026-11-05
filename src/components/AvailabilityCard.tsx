@@ -66,7 +66,7 @@ const AvailabilityCard = () => {
         className="reveal border-t border-border"
         style={{ '--i': 1 } as React.CSSProperties}
       >
-        <div className="flex flex-wrap items-center justify-between gap-3 bg-sunken px-5 py-3 sm:px-7">
+        <div className="flex flex-wrap items-center justify-between gap-3 bg-sunken px-5 py-3 @lg:px-7">
           <UpworkBadge
             className="!text-[13px] !text-foreground"
             iconClassName="h-5 min-w-5 w-auto"
@@ -81,7 +81,7 @@ const AvailabilityCard = () => {
           {terms.map(({ term, detail }) => (
             <div
               key={term}
-              className="grid gap-1 py-2.5 first:pt-0 last:pb-0 sm:grid-cols-[9rem_1fr] sm:gap-6"
+              className="grid gap-1 py-2.5 first:pt-0 last:pb-0 @lg:grid-cols-[9rem_1fr] @lg:gap-6"
             >
               <dt className="meta pt-[3px] text-muted-foreground">{term}</dt>
               <dd className="text-[16px] leading-relaxed text-foreground">
@@ -99,7 +99,7 @@ const AvailabilityCard = () => {
               key={area}
               className="flex items-baseline gap-4 border-b border-border-subtle py-2.5 first:pt-0 last:border-b-0 last:pb-0"
             >
-              <span className="num text-[13px] text-brand-ink">
+              <span className="num text-[13px] text-muted-foreground">
                 {pad2(i + 1)}
               </span>
               <span className="font-display text-[1.125rem] leading-snug text-foreground">
@@ -121,7 +121,7 @@ const AvailabilityCard = () => {
 
       {/* Call to action */}
       <div
-        className="reveal flex flex-wrap items-center gap-3 border-t border-border bg-sunken px-5 py-4 sm:px-7"
+        className="reveal flex flex-wrap items-center gap-3 border-t border-border bg-sunken px-5 py-4 @lg:px-7"
         style={{ '--i': 5 } as React.CSSProperties}
       >
         {social.upwork && (
@@ -129,7 +129,7 @@ const AvailabilityCard = () => {
             href={social.upwork}
             target="_blank"
             rel="noopener noreferrer"
-            className="btn btn--primary"
+            className="btn btn--secondary"
           >
             Hire on Upwork
             <ArrowUpRight className="h-4 w-4" aria-hidden />
@@ -140,7 +140,7 @@ const AvailabilityCard = () => {
           href={agency.url}
           target="_blank"
           rel="noopener noreferrer"
-          className="text-btn sm:ml-auto"
+          className="text-btn @lg:ml-auto"
         >
           Need a team? {agency.name}
           <ArrowUpRight className="h-3.5 w-3.5" aria-hidden />

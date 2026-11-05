@@ -14,7 +14,7 @@ import type { Project } from '@/types/portfolio';
 
 interface ChatLandingProps {
   submitQuery: (query: string) => void;
-  handlePresetReply?: (question: string, reply: string, tool: string) => void;
+  handlePresetReply?: (question: string, reply: string, tool: string, showDetail?: boolean) => void;
   onOpenCommand?: () => void;
   onHire: () => void;
   commands: Command[];
@@ -85,10 +85,10 @@ const ChatLanding: React.FC<ChatLandingProps> = ({
   const [lead, ...moreQuotes] = reviews.quotes;
   const shortQuotes = moreQuotes.filter((q) => q.text.length < 140).slice(0, 2);
 
-  const ask = (q: string) => {
+  const ask = (q: string, showDetail = false) => {
     const preset = presetReplies[q as keyof typeof presetReplies];
     if (preset && handlePresetReply) {
-      handlePresetReply(q, preset.reply, preset.tool);
+      handlePresetReply(q, preset.reply, preset.tool, showDetail);
     } else {
       submitQuery(q);
     }
@@ -180,16 +180,16 @@ const ChatLanding: React.FC<ChatLandingProps> = ({
                 </div>
 
                 <div className="scrollbar-subtle flex min-h-0 flex-1 flex-col gap-3 overflow-y-auto px-4 py-4 sm:px-5 sm:py-5">
-                  <p className="twin-msg max-w-[34rem] rounded-2xl rounded-tl-md bg-sunken px-4 py-3 text-foreground">
+                  <p className="twin-msg max-w-[34rem] text-foreground">
                     I&apos;m {personal.shortName}&apos;s AI twin. Ask what you&apos;d ask in a first interview: what
                     I&apos;ve shipped, how I&apos;d handle your project, whether I&apos;m the right fit.
                   </p>
                   {/* A real exchange from the instant answers, so the window shows what it does. */}
                   <div className="twin-exchange flex-col gap-3">
-                    <p className="twin-msg ml-auto max-w-[80%] rounded-2xl rounded-br-md bg-brand px-4 py-2.5 text-brand-foreground">
+                    <p className="bubble twin-msg ml-auto">
                       Can I trust you with a production system?
                     </p>
-                    <div className="twin-msg max-w-[34rem] rounded-2xl rounded-tl-md bg-sunken px-4 py-3 text-foreground">
+                    <div className="twin-msg max-w-[34rem] text-foreground">
                       {flagship.client} hired me on a 45-day trial to make its backend multi-tenant. Since June 2025 my scope has grown to the whole platform, with {flagship.metrics?.[0]} so far.{' '}
                       <button type="button" onClick={() => setOpenIndex(flagshipIndex)} aria-haspopup="dialog" className="link">
                         Read the case study
@@ -198,19 +198,19 @@ const ChatLanding: React.FC<ChatLandingProps> = ({
                   </div>
                   {/* Taller windows show more of the same answers, in their own approved words. */}
                   <div className="twin-exchange--tall flex-col gap-3">
-                    <p className="twin-msg ml-auto max-w-[80%] rounded-2xl rounded-br-md bg-brand px-4 py-2.5 text-brand-foreground">
+                    <p className="bubble twin-msg ml-auto">
                       {index.find((c) => c.id === 'availability')?.label}
                     </p>
-                    <p className="twin-msg max-w-[34rem] rounded-2xl rounded-tl-md bg-sunken px-4 py-3 text-foreground">
+                    <p className="twin-msg max-w-[34rem] text-foreground">
                       {availability.headline}. {availability.workStyle}
                     </p>
                   </div>
                   {shortQuotes[0] && (
                     <div className="twin-exchange--taller flex-col gap-3">
-                      <p className="twin-msg ml-auto max-w-[80%] rounded-2xl rounded-br-md bg-brand px-4 py-2.5 text-brand-foreground">
+                      <p className="bubble twin-msg ml-auto">
                         {index.find((c) => c.id === 'reviews')?.label}
                       </p>
-                      <p className="twin-msg max-w-[34rem] rounded-2xl rounded-tl-md bg-sunken px-4 py-3 text-foreground">
+                      <p className="twin-msg max-w-[34rem] text-foreground">
                         “{shortQuotes[0].text}”
                       </p>
                     </div>
@@ -296,7 +296,7 @@ const ChatLanding: React.FC<ChatLandingProps> = ({
                   Work shipped for {clients.slice(0, -1).join(', ')} and {clients[clients.length - 1]}.
                 </p>
               </div>
-              <button type="button" onClick={() => ask('What have you shipped?')} className="btn btn--secondary max-sm:w-full">
+              <button type="button" onClick={() => ask('What have you shipped?', true)} className="btn btn--secondary max-sm:w-full">
                 See all {projects.length} case studies
               </button>
             </div>
@@ -373,7 +373,7 @@ const ChatLanding: React.FC<ChatLandingProps> = ({
                   {reviews.ratings.map((r) => r.client).join(', ')}. {reviews.summary}
                 </p>
               </div>
-              <button type="button" onClick={() => ask('What do past clients say?')} className="btn btn--secondary max-sm:w-full">
+              <button type="button" onClick={() => ask('What do past clients say?', true)} className="btn btn--secondary max-sm:w-full">
                 See all reviews
               </button>
             </div>

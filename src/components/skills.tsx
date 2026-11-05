@@ -1,10 +1,11 @@
 'use client';
 
 import React, { useId, useMemo, useRef, useState } from 'react';
-import { ArrowRight, Check, Search, Sparkles } from 'lucide-react';
+import { ArrowRight, Check, Search } from 'lucide-react';
 import { getConfig } from '@/lib/config-loader';
 import { askPortfolio } from '@/lib/portfolio-events';
 import { Artifact, ArtifactHeader, pad2 } from '@/components/artifact/artifact';
+import { usePanel } from '@/components/chat/side-panel';
 
 /**
  * Skills as I actually use them: the languages in my hands, then a capability
@@ -49,12 +50,13 @@ function buildToolIndex(): ToolIndex {
   return map;
 }
 
-const TOOL_INDEX = buildToolIndex();
+export const TOOL_INDEX = buildToolIndex();
 
 const Skills = () => {
   const { skills } = getConfig();
   const { capabilities, languages } = skills;
-  const [active, setActive] = useState(0);
+  const { detail } = usePanel();
+  const [active, setActive] = useState(detail ?? 0);
   const tabRefs = useRef<Array<HTMLButtonElement | null>>([]);
   const baseId = useId();
 
@@ -92,7 +94,7 @@ const Skills = () => {
         title="What I build, with proof I&apos;ve shipped it"
         standfirst={skills.intro}
         aside={
-          <dl className="flex gap-6 sm:text-right">
+          <dl className="flex gap-6 @lg:text-right">
             <div className="flex flex-col gap-1">
               <dt className="meta text-muted-foreground">Capabilities</dt>
               <dd className="num order-first text-[1.75rem] leading-none text-foreground">
@@ -112,21 +114,21 @@ const Skills = () => {
       {/* Languages in my hands */}
       <ul
         aria-label="Languages"
-        className="reveal grid grid-cols-2 gap-px border-t border-border bg-border-subtle sm:grid-cols-4"
+        className="reveal grid grid-cols-2 gap-px border-t border-border bg-border-subtle @2xl:grid-cols-4"
         style={{ '--i': 1 } as React.CSSProperties}
       >
         {languages.map((lang) => (
-          <li key={lang.name} className="flex flex-col gap-1.5 bg-sunken px-5 py-4 sm:px-6">
+          <li key={lang.name} className="flex flex-col gap-1.5 bg-sunken px-5 py-4 @lg:px-6">
             <span className="flex items-center justify-between gap-2">
               <span className="font-display text-[1.25rem] leading-none text-foreground">
                 {lang.name}
               </span>
               <span
-                className={`num flex items-center gap-1.5 text-[13px] ${lang.usage === 'Daily' ? 'text-brand-ink' : 'text-muted-foreground'}`}
+                className={`num flex items-center gap-1.5 text-[13px] ${lang.usage === 'Daily' ? 'text-foreground' : 'text-muted-foreground'}`}
               >
                 <span
                   aria-hidden
-                  className={`h-1.5 w-1.5 rounded-full ${lang.usage === 'Daily' ? 'bg-brand' : 'bg-border-strong'}`}
+                  className={`h-1.5 w-1.5 rounded-full ${lang.usage === 'Daily' ? 'bg-foreground' : 'bg-border-strong'}`}
                 />
                 {lang.usage}
               </span>
@@ -140,14 +142,14 @@ const Skills = () => {
 
       {/* Capability explorer */}
       <div
-        className="reveal grid border-t border-border sm:grid-cols-[15.5rem_1fr]"
+        className="reveal grid border-t border-border @2xl:grid-cols-[15.5rem_1fr]"
         style={{ '--i': 2 } as React.CSSProperties}
       >
         <div
           role="tablist"
           aria-label="Capabilities"
           aria-orientation="vertical"
-          className="scrollbar-none flex gap-1.5 overflow-x-auto border-b border-border-subtle bg-sunken px-5 py-3 sm:flex-col sm:gap-0 sm:overflow-visible sm:border-r sm:border-b-0 sm:p-0"
+          className="scrollbar-none flex gap-1.5 overflow-x-auto border-b border-border-subtle bg-sunken px-5 py-3 @2xl:flex-col @2xl:gap-0 @2xl:overflow-visible @2xl:border-r @2xl:border-b-0 @2xl:p-0"
         >
           {capabilities.map((cap, i) => {
             const selected = i === active;
@@ -164,14 +166,14 @@ const Skills = () => {
                 tabIndex={selected ? 0 : -1}
                 onClick={() => setActive(i)}
                 onKeyDown={(e) => onTabKey(e, i)}
-                className={`press group flex shrink-0 items-baseline gap-3 rounded-md border px-3 py-2 text-left text-[14px] whitespace-nowrap transition-colors sm:rounded-none sm:border-0 sm:border-l-2 sm:px-5 sm:py-3 sm:whitespace-normal ${
+                className={`press group flex shrink-0 items-baseline gap-3 rounded-md border px-3 py-2 text-left text-[14px] whitespace-nowrap transition-colors @2xl:rounded-none @2xl:border-0 @2xl:border-l-2 @2xl:px-5 @2xl:py-3 @2xl:whitespace-normal ${
                   selected
-                    ? 'border-border-strong bg-card text-foreground sm:border-brand'
-                    : 'border-border bg-transparent text-ink-soft hover:text-foreground sm:border-transparent sm:hover:bg-card/60'
+                    ? 'border-border-strong bg-card text-foreground @2xl:border-border-strong'
+                    : 'border-border bg-transparent text-ink-soft hover:text-foreground @2xl:border-transparent @2xl:hover:bg-card/60'
                 }`}
               >
                 <span
-                  className={`num text-[13px] ${selected ? 'text-brand-ink' : 'text-muted-foreground'}`}
+                  className={`num text-[13px] ${selected ? 'text-foreground' : 'text-muted-foreground'}`}
                 >
                   {pad2(i + 1)}
                 </span>
@@ -185,15 +187,15 @@ const Skills = () => {
           role="tabpanel"
           id={`${baseId}-panel`}
           aria-labelledby={`${baseId}-tab-${active}`}
-          className="min-w-0 px-5 py-6 sm:px-7"
+          className="min-w-0 px-5 py-6 @lg:px-7"
         >
           {/* Keyed so the panel re-reveals on every switch */}
-          <div key={current.id} className="reveal">
+          <div key={current.id} className="swap">
             <p className="meta text-muted-foreground">
               Capability <span className="num">{pad2(active + 1)}</span>
               <span className="text-border-strong"> / {pad2(capabilities.length)}</span>
             </p>
-            <h3 className="font-display mt-2 text-[1.625rem] leading-[1.1] text-foreground sm:text-[1.875rem]">
+            <h3 className="font-display mt-2 text-[1.625rem] leading-[1.1] text-foreground @lg:text-[1.875rem]">
               {current.name}
             </h3>
             <p className="measure mt-2.5 text-[16px] leading-relaxed text-ink-soft">
@@ -212,7 +214,7 @@ const Skills = () => {
               ))}
             </ul>
 
-            <div className="mt-6 grid gap-5 sm:grid-cols-[auto_1fr] sm:gap-8">
+            <div className="mt-6 grid gap-5 @lg:grid-cols-[auto_1fr] @lg:gap-8">
               <div>
                 <p className="meta mb-2 text-muted-foreground">Shipped at</p>
                 <ul className="flex flex-wrap gap-1.5">
@@ -245,7 +247,6 @@ const Skills = () => {
               }
               className="text-btn mt-5"
             >
-              <Sparkles className="h-4 w-4 text-brand" aria-hidden />
               Ask my twin how I did it
               <ArrowRight className="text-btn__arrow h-4 w-4" aria-hidden />
             </button>
@@ -266,14 +267,17 @@ const Skills = () => {
 };
 
 /** "Do you work with…?" — answered from the config, never guessed. */
-function ToolLookup({
+export function ToolLookup({
   index,
   onPick,
   capabilityNames,
+  plain = false,
 }: {
   index: ToolIndex;
-  onPick: (capability: number) => void;
+  onPick: (capability: number, opener: HTMLElement) => void;
   capabilityNames: string[];
+  /** Inside a card that already has its own frame. */
+  plain?: boolean;
 }) {
   const [query, setQuery] = useState('');
   const inputId = useId();
@@ -293,8 +297,8 @@ function ToolLookup({
 
   return (
     <div
-      className="reveal border-t border-border bg-sunken px-5 py-5 sm:px-7"
-      style={{ '--i': 3 } as React.CSSProperties}
+      className={plain ? '' : 'reveal border-t border-border bg-sunken px-5 py-5 @lg:px-7'}
+      style={plain ? undefined : ({ '--i': 3 } as React.CSSProperties)}
     >
       <label htmlFor={inputId} className="meta text-muted-foreground">
         Do you work with…?
@@ -346,7 +350,7 @@ function ToolLookup({
                     <button
                       key={c}
                       type="button"
-                      onClick={() => onPick(c)}
+                      onClick={(e) => onPick(c, e.currentTarget)}
                       className="press mr-1.5 inline-flex items-center gap-1 text-[14px] text-brand-ink underline decoration-brand/40 underline-offset-4 hover:decoration-brand"
                     >
                       {capabilityNames[c]}
@@ -369,7 +373,6 @@ function ToolLookup({
               }
               className="btn btn--secondary"
             >
-              <Sparkles className="h-4 w-4 text-brand" aria-hidden />
               Ask me about {query.trim()}
             </button>
           </p>

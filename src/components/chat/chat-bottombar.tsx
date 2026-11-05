@@ -15,7 +15,6 @@ interface ChatBottombarProps {
   isLoading: boolean;
   stop: () => void;
   input: string;
-  isToolInProgress: boolean;
   commands: Command[];
   onRunCommand: (command: Command) => void;
   onOpenCommand: () => void;
@@ -56,7 +55,6 @@ export default function ChatBottombar({
   handleSubmit,
   isLoading,
   stop,
-  isToolInProgress,
   commands,
   onRunCommand,
   onOpenCommand,
@@ -97,8 +95,7 @@ export default function ChatBottombar({
   // A suggestion is offered only while the field is empty and idle — so Tab is
   // never intercepted mid-typing, and the ghost text can't be mistaken for
   // something the user actually entered.
-  const suggestionActive =
-    input.length === 0 && !isToolInProgress && !showSlash;
+  const suggestionActive = input.length === 0 && !isLoading && !showSlash;
 
   useEffect(() => setActive(0), [input]);
 
@@ -184,16 +181,11 @@ export default function ChatBottombar({
       }
     }
 
-    // Enter submits; Shift+Enter inserts a newline.
-    if (
-      e.key === 'Enter' &&
-      !e.shiftKey &&
-      !e.nativeEvent.isComposing &&
-      !isToolInProgress &&
-      input.trim()
-    ) {
+    // Enter submits; Shift+Enter inserts a newline. While an answer is arriving Enter
+    // does nothing: the draft stays, ready to send once the answer ends or is stopped.
+    if (e.key === 'Enter' && !e.shiftKey && !e.nativeEvent.isComposing) {
       e.preventDefault();
-      submit();
+      if (input.trim() && !isLoading) submit();
     }
   };
 
@@ -205,13 +197,11 @@ export default function ChatBottombar({
 
   const status = isLoading
     ? 'Answering…'
-    : isToolInProgress
-      ? 'Opening your card…'
-      : isSlash
-        ? 'Command mode. Press Enter to run it.'
-        : null;
+    : isSlash
+      ? 'Command mode. Press Enter to run it.'
+      : null;
 
-  const canSend = !!input.trim() && !isToolInProgress && !isSlash;
+  const canSend = !!input.trim() && !isSlash;
 
   return (
     <div className="relative w-full">
@@ -272,20 +262,12 @@ export default function ChatBottombar({
           </button>
 
           <div className="relative min-w-0 flex-1">
-            {suggestionActive && (
+            {input.length === 0 && !showSlash && (
               <span
                 aria-hidden
                 className="pointer-events-none absolute inset-x-0 top-[10px] truncate text-[16px] leading-6 text-muted-foreground"
               >
                 Ask my twin anything
-              </span>
-            )}
-            {input.length === 0 && isToolInProgress && (
-              <span
-                aria-hidden
-                className="pointer-events-none absolute inset-x-0 top-[10px] text-[16px] leading-6 text-muted-foreground"
-              >
-                One moment…
               </span>
             )}
             <textarea
@@ -303,8 +285,7 @@ export default function ChatBottombar({
               aria-activedescendant={
                 showSlash ? `${listId}-${slashMatches[active]?.id}` : undefined
               }
-              className="scrollbar-subtle relative block max-h-40 w-full resize-none bg-transparent py-[10px] text-[16px] leading-6 text-foreground focus:outline-none focus-visible:outline-none disabled:cursor-not-allowed"
-              disabled={isToolInProgress}
+              className="scrollbar-subtle relative block max-h-40 w-full resize-none bg-transparent py-[10px] text-[16px] leading-6 text-foreground focus:outline-none focus-visible:outline-none"
             />
           </div>
 
@@ -324,7 +305,7 @@ export default function ChatBottombar({
             id={hintId}
             className="flex min-h-9 flex-wrap items-center justify-between gap-x-2 px-1 pt-1.5 text-[13px] leading-snug text-muted-foreground"
           >
-            <span aria-live="polite">{status ?? 'AI answers. It can make mistakes.'}</span>
+            <span>{status ?? 'AI answers. It can make mistakes.'}</span>
             {suggestionActive && !isLoading && (
               <button
                 type="button"

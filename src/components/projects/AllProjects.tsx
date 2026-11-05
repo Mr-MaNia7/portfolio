@@ -1,8 +1,7 @@
 'use client';
 
-import Image from 'next/image';
-import React, { useRef, useState } from 'react';
-import { ArrowUpRight, ChevronDown } from 'lucide-react';
+import React, { useEffect, useRef, useState } from 'react';
+import { ArrowLeft, ArrowRight, ArrowUpRight, ChevronDown } from 'lucide-react';
 import { getConfig } from '@/lib/config-loader';
 import type { Project } from '@/types/portfolio';
 import {
@@ -11,7 +10,9 @@ import {
   pad2,
   splitMetric,
 } from '@/components/artifact/artifact';
-import { ProjectDialog, projectCover } from './project-dialog';
+import { usePanel } from '@/components/chat/side-panel';
+import { FadeImage } from '@/components/ui/fade-image';
+import { ProjectBody, projectCover } from './project-dialog';
 
 /** Bento shown before "show all": the featured lead plus a 2×2. */
 const COLLAPSED_COUNT = 5;
@@ -19,8 +20,10 @@ const COLLAPSED_COUNT = 5;
 export default function AllProjects() {
   const { projects } = getConfig();
   const [expanded, setExpanded] = useState(false);
-  const [openIndex, setOpenIndex] = useState<number | null>(null);
+  const { detail, setDetail } = usePanel();
   const triggerRefs = useRef<Array<HTMLButtonElement | null>>([]);
+  // The tile to hand focus back to on returning to the list.
+  const returnTo = useRef<number | null>(null);
 
   const visible = expanded ? projects : projects.slice(0, COLLAPSED_COUNT);
   const hidden = projects.length - visible.length;
@@ -28,13 +31,26 @@ export default function AllProjects() {
   // let it run the full width instead.
   const lastSpans = (visible.length - 1) % 2 === 1;
 
-  // Close, and hand focus back to the tile that opened the dossier.
-  const close = () => {
-    const i = openIndex;
-    setOpenIndex(null);
-    if (i !== null)
-      requestAnimationFrame(() => triggerRefs.current[i]?.focus());
-  };
+  useEffect(() => {
+    if (detail !== null || returnTo.current === null) return;
+    triggerRefs.current[returnTo.current]?.focus({ preventScroll: true });
+    returnTo.current = null;
+  }, [detail]);
+
+  if (detail !== null) {
+    return (
+      <ProjectDetail
+        index={detail}
+        onNavigate={setDetail}
+        onBack={(from) => {
+          // A project opened from the summary may sit behind "Show more".
+          if (from >= COLLAPSED_COUNT) setExpanded(true);
+          returnTo.current = from;
+          setDetail(null);
+        }}
+      />
+    );
+  }
 
   return (
     <Artifact label="Projects">
@@ -43,7 +59,7 @@ export default function AllProjects() {
         title="Products I've shipped"
         standfirst="Client work and research. Open any card for the full case study."
         aside={
-          <p className="num text-[14px] leading-relaxed text-muted-foreground sm:text-right">
+          <p className="num text-[14px] leading-relaxed text-muted-foreground @lg:text-right">
             <span className="block text-[1.75rem] leading-none text-foreground">
               {pad2(projects.length)}
             </span>
@@ -52,11 +68,11 @@ export default function AllProjects() {
         }
       />
 
-      <ul className="grid grid-cols-1 gap-px border-t border-border bg-border sm:grid-cols-2">
+      <ul className="grid grid-cols-1 gap-px border-t border-border bg-border @lg:grid-cols-2">
         {visible.map((project, i) => (
           <li
             key={project.title}
-            className={`reveal flex ${i === 0 || (lastSpans && i === visible.length - 1) ? 'sm:col-span-2' : ''}`}
+            className={`reveal flex ${i === 0 || (lastSpans && i === visible.length - 1) ? '@lg:col-span-2' : ''}`}
             style={{ '--i': Math.min(i, 6) + 1 } as React.CSSProperties}
           >
             <ProjectTile
@@ -69,7 +85,7 @@ export default function AllProjects() {
                     ? 'wide'
                     : 'tile'
               }
-              onOpen={() => setOpenIndex(i)}
+              onOpen={() => setDetail(i)}
               ref={(el) => {
                 triggerRefs.current[i] = el;
               }}
@@ -93,13 +109,100 @@ export default function AllProjects() {
         </button>
       )}
 
-      <ProjectDialog
-        projects={projects}
-        index={openIndex}
-        onClose={close}
-        onNavigate={(i) => setOpenIndex(i)}
-      />
     </Artifact>
+  );
+}
+
+/** One project in the panel: back to the list, or on to the next with the buttons or arrow keys. */
+function ProjectDetail({
+  index,
+  onNavigate,
+  onBack,
+}: {
+  index: number;
+  onNavigate: (index: number) => void;
+  onBack: (from: number) => void;
+}) {
+  const { projects } = getConfig();
+  const project = projects[index];
+  const primaryLink = project.links[0];
+  const rootRef = useRef<HTMLDivElement>(null);
+  const backRef = useRef<HTMLButtonElement>(null);
+  const count = projects.length;
+
+  // The tile that opened this is gone, so focus takes the first control here.
+  useEffect(() => {
+    backRef.current?.focus({ preventScroll: true });
+  }, []);
+
+  useEffect(() => {
+    rootRef.current?.closest('.side-panel__body')?.scrollTo({ top: 0 });
+  }, [index]);
+
+  useEffect(() => {
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key !== 'ArrowRight' && e.key !== 'ArrowLeft') return;
+      if (document.querySelector('[aria-modal="true"]:not(.side-panel)')) return;
+      // Arrows belong to the composer and any other field while one has focus.
+      const target = e.target as HTMLElement | null;
+      if (target?.closest('input, textarea, [contenteditable="true"]')) return;
+      const inPanel = target?.closest('.side-panel');
+      if (!inPanel && target !== document.body) return;
+      e.preventDefault();
+      onNavigate((index + (e.key === 'ArrowRight' ? 1 : count - 1)) % count);
+    };
+    window.addEventListener('keydown', onKey);
+    return () => window.removeEventListener('keydown', onKey);
+  }, [index, count, onNavigate]);
+
+  return (
+    <div ref={rootRef}>
+      <div className="project-rail">
+        <button ref={backRef} type="button" onClick={() => onBack(index)} className="text-btn">
+          <ArrowLeft className="h-4 w-4" aria-hidden />
+          All case studies
+        </button>
+        <span className="meta num ml-auto text-muted-foreground" aria-live="polite">
+          <span className="sr-only">{project.title}, </span>
+          {pad2(index + 1)} / {pad2(count)}
+        </span>
+        <button
+          type="button"
+          onClick={() => onNavigate((index + count - 1) % count)}
+          aria-label="Previous project"
+          className="icon-btn"
+        >
+          <ArrowLeft className="h-4 w-4" aria-hidden />
+        </button>
+        <button
+          type="button"
+          onClick={() => onNavigate((index + 1) % count)}
+          aria-label="Next project"
+          className="icon-btn"
+        >
+          <ArrowRight className="h-4 w-4" aria-hidden />
+        </button>
+      </div>
+      <ProjectBody
+        key={project.title}
+        project={project}
+        inPanel
+        afterTitle={
+          primaryLink && (
+            <a
+              href={primaryLink.url}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-btn mt-1"
+            >
+              {primaryLink.name}
+              <ArrowUpRight className="h-3.5 w-3.5" aria-hidden />
+              <span className="sr-only">(opens in a new tab)</span>
+            </a>
+          )
+        }
+      />
+    </div>
   );
 }
 
@@ -124,12 +227,11 @@ const ProjectTile = React.forwardRef<
       ref={ref}
       type="button"
       onClick={onOpen}
-      aria-haspopup="dialog"
       className={`group flex w-full bg-card text-left transition-colors duration-200 hover:bg-background focus-visible:z-10 focus-visible:outline-offset-[-2px] ${
         lead
-          ? 'flex-col sm:flex-row'
+          ? 'flex-col @2xl:flex-row'
           : wide
-            ? 'flex-col sm:flex-row'
+            ? 'flex-col @lg:flex-row'
             : 'flex-col'
       }`}
     >
@@ -138,18 +240,18 @@ const ProjectTile = React.forwardRef<
         className={`relative block shrink-0 overflow-hidden ${raster ? (lead ? 'bg-white' : 'bg-sunken') : 'bg-primary'} ${
           raster
             ? lead
-              ? 'aspect-[4/3] sm:aspect-auto sm:min-h-full sm:w-1/2 sm:self-stretch'
+              ? 'aspect-[4/3] @2xl:aspect-auto @2xl:min-h-full @2xl:w-1/2 @2xl:self-stretch'
               : wide
-                ? 'aspect-[4/3] sm:w-[34%] sm:self-start'
+                ? 'aspect-[4/3] @lg:w-[34%] @lg:self-start'
                 : 'aspect-[4/3]'
             : lead
-              ? 'aspect-[16/10] sm:aspect-auto sm:w-[46%]'
+              ? 'aspect-[16/10] @2xl:aspect-auto @2xl:w-[46%]'
               : wide
-                ? 'aspect-[16/9] sm:aspect-auto sm:w-[34%]'
-                : 'aspect-[21/9] sm:aspect-[16/9]'
+                ? 'aspect-[16/9] @lg:aspect-auto @lg:w-[34%]'
+                : 'aspect-[21/9] @lg:aspect-[16/9]'
         }`}
       >
-        <Image
+        <FadeImage
           src={projectCover(project)}
           alt=""
           fill
@@ -164,11 +266,11 @@ const ProjectTile = React.forwardRef<
 
       {/* Body */}
       <span
-        className={`flex min-w-0 flex-1 flex-col ${lead ? 'gap-3 p-5 sm:p-6' : 'gap-2.5 p-5'}`}
+        className={`flex min-w-0 flex-1 flex-col ${lead ? 'gap-3 p-5 @lg:p-6' : 'gap-2.5 p-5'}`}
       >
         <span className="meta flex items-center justify-between gap-3 text-muted-foreground">
           <span className="truncate">
-            <span className="text-brand-ink">{project.category}</span>
+            <span>{project.category}</span>
           </span>
           <span className="num shrink-0 normal-case tracking-normal">
             {project.date}
@@ -177,7 +279,7 @@ const ProjectTile = React.forwardRef<
 
         <span
           className={`font-display block leading-[1.12] text-foreground ${
-            lead ? 'text-[1.625rem] sm:text-[1.875rem]' : 'text-[1.25rem]'
+            lead ? 'text-[1.625rem] @lg:text-[1.875rem]' : 'text-[1.25rem]'
           }`}
         >
           {project.title}

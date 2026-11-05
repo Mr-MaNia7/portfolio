@@ -13,6 +13,9 @@ interface TopBarProps {
   onHire: () => void;
   /** In a conversation the bar sits in the app shell and the section links give way to a way back. */
   conversation?: boolean;
+  /** Under 1024 the conversation's one menu is the sidebar drawer. */
+  onOpenSidebar?: () => void;
+  sidebarOpen?: boolean;
 }
 
 const WORDS = [
@@ -23,7 +26,7 @@ const WORDS = [
   { href: '#questions', label: 'Questions' },
 ];
 
-export function TopBar({ onOpenCommand, onHome, onHire, conversation = false }: TopBarProps) {
+export function TopBar({ onOpenCommand, onHome, onHire, conversation = false, onOpenSidebar, sidebarOpen = false }: TopBarProps) {
   const { personal, social } = getConfig();
   const [menuOpen, setMenuOpen] = useState(false);
 
@@ -46,34 +49,48 @@ export function TopBar({ onOpenCommand, onHome, onHire, conversation = false }: 
   return (
     <header className={`nav ${conversation ? 'nav--static' : ''}`}>
       <div className="wrap">
-        <button
-          onClick={onHome}
-          className="press flex shrink-0 items-center gap-2.5 text-left"
-          aria-label={`${personal.name}, back to start`}
-        >
-          <span className="relative h-8 w-8 shrink-0 overflow-hidden rounded-lg">
-            <Image src={personal.avatar} alt="" fill sizes="32px" className="object-cover" priority />
-          </span>
-          <span className="font-display truncate text-[18px] leading-none text-foreground">
-            <span className="sm:hidden lg:inline xl:hidden">{personal.shortName}</span>
-            <span className="hidden sm:inline lg:hidden xl:inline">{personal.name}</span>
-          </span>
-        </button>
-
-        <nav aria-label="Sections" className="hidden items-center gap-5 lg:flex xl:gap-7">
-          {conversation ? (
-            <button onClick={onHome} className="nav__word gap-1.5">
+        <div className="flex min-w-0 items-center gap-2 lg:gap-6">
+          {conversation && (
+            <button
+              type="button"
+              onClick={onOpenSidebar}
+              aria-label="Open sidebar"
+              aria-expanded={sidebarOpen}
+              className="icon-btn -ml-2 lg:!hidden"
+            >
+              <Menu className="h-5 w-5" aria-hidden />
+            </button>
+          )}
+          <button
+            onClick={onHome}
+            className="press flex min-w-0 shrink-0 items-center gap-2.5 text-left"
+            aria-label={`${personal.name}, back to start`}
+          >
+            <span className="relative h-8 w-8 shrink-0 overflow-hidden rounded-lg">
+              <Image src={personal.avatar} alt="" fill sizes="32px" className="object-cover" priority />
+            </span>
+            <span className="font-display truncate text-[18px] leading-none text-foreground">
+              <span className="sm:hidden lg:inline xl:hidden">{personal.shortName}</span>
+              <span className="hidden sm:inline lg:hidden xl:inline">{personal.name}</span>
+            </span>
+          </button>
+          {conversation && (
+            <button onClick={onHome} className="nav__word !hidden gap-1.5 lg:!inline-flex">
               <ArrowLeft className="h-4 w-4" aria-hidden />
               Back to portfolio
             </button>
-          ) : (
-            WORDS.map((w) => (
+          )}
+        </div>
+
+        {!conversation && (
+          <nav aria-label="Sections" className="hidden items-center gap-5 lg:flex xl:gap-7">
+            {WORDS.map((w) => (
               <a key={w.href} href={w.href} className="nav__word">
                 {w.label}
               </a>
-            ))
-          )}
-        </nav>
+            ))}
+          </nav>
+        )}
 
         <div className="flex shrink-0 items-center gap-1">
           <button
@@ -87,7 +104,7 @@ export function TopBar({ onOpenCommand, onHome, onHire, conversation = false }: 
             <kbd className="kbd hidden xl:inline-flex">⌘K</kbd>
           </button>
 
-          {social.github && (
+          {social.github && !conversation && (
             <a
               href={social.github}
               target="_blank"
@@ -106,15 +123,17 @@ export function TopBar({ onOpenCommand, onHome, onHire, conversation = false }: 
             <ArrowUpRight className="hidden h-4 w-4 sm:block" aria-hidden />
           </button>
 
-          <button
-            type="button"
-            onClick={() => setMenuOpen((o) => !o)}
-            aria-label={menuOpen ? 'Close menu' : 'Open menu'}
-            aria-expanded={menuOpen}
-            className="icon-btn -mr-2 ml-1 lg:!hidden"
-          >
-            {menuOpen ? <X className="h-5 w-5" aria-hidden /> : <Menu className="h-5 w-5" aria-hidden />}
-          </button>
+          {!conversation && (
+            <button
+              type="button"
+              onClick={() => setMenuOpen((o) => !o)}
+              aria-label={menuOpen ? 'Close menu' : 'Open menu'}
+              aria-expanded={menuOpen}
+              className="icon-btn -mr-2 ml-1 lg:!hidden"
+            >
+              {menuOpen ? <X className="h-5 w-5" aria-hidden /> : <Menu className="h-5 w-5" aria-hidden />}
+            </button>
+          )}
         </div>
       </div>
 
@@ -125,29 +144,16 @@ export function TopBar({ onOpenCommand, onHome, onHire, conversation = false }: 
           aria-label="Menu"
         >
           <div className="wrap flex flex-col py-2 pb-[calc(16px+env(safe-area-inset-bottom))]">
-            {conversation ? (
-              <button
-                onClick={() => {
-                  close();
-                  onHome();
-                }}
-                className="flex h-14 items-center gap-2 border-b border-border text-left text-[20px] font-medium"
+            {WORDS.map((w) => (
+              <a
+                key={w.href}
+                href={w.href}
+                onClick={close}
+                className="flex h-14 items-center border-b border-border text-[20px] font-medium"
               >
-                <ArrowLeft className="h-5 w-5" aria-hidden />
-                Back to portfolio
-              </button>
-            ) : (
-              WORDS.map((w) => (
-                <a
-                  key={w.href}
-                  href={w.href}
-                  onClick={close}
-                  className="flex h-14 items-center border-b border-border text-[20px] font-medium"
-                >
-                  {w.label}
-                </a>
-              ))
-            )}
+                {w.label}
+              </a>
+            ))}
             <button
               onClick={() => {
                 close();

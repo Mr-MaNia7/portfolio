@@ -75,10 +75,9 @@ function Pitch() {
   );
 }
 
-/** "Off the clock": chess, with live chess.com ratings, and football. */
-export function Hobbies() {
-  const { hobbies } = getConfig();
-  const { chess, football } = hobbies;
+/** Chess ratings: the last synced figures, replaced by chess.com's when they arrive. */
+export function useChessStats() {
+  const { chess } = getConfig().hobbies;
   const [stats, setStats] = useState<ChessSummary>({
     ...chess.fallback,
     currentRapid: null,
@@ -98,6 +97,15 @@ export function Hobbies() {
     };
   }, []);
 
+  return stats;
+}
+
+/** "Off the clock": chess, with live chess.com ratings, and football. */
+export function Hobbies() {
+  const { hobbies } = getConfig();
+  const { chess, football } = hobbies;
+  const stats = useChessStats();
+
   return (
     <Artifact label="Off the clock">
       <ArtifactHeader
@@ -106,14 +114,14 @@ export function Hobbies() {
         standfirst={hobbies.intro}
       />
 
-      <div className="grid gap-px border-t border-border bg-border sm:grid-cols-2">
+      <div className="grid gap-px border-t border-border bg-border @2xl:grid-cols-2">
         {/* Chess */}
         <section
           aria-labelledby="hobby-chess"
           className="reveal flex flex-col bg-card"
           style={{ '--i': 1 } as React.CSSProperties}
         >
-          <div className="flex items-center gap-4 border-b border-border-subtle bg-sunken px-5 py-4 sm:min-h-[6.75rem] sm:px-6">
+          <div className="flex items-center gap-4 border-b border-border-subtle bg-sunken px-5 py-4 @lg:min-h-[6.75rem] @lg:px-6">
             <div className="h-16 w-16 shrink-0 overflow-hidden rounded-sm border border-border">
               <Board />
             </div>
@@ -126,7 +134,7 @@ export function Hobbies() {
               </p>
             </div>
           </div>
-          <dl className="flex flex-1 flex-col px-5 sm:px-6">
+          <dl className="flex flex-1 flex-col px-5 @lg:px-6">
             {[
               { term: 'Peak rapid', value: stats.peakRapid.toLocaleString('en-US') },
               { term: 'Rapid games', value: `${stats.rapidGames.toLocaleString('en-US')}` },
@@ -140,7 +148,7 @@ export function Hobbies() {
               </div>
             ))}
           </dl>
-          <div className="flex items-center justify-between gap-3 px-5 py-2 sm:px-6">
+          <div className="flex items-center justify-between gap-3 px-5 py-2 @lg:px-6">
             <span className="meta flex items-center gap-1.5 text-muted-foreground">
               {stats.live && <span className="status-dot" aria-hidden />}
               {stats.live ? 'Live from chess.com' : 'Last synced stats'}
@@ -164,7 +172,7 @@ export function Hobbies() {
           className="reveal flex flex-col bg-card"
           style={{ '--i': 2 } as React.CSSProperties}
         >
-          <div className="flex items-center gap-4 border-b border-border-subtle bg-sunken px-5 py-4 sm:min-h-[6.75rem] sm:px-6">
+          <div className="flex items-center gap-4 border-b border-border-subtle bg-sunken px-5 py-4 @lg:min-h-[6.75rem] @lg:px-6">
             <div className="h-16 w-20 shrink-0">
               <Pitch />
             </div>
@@ -177,7 +185,7 @@ export function Hobbies() {
               </p>
             </div>
           </div>
-          <div className="flex flex-1 flex-col gap-4 px-5 py-4 sm:px-6">
+          <div className="flex flex-1 flex-col gap-4 px-5 py-4 @lg:px-6">
             <p className="text-[16px] leading-relaxed text-ink-soft">{football.note}</p>
             <div>
               <p className="meta mb-2 text-muted-foreground">I support</p>

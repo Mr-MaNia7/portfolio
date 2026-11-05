@@ -1,5 +1,17 @@
+'use client';
+
 import { cn } from '@/lib/utils';
-import type { CSSProperties, ReactNode } from 'react';
+import {
+  createContext,
+  useContext,
+  type CSSProperties,
+  type ReactNode,
+} from 'react';
+
+/** Set inside the side panel, which is already the sheet and already names what it shows. */
+export const ArtifactSurfaceContext = createContext<{ title: string } | null>(
+  null
+);
 
 /**
  * The sheet every tool-rendered card sits on: one step above the ground, a 1px
@@ -15,11 +27,13 @@ export function Artifact({
   /** Accessible name for the region, e.g. "Projects". */
   label: string;
 }) {
+  const surface = useContext(ArtifactSurfaceContext);
   return (
     <section
       aria-label={label}
       className={cn(
-        'reveal-sheet w-full overflow-hidden rounded-lg border border-border bg-card text-card-foreground',
+        'w-full text-card-foreground',
+        !surface && 'reveal-sheet overflow-hidden rounded-lg border border-border bg-card',
         className
       )}
     >
@@ -42,16 +56,19 @@ export function ArtifactHeader({
   aside?: ReactNode;
   className?: string;
 }) {
+  const surface = useContext(ArtifactSurfaceContext);
   return (
     <header
       className={cn(
-        'flex flex-wrap items-end justify-between gap-x-6 gap-y-4 px-5 pt-5 pb-5 sm:px-7 sm:pt-6',
+        'flex flex-wrap items-end justify-between gap-x-6 gap-y-4 px-5 pt-5 pb-5 @lg:px-7 @lg:pt-6',
         className
       )}
     >
       <div className="min-w-0 flex-1 basis-72">
-        <p className="meta text-muted-foreground">{kicker}</p>
-        <h2 className="font-display mt-2 text-[1.75rem] leading-[1.08] text-foreground sm:text-[2rem]">
+        {kicker !== surface?.title && (
+          <p className="meta mb-2 text-muted-foreground">{kicker}</p>
+        )}
+        <h2 className="font-display text-[1.75rem] leading-[1.08] text-foreground @lg:text-[2rem]">
           {title}
         </h2>
         {standfirst && (
@@ -80,7 +97,7 @@ export function ArtifactSection({
   return (
     <div
       className={cn(
-        'reveal border-t border-border-subtle px-5 py-5 sm:px-7',
+        'reveal border-t border-border-subtle px-5 py-5 @lg:px-7',
         className
       )}
       style={

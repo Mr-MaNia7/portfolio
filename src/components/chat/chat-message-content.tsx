@@ -10,24 +10,38 @@ import {
 } from '@/components/ui/collapsible';
 import { ChevronDown, ChevronUp } from 'lucide-react';
 import { useState } from 'react';
+import {
+  prepareStreamingMarkdown,
+  rehypeStreaming,
+} from '@/lib/streaming-markdown';
 
 export type ChatMessageContentProps = {
   message: UIMessage;
-  isLast?: boolean;
-  isLoading?: boolean;
-  reload?: () => void;
-  addToolResult?: (args: { toolCallId: string; result: string }) => void;
-  skipToolRendering?: boolean;
+  /** The answer is still arriving: new words fade in behind one cursor. */
+  streaming?: boolean;
 };
 
-const CodeBlock = ({ content }: { content: string }) => {
+const CodeBlock = ({
+  content,
+  streaming,
+}: {
+  content: string;
+  /** Still being written: the language line may be partial and the cursor sits at its end. */
+  streaming?: boolean;
+}) => {
   const [isOpen, setIsOpen] = useState(true);
 
-  // Extract language if present in the first line
+  // Extract language if present in the first line. While the first line is still
+  // arriving there is no code yet, and a half-written name is not a language.
   const firstLineBreak = content.indexOf('\n');
-  const firstLine = content.substring(0, firstLineBreak).trim();
+  const headerDone = firstLineBreak >= 0;
+  const firstLine = headerDone ? content.substring(0, firstLineBreak).trim() : '';
   const language = firstLine || 'text';
-  const code = firstLine ? content.substring(firstLineBreak + 1) : content;
+  const code = headerDone
+    ? content.substring(firstLineBreak + 1)
+    : streaming
+      ? ''
+      : content;
 
   // Get first few lines for preview
   const previewLines = code.split('\n').slice(0, 1).join('\n');
@@ -67,12 +81,32 @@ const CodeBlock = ({ content }: { content: string }) => {
             <pre className="min-w-max px-4 py-3.5">
               <code className="font-mono text-[13px] leading-relaxed whitespace-pre text-foreground">
                 {code}
+                {streaming && <span aria-hidden className="stream-cursor" />}
               </code>
             </pre>
           </div>
         </CollapsibleContent>
       )}
     </Collapsible>
+  );
+};
+
+/** A model-written image: its box is held before it loads, then it fades in. */
+const AnswerImage = ({ src, alt }: { src?: string; alt?: string }) => {
+  const [loaded, setLoaded] = useState(false);
+  if (typeof src !== 'string' || !src) return null;
+  return (
+    <span className="answer-image">
+      {/* eslint-disable-next-line @next/next/no-img-element -- any host the model names; next/image needs them listed */}
+      <img
+        src={src}
+        alt={alt ?? ''}
+        loading="lazy"
+        data-loaded={loaded}
+        onLoad={() => setLoaded(true)}
+        className="fade-img"
+      />
+    </span>
   );
 };
 
@@ -94,7 +128,7 @@ const MARKDOWN: Components = {
     </h4>
   ),
   ul: ({ children }) => (
-    <ul className="hang my-3 list-disc space-y-1.5 pl-5 marker:text-brand">
+    <ul className="hang my-3 list-disc space-y-1.5 pl-5 marker:text-muted-foreground">
       {children}
     </ul>
   ),
@@ -107,11 +141,9 @@ const MARKDOWN: Components = {
   strong: ({ children }) => (
     <strong className="font-medium text-foreground">{children}</strong>
   ),
-  em: ({ children }) => (
-    <em className="italic">{children}</em>
-  ),
+  em: ({ children }) => <em className="italic">{children}</em>,
   blockquote: ({ children }) => (
-    <blockquote className="font-display hang my-4 border-l-2 border-brand pl-4 text-[1.125rem] leading-snug text-ink-soft italic">
+    <blockquote className="font-display hang my-4 border-l-2 border-border-strong pl-4 text-[1.125rem] leading-snug text-ink-soft italic">
       {children}
     </blockquote>
   ),
@@ -122,7 +154,7 @@ const MARKDOWN: Components = {
     </code>
   ),
   table: ({ children }) => (
-    <div className="scrollbar-subtle my-4 overflow-x-auto rounded-md border border-border">
+    <div className="answer-table scrollbar-subtle my-4 overflow-x-auto rounded-md border border-border">
       <table className="w-full border-collapse text-left text-[14px]">
         {children}
       </table>
@@ -148,32 +180,53 @@ const MARKDOWN: Components = {
       {children}
     </a>
   ),
+  img: ({ src, alt }) => (
+    <AnswerImage src={typeof src === 'string' ? src : undefined} alt={alt} />
+  ),
 };
+
+const STREAMING_PLUGINS = [rehypeStreaming];
 
 export default function ChatMessageContent({
   message,
+  streaming = false,
 }: ChatMessageContentProps) {
+  const parts = message.parts ?? [];
+  const lastTextIndex = parts.findLastIndex(
+    (part) => part.type === 'text' && part.text
+  );
+
   return (
-    <div className="measure w-full text-[16px] leading-[1.7] text-foreground">
-      {message.parts?.map((part, partIndex) => {
+    <div className="w-full text-[16px] leading-[1.7] text-foreground">
+      {parts.map((part, partIndex) => {
         if (part.type !== 'text' || !part.text) return null;
 
-        // Split content by code block markers
-        const contentParts = part.text.split('```');
+        const live = streaming && partIndex === lastTextIndex;
+        // A fence still being opened must not show as stray backticks.
+        const source = live ? part.text.replace(/(^|\n)`{1,2}$/, '$1') : part.text;
+
+        // Split content by code block markers. An unclosed fence is an odd last piece,
+        // so it already renders as a code block while it is being written.
+        const contentParts = source.split('```');
 
         return (
           <div key={partIndex} className="w-full">
-            {contentParts.map((content, i) =>
-              i % 2 === 0 ? (
+            {contentParts.map((content, i) => {
+              const tail = live && i === contentParts.length - 1;
+              return i % 2 === 0 ? (
                 <div key={`text-${i}`} className="w-full break-words">
-                  <Markdown remarkPlugins={[remarkGfm]} components={MARKDOWN}>
-                    {content}
+                  <Markdown
+                    remarkPlugins={[remarkGfm]}
+                    rehypePlugins={tail ? STREAMING_PLUGINS : undefined}
+                    components={MARKDOWN}
+                  >
+                    {tail ? prepareStreamingMarkdown(content) : content}
                   </Markdown>
                 </div>
               ) : (
-                <CodeBlock key={`code-${i}`} content={content} />
-              )
-            )}
+                <CodeBlock key={`code-${i}`} content={content} streaming={tail} />
+              );
+            })}
           </div>
         );
       })}

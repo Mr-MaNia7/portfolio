@@ -7,6 +7,7 @@ import React, { useEffect, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
 import type { Project } from '@/types/portfolio';
 import { pad2, splitMetric } from '@/components/artifact/artifact';
+import { FadeImage } from '@/components/ui/fade-image';
 
 const EASE = [0.22, 1, 0.36, 1] as const;
 
@@ -226,13 +227,20 @@ export function ProjectDialog({
   );
 }
 
-function ProjectBody({
+/** One project's full story. The landing page shows it in a dialog, the conversation in the side panel. */
+export function ProjectBody({
   project,
   linksRef,
+  inPanel = false,
+  afterTitle,
 }: {
   project: Project;
-  linksRef: (el: HTMLDivElement | null) => void;
+  linksRef?: (el: HTMLDivElement | null) => void;
+  afterTitle?: React.ReactNode;
+  /** In the conversation the top bar holds the one filled button, and images fade in. */
+  inPanel?: boolean;
 }) {
+  const Picture = inPanel ? FadeImage : Image;
   const facts = [
     { term: 'Role', detail: project.role },
     { term: 'Client', detail: project.client },
@@ -243,16 +251,17 @@ function ProjectBody({
   const metrics = (project.metrics ?? []).map(splitMetric);
 
   return (
-    <div className="reveal">
+    <div className={inPanel ? 'swap' : 'reveal'}>
       {/* What it is first, then the cover, so the title is on the first screen of the dialog */}
-      <div className="px-5 pt-6 pb-6 sm:px-8 sm:pt-7">
-        <p className="meta text-brand-ink">{project.category}</p>
+      <div className={`px-5 pt-6 pb-6 ${inPanel ? '@lg:px-7' : 'sm:px-8 sm:pt-7'}`}>
+        <p className={`meta ${inPanel ? 'text-muted-foreground' : 'text-brand-ink'}`}>{project.category}</p>
         <h2
           id="project-dialog-title"
           className="font-display mt-2 text-[2rem] leading-[1.05] tracking-[-0.03em] text-foreground sm:text-[2.5rem]"
         >
           {project.title}
         </h2>
+        {afterTitle}
       </div>
 
       <div
@@ -262,7 +271,7 @@ function ProjectBody({
             : 'aspect-[16/7] bg-primary'
         }`}
       >
-        <Image
+        <Picture
           src={projectCover(project)}
           alt={`${project.title} — cover`}
           fill
@@ -272,10 +281,10 @@ function ProjectBody({
         />
       </div>
 
-      <div className="px-5 pt-6 pb-8 sm:px-8">
+      <div className={`px-5 pt-6 pb-8 ${inPanel ? '@lg:px-7' : 'sm:px-8'}`}>
         {/* Facts */}
         <dl
-          className="grid grid-cols-2 gap-px overflow-hidden rounded-md border border-border bg-border-subtle sm:grid-cols-[repeat(var(--facts),minmax(0,1fr))]"
+          className={`grid grid-cols-2 gap-px overflow-hidden rounded-md border border-border bg-border-subtle ${inPanel ? '@xl:grid-cols-[repeat(var(--facts),minmax(0,1fr))]' : 'sm:grid-cols-[repeat(var(--facts),minmax(0,1fr))]'}`}
           style={{ '--facts': facts.length } as React.CSSProperties}
         >
           {facts.map(({ term, detail }) => (
@@ -301,12 +310,12 @@ function ProjectBody({
             <h3 id="impact-h" className="meta mb-3 text-muted-foreground">
               Impact
             </h3>
-            <ul className="grid gap-px overflow-hidden rounded-md border border-border bg-border-subtle sm:grid-cols-2">
+            <ul className={`grid gap-px overflow-hidden rounded-md border border-border bg-border-subtle ${inPanel ? '@lg:grid-cols-2' : 'sm:grid-cols-2'}`}>
               {metrics.map((m, i) => (
                 <li
                   key={i}
                   className={`flex flex-col gap-1.5 bg-card px-4 py-4 ${
-                    metrics.length % 2 === 1 && i === metrics.length - 1 ? 'sm:col-span-2' : ''
+                    metrics.length % 2 === 1 && i === metrics.length - 1 ? (inPanel ? '@lg:col-span-2' : 'sm:col-span-2') : ''
                   }`}
                 >
                   {m.figure ? (
@@ -343,7 +352,7 @@ function ProjectBody({
                   key={h}
                   className="flex gap-4 border-b border-border-subtle py-2.5 text-[16px] leading-snug text-foreground first:pt-0 last:border-b-0"
                 >
-                  <span className="num pt-0.5 text-[13px] text-brand-ink">
+                  <span className={`num pt-0.5 text-[13px] ${inPanel ? 'text-muted-foreground' : 'text-brand-ink'}`}>
                     {pad2(i + 1)}
                   </span>
                   {h}
@@ -381,7 +390,7 @@ function ProjectBody({
                 href={link.url}
                 target="_blank"
                 rel="noopener noreferrer"
-                className={i === 0 ? 'btn btn--primary' : 'btn btn--secondary'}
+                className={i === 0 && !inPanel ? 'btn btn--primary' : 'btn btn--secondary'}
               >
                 {link.name}
                 <ArrowUpRight className="h-4 w-4" aria-hidden />
@@ -398,7 +407,7 @@ function ProjectBody({
                 key={image.src}
                 className="overflow-hidden rounded-md border border-border"
               >
-                <Image
+                <Picture
                   src={image.src}
                   alt={image.alt}
                   width={800}

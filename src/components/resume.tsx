@@ -37,7 +37,7 @@ export function Resume() {
 
       {/* Download bar */}
       <div
-        className="reveal flex flex-wrap items-center gap-x-4 gap-y-3 border-t border-border bg-sunken px-5 py-3 sm:px-7"
+        className="reveal flex flex-wrap items-center gap-x-4 gap-y-3 border-t border-border bg-sunken px-5 py-3 @lg:px-7"
         style={{ '--i': 1 } as React.CSSProperties}
       >
         <FileText
@@ -57,7 +57,7 @@ export function Resume() {
           download
           target="_blank"
           rel="noopener noreferrer"
-          className="btn btn--primary"
+          className="btn btn--secondary"
         >
           <ArrowDownToLine className="h-4 w-4" aria-hidden />
           Download PDF
@@ -66,7 +66,7 @@ export function Resume() {
 
       {/* Timeline */}
       <ol
-        className="border-t border-border px-5 pt-2 pb-3 sm:px-7"
+        className="border-t border-border px-5 pt-2 pb-3 @lg:px-7"
         aria-label="Work history"
       >
         {experience.map((exp, i) => (
@@ -82,7 +82,7 @@ export function Resume() {
 
       {/* Education & research */}
       <ArtifactSection label="Education & research" index={3}>
-        <div className="grid gap-6 sm:grid-cols-2 sm:gap-8">
+        <div className="grid gap-6 @2xl:grid-cols-2 @2xl:gap-8">
           <div>
             <h3 className="font-display text-[1.1875rem] leading-snug text-foreground">
               {education.degree}
@@ -130,11 +130,11 @@ export function Resume() {
 
       {education.achievements?.length > 0 && (
         <ArtifactSection label="Recognition" index={4}>
-          <ol className="grid gap-x-8 sm:grid-cols-2">
+          <ol className="grid gap-x-8 @2xl:grid-cols-2">
             {education.achievements.map((a, i) => (
               <li
                 key={a}
-                className="flex gap-3 border-t border-border-subtle py-2.5 text-[16px] leading-snug text-foreground first:border-t-0 first:pt-0 sm:[&:nth-child(2)]:border-t-0 sm:[&:nth-child(2)]:pt-0"
+                className="flex gap-3 border-t border-border-subtle py-2.5 text-[16px] leading-snug text-foreground first:border-t-0 first:pt-0 @lg:[&:nth-child(2)]:border-t-0 @lg:[&:nth-child(2)]:pt-0"
               >
                 <span className="num pt-px text-[13px] text-muted-foreground">
                   {pad2(i + 1)}
@@ -165,11 +165,11 @@ function TimelineEntry({
 
   return (
     <li
-      className="reveal grid gap-x-6 sm:grid-cols-[9.5rem_1fr]"
+      className="reveal grid gap-x-6 @2xl:grid-cols-[9.5rem_1fr]"
       style={{ '--i': index + 2 } as React.CSSProperties}
     >
       {/* Date rail */}
-      <div className="pt-5 sm:pt-6">
+      <div className="pt-5 @2xl:pt-6">
         <p className="num text-[14px] whitespace-nowrap text-foreground">
           {exp.duration}
         </p>
@@ -177,18 +177,18 @@ function TimelineEntry({
       </div>
 
       {/* Entry, hung on a hairline spine */}
-      <div className="relative border-border sm:border-l sm:pl-6">
+      <div className="relative border-border @2xl:border-l @2xl:pl-6">
         <span
           aria-hidden
-          className={`absolute top-[1.85rem] -left-[4px] hidden h-[7px] w-[7px] rounded-[1px] sm:block ${
-            current ? 'bg-brand' : 'border border-border-strong bg-card'
+          className={`absolute top-[1.85rem] -left-[4px] hidden h-[7px] w-[7px] rounded-[1px] @2xl:block ${
+            current ? 'bg-foreground' : 'border border-border-strong bg-card'
           }`}
         />
-        <div className="border-b border-border-subtle pt-2 pb-5 sm:pt-5">
+        <div className="border-b border-border-subtle pt-2 pb-5 @2xl:pt-5">
           <h3 className="text-[18px] leading-snug font-medium text-foreground">
             {exp.position}
           </h3>
-          <p className="mt-1 text-[14px] text-brand-ink">
+          <p className="mt-1 text-[14px] text-ink-soft">
             {exp.company}
             {exp.location && (
               <span className="text-muted-foreground"> · {exp.location}</span>
@@ -232,7 +232,7 @@ function TimelineEntry({
                           key={h}
                           className="flex gap-2.5 text-[16px] leading-snug text-foreground"
                         >
-                          <span aria-hidden className="text-brand">
+                          <span aria-hidden className="text-muted-foreground">
                             –
                           </span>
                           {h}

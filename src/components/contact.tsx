@@ -39,14 +39,11 @@ export function Contact() {
   return (
     <section
       aria-label="Contact"
-      className="reveal-sheet w-full overflow-hidden rounded-lg border border-border bg-card"
+      className="w-full"
     >
       {/* Invitation, on slate */}
-      <div className="border-b border-transparent bg-[var(--band)] px-5 py-7 text-[var(--band-ink)] sm:px-7 sm:py-8 dark:border-border dark:bg-sunken">
-        <p className="meta flex flex-wrap items-center gap-x-2 text-[var(--band-ink)]/60">
-          Contact
-        </p>
-        <h2 className="font-display mt-3 text-[2rem] leading-[1.05] tracking-[-0.03em] sm:text-[2.5rem]">
+      <div className="border-b border-transparent bg-[var(--band)] px-5 py-7 text-[var(--band-ink)] @lg:px-7 @lg:py-8 dark:border-border dark:bg-sunken">
+        <h2 className="font-display text-[2rem] leading-[1.05] tracking-[-0.03em] @lg:text-[2.5rem]">
           Let&apos;s talk about your project
         </h2>
         <p className="measure mt-3 text-[16px] leading-relaxed text-[var(--band-ink)]/75">
@@ -69,14 +66,14 @@ export function Contact() {
 
       {/* Email — the direct line */}
       <div
-        className="reveal flex flex-wrap items-center justify-between gap-x-4 gap-y-3 px-5 py-5 sm:px-7"
+        className="reveal flex flex-wrap items-center justify-between gap-x-4 gap-y-3 px-5 py-5 @lg:px-7"
         style={{ '--i': 1 } as React.CSSProperties}
       >
         <div className="min-w-0">
           <p className="meta text-muted-foreground">Email</p>
           <a
             href={`mailto:${contactInfo.email}`}
-            className="font-display mt-1 block truncate text-[1.25rem] leading-snug text-foreground underline decoration-border-strong decoration-1 underline-offset-[5px] transition-colors hover:decoration-brand sm:text-[1.5rem]"
+            className="font-display mt-1 block truncate text-[1.25rem] leading-snug text-foreground underline decoration-border-strong decoration-1 underline-offset-[5px] transition-colors hover:decoration-brand @lg:text-[1.5rem]"
           >
             {contactInfo.email}
           </a>
@@ -85,7 +82,7 @@ export function Contact() {
           <CopyEmail email={contactInfo.email} label="Copy" />
           <a
             href={`mailto:${contactInfo.email}`}
-            className="btn btn--primary"
+            className="btn btn--secondary"
           >
             <Mail className="h-4 w-4" aria-hidden />
             Write
@@ -107,7 +104,7 @@ export function Contact() {
                 href={social.url}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="group flex items-center gap-4 px-5 py-3.5 transition-colors duration-200 hover:bg-sunken sm:px-7"
+                className="group flex items-center gap-4 px-5 py-3.5 transition-colors duration-200 hover:bg-sunken @lg:px-7"
               >
                 <Icon className="h-4 w-4 shrink-0 text-muted-foreground transition-colors group-hover:text-foreground" />
                 <span className="w-20 shrink-0 text-[16px] font-medium text-foreground">
@@ -127,7 +124,7 @@ export function Contact() {
         })}
       </ul>
 
-      <p className="meta border-t border-border bg-sunken px-5 py-3 text-muted-foreground sm:px-7">
+      <p className="meta border-t border-border bg-sunken px-5 py-3 text-muted-foreground @lg:px-7">
         {time
           ? time.isWorkingHours
             ? `It's ${time.label} in ${city} — I'm at the desk.`

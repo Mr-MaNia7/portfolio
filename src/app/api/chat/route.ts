@@ -1,5 +1,5 @@
 import { createGoogleGenerativeAI } from '@ai-sdk/google';
-import { convertToModelMessages, stepCountIs, streamText } from 'ai';
+import { convertToModelMessages, smoothStream, stepCountIs, streamText } from 'ai';
 
 import { SYSTEM_PROMPT } from './prompt';
 import { getContact } from './tools/getContact';
@@ -61,9 +61,16 @@ export async function POST(req: Request) {
       // stable Flash releases instead of pinning.
       model: google('gemini-2.5-flash-lite'),
       system: SYSTEM_PROMPT.content,
-      messages: await convertToModelMessages(messages),
+      // A stopped answer can leave a tool call with no result; it must not break the next turn.
+      messages: await convertToModelMessages(messages, {
+        ignoreIncompleteToolCalls: true,
+      }),
       tools,
       stopWhen: stepCountIs(2),
+      // The visitor pressing stop also stops the model, so it stops spending quota.
+      abortSignal: req.signal,
+      // The model sends bursts. Release them word by word so the text arrives evenly.
+      experimental_transform: smoothStream({ delayInMs: 18, chunking: 'word' }),
     });
 
     return result.toUIMessageStreamResponse({

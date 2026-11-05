@@ -166,40 +166,40 @@ ${reviews.quotes.map((q) => `- "${q.text}" — ${q.author}${q.role ? `, ${q.role
   }
 
   generatePresetReplies() {
-    const { personal } = this.config;
+    const { reviews } = this.config;
 
     const replies: Record<string, { reply: string; tool: string }> = {};
 
     replies['Why should I consider you?'] = {
-      reply: personal.bio,
+      reply: 'I take AI products to production and get them ready for enterprise buyers, and I’ve been shipping for clients around the world for 5+ years.',
       tool: 'getPresentation',
     };
     replies['Can you handle my stack?'] = {
-      reply: 'Here’s the stack I work in day to day.',
+      reply: 'Most likely. I work in TypeScript, Python and SQL daily and Go weekly, and the lookup checks any tool against work I’ve shipped.',
       tool: 'getSkills',
     };
     replies['What have you shipped?'] = {
-      reply: 'A few pieces of work I’m proud of 👇',
+      reply: 'Work across AI, SaaS, fintech and telecom. I’d start with AIVI, where I’ve merged 500+ PRs so far.',
       tool: 'getProjects',
     };
     replies['Can I see your résumé?'] = {
-      reply: 'Here’s my résumé and the full history.',
+      reply: 'Yes. Here’s the short version, and the full history and PDF are one click away.',
       tool: 'getResume',
     };
     replies['How do we get started?'] = {
-      reply: 'The fastest ways to reach me:',
+      reply: 'Send me a few lines about your project by email or on Upwork. My typical response time is 0–4 hours.',
       tool: 'getContact',
     };
     replies['How soon can you start?'] = {
-      reply: 'Yes — here’s what I’m open to right now.',
+      reply: 'Immediately. I’m available now for full- or part-time contracts, working remotely with hours that overlap US and EU teams.',
       tool: 'getInternship',
     };
     replies['What do past clients say?'] = {
-      reply: 'In their own words, verbatim from Upwork.',
+      reply: `They rate me ${reviews.rating}, and several say they’d hire me again. Here’s one in their own words, verbatim from Upwork.`,
       tool: 'getReviews',
     };
     replies['What are you like outside work?'] = {
-      reply: 'Chess and football, mostly.',
+      reply: 'Chess and football, mostly. I’m ibnuusina on chess.com, and on the pitch I play central midfield.',
       tool: 'getHobbies',
     };
 

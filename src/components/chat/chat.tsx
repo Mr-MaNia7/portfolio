@@ -1,18 +1,19 @@
 'use client';
 import { useChat } from '@ai-sdk/react';
-import { DefaultChatTransport, isToolUIPart, type UIMessage } from 'ai';
+import { DefaultChatTransport, getToolName, isToolUIPart, type UIMessage } from 'ai';
 import {
   AnimatePresence,
   MotionConfig,
   motion,
   useReducedMotion,
 } from 'framer-motion';
+import { ArrowDown } from 'lucide-react';
 import { useTheme } from 'next-themes';
-import Image from 'next/image';
 import { useSearchParams } from 'next/navigation';
 import React, {
   useCallback,
   useEffect,
+  useLayoutEffect,
   useMemo,
   useRef,
   useState,
@@ -21,13 +22,29 @@ import { toast } from 'sonner';
 
 import ChatBottombar from '@/components/chat/chat-bottombar';
 import ChatLanding from '@/components/chat/chat-landing';
-import { AssistantTurn } from '@/components/chat/simple-chat-view';
+import {
+  AssistantTurn,
+  StoppedTurn,
+  Thinking,
+  hasContent,
+  textOf,
+} from '@/components/chat/simple-chat-view';
 import { PresetReply } from '@/components/chat/preset-reply';
 import { CommandPalette } from '@/components/chat/command-palette';
 import { TopBar } from '@/components/chat/top-bar';
 import { HireSheet } from '@/components/chat/hire-sheet';
-import HelperBoost from './HelperBoost';
-import { TurnHeader } from './turn-badge';
+import { FollowUps } from '@/components/chat/follow-ups';
+import { MessageActions } from '@/components/chat/message-actions';
+import { PanelContext, SidePanel } from '@/components/chat/side-panel';
+import {
+  SidebarCollapse,
+  SidebarContent,
+  SidebarFloat,
+  SidebarRail,
+} from '@/components/chat/sidebar';
+import { renderToolArtifact } from '@/components/chat/tool-renderer';
+import { useMediaQuery } from '@/hooks/use-media-query';
+import { PANEL_TITLES, TOOL_LABELS, suggestQuestions } from '@/lib/answers';
 import { presetReplies, getConfig } from '@/lib/config-loader';
 import { buildCommands, type Command } from '@/lib/commands';
 import { onAsk, onHire } from '@/lib/portfolio-events';
@@ -43,16 +60,37 @@ type PresetItem = {
   tool: string;
 };
 
-type ErrorItem = { anchor: number; order: number };
+type FailureKind = 'rate' | 'network' | 'server' | 'empty';
+type ErrorItem = { anchor: number; order: number; kind: FailureKind };
 
 // A single entry in the rendered transcript.
 type TimelineItem =
-  | { key: string; kind: 'msg'; message: UIMessage }
+  | { key: string; kind: 'msg'; message: UIMessage; userId: string | null }
   | { key: string; kind: 'preset'; item: PresetItem }
-  | { key: string; kind: 'error' };
+  | { key: string; kind: 'error'; failure: FailureKind }
+  | { key: string; kind: 'pending' }
+  | { key: string; kind: 'stopped'; userId: string };
 
 /** Space kept above a pinned question: the thread's own top padding. */
 const PIN_GAP = 32;
+
+type PanelState = { tool: string; phase: 'open' | 'closing'; detail: number | null };
+
+/** How long the panel's exit runs before it is removed. */
+const PANEL_EXIT_MS = 160;
+
+/** Which failure this is, from what the transport or the stream reported. */
+function classifyFailure(error: Error): FailureKind {
+  const message = error.message ?? '';
+  if (/quota|exceeded|exhausted|rate.?limit|429|API key/i.test(message)) return 'rate';
+  if (
+    error.name === 'TypeError' ||
+    /network|failed to fetch|fetch failed|terminated|load failed/i.test(message)
+  ) {
+    return 'network';
+  }
+  return 'server';
+}
 
 const Chat = () => {
   const searchParams = useSearchParams();
@@ -62,45 +100,76 @@ const Chat = () => {
   const config = useMemo(() => getConfig(), []);
   const commands = useMemo(() => buildCommands(config), [config]);
 
-  const [autoSubmitted, setAutoSubmitted] = useState(false);
-  const [loadingSubmit, setLoadingSubmit] = useState(false);
   const [paletteOpen, setPaletteOpen] = useState(false);
   const [hireOpen, setHireOpen] = useState(false);
   const [input, setInput] = useState('');
   const [heroComposerVisible, setHeroComposerVisible] = useState(true);
   const [presetItems, setPresetItems] = useState<PresetItem[]>([]);
   const [errorItem, setErrorItem] = useState<ErrorItem | null>(null);
+  const [panel, setPanel] = useState<PanelState | null>(null);
+  const [sidebarOpen, setSidebarOpen] = useState(true);
+  const [sidebarFloating, setSidebarFloating] = useState(false);
+  const [jumped, setJumped] = useState<{ key: string; during: string | null } | null>(null);
+  // Questions the visitor pressed stop on.
+  const [stoppedIds, setStoppedIds] = useState<ReadonlySet<string>>(new Set());
+  const [hasNewerBelow, setHasNewerBelow] = useState(false);
+  const [instantAnnouncement, setInstantAnnouncement] = useState('');
+
+  // Below 1024 the sidebar is a drawer. Below 1280 the panel covers the chat.
+  const sidebarDocks = useMediaQuery('(min-width: 1024px)');
+  const panelBeside = useMediaQuery('(min-width: 1280px)');
 
   // Monotonic tie-break for entries sharing an anchor. Only ever touched inside
   // event handlers / callbacks, never during render.
   const orderRef = useRef(0);
   const nextOrder = () => orderRef.current++;
+  // True from the moment a message is sent until its request ends, so a second click
+  // or Enter in the same tick cannot send twice before the status updates.
+  const sendingRef = useRef(false);
+  const autoSubmittedRef = useRef(false);
 
   const scrollerRef = useRef<HTMLDivElement>(null);
   const threadRef = useRef<HTMLDivElement>(null);
   const bottomRef = useRef<HTMLDivElement>(null);
   const spacerRef = useRef<HTMLDivElement>(null);
+  const composerColRef = useRef<HTMLDivElement>(null);
+  const panelOpenerRef = useRef<HTMLElement | null>(null);
+  const floatOpenerRef = useRef<HTMLElement | null>(null);
+  const panelExitRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  // Where the hero's composer was when the first message left it.
+  const heroComposerRect = useRef<DOMRect | null>(null);
+  // Where things were before the column moved, so it can glide and the reader keeps their place.
+  const flipRef = useRef<{
+    left: number;
+    anchor: HTMLElement | null;
+    anchorTop: number;
+  } | null>(null);
   const reduceMotion = useReducedMotion();
 
   const { messages, status, stop, regenerate, sendMessage, setMessages } =
     useChat({
       transport: new DefaultChatTransport({ api: '/api/chat' }),
-      onFinish: () => setLoadingSubmit(false),
+      // Words arrive evenly from the server; rendering them in small batches keeps the page calm.
+      throttle: 40,
+      onFinish: ({ message, isAbort, isError, isDisconnect }) => {
+        sendingRef.current = false;
+        if (isAbort || isError || isDisconnect) return;
+        if (!hasContent(message)) {
+          setErrorItem({
+            anchor: messagesRef.current.length,
+            order: nextOrder(),
+            kind: 'empty',
+          });
+        }
+      },
       onError: (error) => {
-        setLoadingSubmit(false);
-        console.error('Chat error:', error.message);
+        sendingRef.current = false;
+        console.warn('Chat error:', error.message);
         setErrorItem({
           anchor: messagesRef.current.length,
           order: nextOrder(),
+          kind: classifyFailure(error),
         });
-        if (!(
-          error.message?.includes('quota') ||
-          error.message?.includes('exceeded') ||
-          error.message?.includes('429') ||
-          error.message?.includes('API key')
-        )) {
-          toast.error('Something went wrong. Try a quick question below.');
-        }
       },
     });
 
@@ -111,21 +180,13 @@ const Chat = () => {
   }, [messages]);
 
   const isLoading = status === 'submitted' || status === 'streaming';
+  const isLoadingRef = useRef(isLoading);
+  useEffect(() => {
+    isLoadingRef.current = isLoading;
+  }, [isLoading]);
+
   const handleInputChange = (e: React.ChangeEvent<HTMLTextAreaElement>) =>
     setInput(e.target.value);
-
-  // Hide the standalone loading bubble once the response starts streaming.
-  useEffect(() => {
-    if (status === 'streaming') setLoadingSubmit(false);
-  }, [status]);
-
-  const isToolInProgress = messages.some(
-    (m) =>
-      m.role === 'assistant' &&
-      m.parts?.some(
-        (part) => isToolUIPart(part) && part.state !== 'output-available'
-      )
-  );
 
   // Merge messages + presets + error into one ordered transcript. A preset (or
   // the error notice) anchored at N renders right after the Nth chat message,
@@ -144,29 +205,111 @@ const Chat = () => {
       extras.push({
         anchor: errorItem.anchor,
         order: errorItem.order,
-        node: { key: 'error', kind: 'error' },
+        node: { key: 'error', kind: 'error', failure: errorItem.kind },
       });
     }
     extras.sort((a, b) => a.order - b.order);
 
+    const count = messages.length;
     const items: TimelineItem[] = [];
-    for (let i = 0; i <= messages.length; i++) {
-      for (const e of extras) if (e.anchor === i) items.push(e.node);
-      if (i < messages.length) {
-        const m = messages[i];
-        items.push({ key: `msg-${m.id}`, kind: 'msg', message: m });
+    let userId: string | null = null;
+    for (let i = 0; i <= count; i++) {
+      for (const e of extras) {
+        // An anchor past the end belongs to an answer that never arrived.
+        if (e.anchor === i || (i === count && e.anchor > count)) items.push(e.node);
+      }
+      if (i === count) break;
+      const m = messages[i];
+      const isLast = i === count - 1;
+      if (m.role === 'user') {
+        userId = m.id;
+        items.push({ key: `msg-${m.id}`, kind: 'msg', message: m, userId });
+        if (isLast && isLoading) items.push({ key: 'pending', kind: 'pending' });
+        else if (isLast && stoppedIds.has(m.id)) {
+          items.push({ key: `stopped-${m.id}`, kind: 'stopped', userId: m.id });
+        }
+      } else if (hasContent(m)) {
+        items.push({ key: `msg-${m.id}`, kind: 'msg', message: m, userId });
+      } else if (isLast && isLoading) {
+        // The answer has begun but has no words yet. Same entry as before, so the
+        // indicator keeps running rather than starting over.
+        items.push({ key: 'pending', kind: 'pending' });
+      } else if (userId && stoppedIds.has(userId)) {
+        items.push({ key: `stopped-${userId}`, kind: 'stopped', userId });
       }
     }
     return items;
-  }, [messages, presetItems, errorItem]);
+  }, [messages, presetItems, errorItem, isLoading, stoppedIds]);
 
-  const isEmptyState = timeline.length === 0 && !loadingSubmit;
+  const isEmptyState = timeline.length === 0;
 
-  // Only the most recent turn — when it's a preset and nothing is loading after
-  // it — offers "Ask the live AI". Older presets are settled history.
+  // Only the most recent turn offers follow-ups and "Ask my AI twin live". Older
+  // answers are settled history.
   const lastEntry = timeline[timeline.length - 1];
-  const latestPresetId =
-    !loadingSubmit && lastEntry?.kind === 'preset' ? lastEntry.item.id : null;
+  const latestKey = !isLoading ? lastEntry?.key : null;
+
+  const allQuestions = useMemo(
+    () =>
+      commands
+        .filter((c) => c.group === 'Ask')
+        .map((c) => c.payload || c.label),
+    [commands]
+  );
+
+  // What has been asked, for "This chat" and for not offering it twice.
+  const turns = useMemo(
+    () =>
+      timeline.flatMap((e) =>
+        e.kind === 'preset'
+          ? [{ key: e.key, question: e.item.question }]
+          : e.kind === 'msg' && e.message.role === 'user'
+            ? [{ key: e.key, question: textOf(e.message) }]
+            : []
+      ),
+    [timeline]
+  );
+
+  const latestTool =
+    lastEntry?.kind === 'preset'
+      ? lastEntry.item.tool
+      : lastEntry?.kind === 'msg'
+        ? (() => {
+            const part = lastEntry.message.parts?.find(isToolUIPart);
+            return part ? getToolName(part) : undefined;
+          })()
+        : undefined;
+
+  const { chips, askNext } = useMemo(
+    () =>
+      suggestQuestions(
+        allQuestions,
+        new Set(turns.map((t) => t.question)),
+        latestTool
+      ),
+    [allQuestions, turns, latestTool]
+  );
+
+  // What a screen reader hears: state changes, never each word. A failure speaks for
+  // itself through its alert, and an instant answer through its own words.
+  const liveStatus = (() => {
+    if (lastEntry?.kind === 'preset' && !isLoading) return instantAnnouncement;
+    if (errorItem) return '';
+    const last = messages[messages.length - 1];
+    if (isLoading) {
+      if (!last || last.role === 'user' || !hasContent(last)) return 'Thinking';
+      const running = (last.parts ?? [])
+        .filter(isToolUIPart)
+        .find((p) => p.state === 'input-streaming' || p.state === 'input-available');
+      if (running) return TOOL_LABELS[getToolName(running)]?.running ?? 'Thinking';
+      return 'Answering';
+    }
+    if (last) {
+      const userMessage = [...messages].reverse().find((m) => m.role === 'user');
+      if (userMessage && stoppedIds.has(userMessage.id)) return 'Stopped';
+      if (last.role === 'assistant' && hasContent(last)) return 'Answer ready';
+    }
+    return '';
+  })();
 
   // The question that started the newest turn. Answers are taller than the screen,
   // so a new turn pins this to the top of the transcript and reads downward.
@@ -202,16 +345,34 @@ const Chat = () => {
     spacer.style.height = `${room}px`;
   }, [lastTurnOffset]);
 
+  // Is the end of the conversation below what the reader can see?
+  const syncNewerBelow = useCallback(() => {
+    const scroller = scrollerRef.current;
+    const bottom = bottomRef.current;
+    if (!scroller || !bottom) return;
+    setHasNewerBelow(
+      bottom.getBoundingClientRect().top >
+        scroller.getBoundingClientRect().bottom + 24
+    );
+  }, []);
+
   const hasTurns = !isEmptyState;
   useEffect(() => {
     const scroller = scrollerRef.current;
     const thread = threadRef.current;
     if (!hasTurns || !scroller || !thread) return;
-    const ro = new ResizeObserver(syncSpacer);
+    const ro = new ResizeObserver(() => {
+      syncSpacer();
+      syncNewerBelow();
+    });
     ro.observe(scroller);
     ro.observe(thread);
-    return () => ro.disconnect();
-  }, [hasTurns, syncSpacer]);
+    scroller.addEventListener('scroll', syncNewerBelow, { passive: true });
+    return () => {
+      ro.disconnect();
+      scroller.removeEventListener('scroll', syncNewerBelow);
+    };
+  }, [hasTurns, syncSpacer, syncNewerBelow]);
 
   useEffect(() => {
     if (!lastTurnKey) return;
@@ -222,75 +383,264 @@ const Chat = () => {
       top: Math.max(0, offset - PIN_GAP),
       behavior: reduceMotion ? 'auto' : 'smooth',
     });
+    // The chip or row that asked this is gone. Focus takes the question, not the page's top.
+    if (document.activeElement === document.body) {
+      const starts = threadRef.current?.querySelectorAll<HTMLElement>('[data-turn-start]');
+      starts?.[starts.length - 1]?.focus({ preventScroll: true });
+    }
   }, [lastTurnKey, reduceMotion, syncSpacer, lastTurnOffset]);
+
+  const scrollToLatest = () => {
+    const scroller = scrollerRef.current;
+    const bottom = bottomRef.current;
+    if (!scroller || !bottom) return;
+    scroller.scrollTo({
+      top:
+        scroller.scrollTop +
+        bottom.getBoundingClientRect().bottom -
+        scroller.getBoundingClientRect().bottom +
+        16,
+      behavior: reduceMotion ? 'auto' : 'smooth',
+    });
+    // The button goes away once it has done its job. Focus must not go with it.
+    document
+      .querySelector<HTMLElement>('.shell__composer textarea')
+      ?.focus({ preventScroll: true });
+  };
+
+  // Measure the column before a layout change; the layout effect below glides it.
+  const captureFlip = (anchor: HTMLElement | null) => {
+    const col = threadRef.current;
+    if (!col) return;
+    const held = anchor && scrollerRef.current?.contains(anchor) ? anchor : null;
+    flipRef.current = {
+      left: col.getBoundingClientRect().left,
+      anchor: held,
+      anchorTop: held?.getBoundingClientRect().top ?? 0,
+    };
+  };
+
+  const panelInFlow = panel?.phase === 'open' && panelBeside;
+  // The sidebar steps aside for the panel, so the reading column keeps its width.
+  const sidebarRailed = !sidebarOpen || panelInFlow;
+
+  useLayoutEffect(() => {
+    const flip = flipRef.current;
+    const col = threadRef.current;
+    if (!flip || !col) return;
+    flipRef.current = null;
+    // The text has rewrapped: put what the reader was looking at back where it was.
+    if (flip.anchor?.isConnected && scrollerRef.current) {
+      scrollerRef.current.scrollTop +=
+        flip.anchor.getBoundingClientRect().top - flip.anchorTop;
+    }
+    if (reduceMotion) return;
+    const dx = flip.left - col.getBoundingClientRect().left;
+    if (Math.abs(dx) < 1) return;
+    for (const el of [col, composerColRef.current]) {
+      el?.animate(
+        [{ transform: `translateX(${dx}px)` }, { transform: 'none' }],
+        { duration: 220, easing: 'cubic-bezier(0.2, 0.8, 0.2, 1)' }
+      );
+    }
+  }, [panelInFlow, sidebarRailed, reduceMotion]);
+
+  // The first message: the hero's composer travels to the bottom of the conversation.
+  useLayoutEffect(() => {
+    const from = heroComposerRect.current;
+    if (isEmptyState || !from) return;
+    heroComposerRect.current = null;
+    const composer = composerColRef.current?.querySelector<HTMLElement>('.composer');
+    if (!composer || reduceMotion) return;
+    const to = composer.getBoundingClientRect();
+    composer.animate(
+      [
+        {
+          transform: `translate(${from.left - to.left}px, ${from.top - to.top}px)`,
+          width: `${from.width}px`,
+        },
+        { transform: 'none', width: `${to.width}px` },
+      ],
+      { duration: 240, easing: 'cubic-bezier(0.2, 0.8, 0.2, 1)' }
+    );
+  }, [isEmptyState, reduceMotion]);
+
+  const openPanel = useCallback(
+    (tool: string, opener?: HTMLElement | null, detail?: number | null) => {
+      if (panelExitRef.current) clearTimeout(panelExitRef.current);
+      panelOpenerRef.current = opener ?? null;
+      captureFlip(opener ?? null);
+      setPanel({ tool, phase: 'open', detail: detail ?? null });
+    },
+    []
+  );
+
+  const closePanel = useCallback(() => {
+    const opener = panelOpenerRef.current;
+    captureFlip(opener);
+    setPanel((p) => (p ? { ...p, phase: 'closing' } : p));
+    panelExitRef.current = setTimeout(
+      () => setPanel((p) => (p?.phase === 'closing' ? null : p)),
+      reduceMotion ? 0 : PANEL_EXIT_MS
+    );
+    // Focus goes back to what opened it, or to the composer on a desktop if that turn
+    // is gone. After the render: below 1280 the chat is inert until the panel lets go.
+    requestAnimationFrame(() => {
+      if (opener?.isConnected) {
+        opener.focus({ preventScroll: true });
+      } else if (window.matchMedia('(pointer: fine)').matches) {
+        document
+          .querySelector<HTMLElement>('.shell__composer textarea')
+          ?.focus({ preventScroll: true });
+      }
+    });
+  }, [reduceMotion]);
+
+  const setPanelDetail = useCallback((detail: number | null) => {
+    setPanel((p) => (p ? { ...p, detail } : p));
+  }, []);
+
+  const panelApi = useMemo(
+    () => ({
+      openTool: panel?.phase === 'open' ? panel.tool : null,
+      detail: panel?.detail ?? null,
+      setDetail: setPanelDetail,
+      open: openPanel,
+    }),
+    [panel, openPanel, setPanelDetail]
+  );
+
+  const closeFloat = useCallback(() => {
+    setSidebarFloating(false);
+    floatOpenerRef.current?.focus({ preventScroll: true });
+  }, []);
+
+  const openFloat = (opener?: HTMLElement | null) => {
+    floatOpenerRef.current = opener ?? null;
+    setSidebarFloating(true);
+  };
+
+  const collapseSidebar = () => {
+    captureFlip(null);
+    setSidebarOpen(false);
+  };
+
+  const expandSidebar = (opener: HTMLElement) => {
+    // Beside an open panel there is no room to dock, so it floats over the chat.
+    if (panelInFlow) {
+      openFloat(opener);
+      return;
+    }
+    captureFlip(null);
+    setSidebarOpen(true);
+  };
+
+  const jumpToTurn = (key: string) => {
+    setSidebarFloating(false);
+    setJumped({ key, during: lastTurnKey });
+    const thread = threadRef.current;
+    const el = thread?.querySelector<HTMLElement>(
+      `[data-turn-key="${CSS.escape(key)}"]`
+    );
+    if (!thread || !el) return;
+    scrollerRef.current?.scrollTo({
+      top: Math.max(
+        0,
+        el.getBoundingClientRect().top - thread.getBoundingClientRect().top - PIN_GAP
+      ),
+      behavior: reduceMotion ? 'auto' : 'smooth',
+    });
+    el.focus({ preventScroll: true });
+  };
+
+  // The newest question, until the reader jumps to an earlier one.
+  const currentTurnKey = jumped?.during === lastTurnKey ? jumped.key : lastTurnKey;
 
   const addPreset = useCallback(
     (question: string, reply: string, tool: string) => {
       setErrorItem(null);
+      setInstantAnnouncement(reply);
+      // A question still waiting for its answer keeps that answer directly under it.
+      const current = messagesRef.current;
+      const awaitingAnswer =
+        isLoadingRef.current && current[current.length - 1]?.role === 'user';
       setPresetItems((prev) => [
         ...prev,
         {
           id: `${Date.now()}-${prev.length}`,
-          anchor: messagesRef.current.length,
+          anchor: current.length + (awaitingAnswer ? 1 : 0),
           order: nextOrder(),
           question,
           reply,
           tool,
         },
       ]);
-      setLoadingSubmit(false);
     },
     []
   );
 
+  /** Sends to the live model. Only one answer at a time: a second send is refused, not queued. */
+  const sendLive = useCallback(
+    (text: string) => {
+      if (sendingRef.current || isLoadingRef.current) return false;
+      sendingRef.current = true;
+      setErrorItem(null);
+      const count = messagesRef.current.length;
+      // An answer stopped before it began left its anchor one past the end.
+      setPresetItems((prev) =>
+        prev.map((p) => (p.anchor > count ? { ...p, anchor: count } : p))
+      );
+      sendMessage({ text });
+      return true;
+    },
+    [sendMessage]
+  );
+
   const submitQuery = useCallback(
     (query: string) => {
-      if (!query.trim() || isToolInProgress) return;
-      setErrorItem(null);
+      if (!query.trim()) return;
       if (presetReplies[query]) {
         const preset = presetReplies[query];
         addPreset(query, preset.reply, preset.tool);
         return;
       }
-      setLoadingSubmit(true);
-      sendMessage({ text: query });
+      if (!sendLive(query)) toast('Wait for this answer to finish, or stop it.');
     },
-    [sendMessage, isToolInProgress, addPreset]
+    [addPreset, sendLive]
   );
 
   const submitQueryToAI = useCallback(
     (query: string) => {
-      if (!query.trim() || isToolInProgress) return;
-      setErrorItem(null);
-      setLoadingSubmit(true);
-      sendMessage({ text: query });
+      if (!query.trim()) return;
+      if (!sendLive(query)) toast('Wait for this answer to finish, or stop it.');
     },
-    [sendMessage, isToolInProgress]
+    [sendLive]
   );
 
   const handlePresetReply = useCallback(
-    (question: string, reply: string, tool: string) => {
+    (question: string, reply: string, tool: string, showDetail = false) => {
       addPreset(question, reply, tool);
+      if (showDetail && tool in PANEL_TITLES) {
+        panelOpenerRef.current = null;
+        setPanel({ tool, phase: 'open', detail: null });
+      }
     },
     [addPreset]
-  );
-
-  const handleGetAIResponse = useCallback(
-    (question: string) => {
-      submitQueryToAI(question);
-    },
-    [submitQueryToAI]
   );
 
   // Reset the ephemeral conversation in place — no full-page reload.
   const goHome = useCallback(() => {
     stop();
+    sendingRef.current = false;
     setMessages([]);
     setPresetItems([]);
     setErrorItem(null);
+    setStoppedIds(new Set());
+    setInstantAnnouncement('');
     orderRef.current = 0;
-    setLoadingSubmit(false);
     setInput('');
+    setPanel(null);
+    setSidebarFloating(false);
     window.history.replaceState(null, '', '/');
   }, [stop, setMessages]);
 
@@ -329,9 +679,12 @@ const Chat = () => {
   // Cards and landing sections ask questions / open the hire sheet via events.
   useEffect(
     () =>
-      onAsk(({ question, live }) =>
-        live ? submitQueryToAI(question) : submitQuery(question)
-      ),
+      onAsk(({ question, live }) => {
+        // Where the panel covers the chat, get it out of the way of the answer.
+        if (!window.matchMedia('(min-width: 1280px)').matches) setPanel(null);
+        if (live) submitQueryToAI(question);
+        else submitQuery(question);
+      }),
     [submitQuery, submitQueryToAI]
   );
   useEffect(() => onHire(() => setHireOpen(true)), []);
@@ -348,28 +701,78 @@ const Chat = () => {
     return () => window.removeEventListener('keydown', onKey);
   }, []);
 
+  // A ?query= link asks once. The address is cleaned, so a reload does not spend another answer.
   useEffect(() => {
-    if (initialQuery && !autoSubmitted) {
-      setAutoSubmitted(true);
-      setInput('');
-      submitQuery(initialQuery);
-    }
-  }, [initialQuery, autoSubmitted, submitQuery]);
+    if (!initialQuery || autoSubmittedRef.current) return;
+    autoSubmittedRef.current = true;
+    submitQuery(initialQuery);
+    window.history.replaceState(null, '', '/');
+  }, [initialQuery, submitQuery]);
 
   const onSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (!input.trim() || isToolInProgress) return;
-    submitQueryToAI(input);
-    setInput('');
+    if (!input.trim()) return;
+    if (isEmptyState && heroComposerVisible) {
+      heroComposerRect.current =
+        document.querySelector('.twin .composer')?.getBoundingClientRect() ?? null;
+    }
+    // While an answer is arriving the draft stays in the field.
+    if (sendLive(input)) setInput('');
   };
 
   const handleStop = () => {
+    const lastUser = [...messagesRef.current]
+      .reverse()
+      .find((m) => m.role === 'user');
+    if (lastUser) setStoppedIds((prev) => new Set(prev).add(lastUser.id));
     stop();
-    setLoadingSubmit(false);
+    sendingRef.current = false;
   };
 
-  const removePreset = (id: string) =>
+  // Removing the last turn returns to the landing page, so the panel goes with it.
+  const closePanelIfEmpty = (remaining: number) => {
+    if (remaining === 0) {
+      setPanel(null);
+      setSidebarFloating(false);
+      setInstantAnnouncement('');
+    }
+  };
+
+  const removePreset = (id: string) => {
     setPresetItems((prev) => prev.filter((p) => p.id !== id));
+    closePanelIfEmpty(turns.filter((t) => t.key !== `preset-${id}`).length);
+  };
+
+  /** Removes a live question and its answer, stopping the answer if it is still arriving. */
+  const removeLiveTurn = (messageId: string) => {
+    const i = messages.findIndex((m) => m.id === messageId);
+    if (i < 0) return;
+    const start = messages[i].role === 'user' ? i : i - 1;
+    if (start < 0) return;
+    const count = messages[start + 1]?.role === 'assistant' ? 2 : 1;
+    const isCurrent = start + count >= messages.length;
+    if (isCurrent && isLoading) {
+      stop();
+      sendingRef.current = false;
+    }
+    const shift = (anchor: number) =>
+      anchor > start ? anchor - Math.min(count, anchor - start) : anchor;
+    setMessages(messages.filter((_, n) => n < start || n >= start + count));
+    setPresetItems((prev) =>
+      prev.map((p) => ({ ...p, anchor: shift(p.anchor) }))
+    );
+    // A failure notice belongs to the turn it interrupted.
+    setErrorItem((e) => (e && isCurrent ? null : e ? { ...e, anchor: shift(e.anchor) } : e));
+    closePanelIfEmpty(
+      turns.filter((t) => t.key !== `msg-${messages[start].id}`).length
+    );
+  };
+
+  const retry = () => {
+    setErrorItem(null);
+    sendingRef.current = true;
+    regenerate();
+  };
 
   const composerProps = {
     input,
@@ -377,10 +780,24 @@ const Chat = () => {
     handleSubmit: onSubmit,
     isLoading,
     stop: handleStop,
-    isToolInProgress,
     commands,
     onRunCommand: runCommand,
     onOpenCommand: () => setPaletteOpen(true),
+  };
+
+  // The panel covers the chat below 1280; while it does, nothing behind it takes focus.
+  const panelIsModal = panel?.phase === 'open' && !panelBeside;
+
+  const sidebarProps = {
+    turns,
+    currentKey: currentTurnKey,
+    askNext,
+    onNewChat: goHome,
+    onJump: jumpToTurn,
+    onAsk: (q: string) => {
+      setSidebarFloating(false);
+      submitQuery(q);
+    },
   };
 
   return (
@@ -427,180 +844,267 @@ const Chat = () => {
           )}
         </>
       ) : (
-        <div className="flex h-dvh flex-col overflow-hidden bg-background">
-          <TopBar
-            conversation
-            onOpenCommand={() => setPaletteOpen(true)}
-            onHome={goHome}
-            onHire={() => setHireOpen(true)}
-          />
+        <PanelContext.Provider value={panelApi}>
+          <div className="shell">
+            <div inert={panelIsModal}>
+              <TopBar
+                conversation
+                onOpenCommand={() => setPaletteOpen(true)}
+                onHome={goHome}
+                onHire={() => setHireOpen(true)}
+                onOpenSidebar={() => openFloat(document.activeElement as HTMLElement)}
+                sidebarOpen={sidebarFloating}
+              />
+            </div>
 
-          <main className="wrap flex min-h-0 flex-1 gap-10">
-            {/* Who you are talking to, always in view on a desktop */}
-            <aside
-              aria-label="About this twin"
-              className="scrollbar-subtle hidden w-[280px] shrink-0 flex-col gap-6 overflow-x-hidden overflow-y-auto py-8 pl-3 -ml-3 lg:flex xl:w-[320px]"
-            >
-              <div className="flex items-center gap-3">
-                <span className="relative h-12 w-12 shrink-0 overflow-hidden rounded-xl">
-                  <Image src={config.personal.avatar} alt="" fill sizes="48px" className="object-cover" />
-                </span>
-                <span className="min-w-0">
-                  <span className="block text-[18px] leading-tight font-medium">
-                    {config.personal.shortName}&apos;s AI twin
-                  </span>
-                  <span className="text-[14px] text-muted-foreground">Answers as me</span>
-                </span>
-              </div>
-              {config.availability.open && (
-                <p className="flex gap-2 text-[14px] leading-snug text-ink-soft">
-                  <span className="status-dot mt-1.5" aria-hidden />
-                  {config.availability.headline}
-                </p>
+            {/* What a screen reader hears: state changes, never each word. */}
+            <div role="status" aria-live="polite" className="sr-only">
+              {liveStatus}
+            </div>
+
+            <div className="wrap shell__body">
+              {sidebarRailed ? (
+                <SidebarRail onExpand={expandSidebar} onNewChat={goHome} />
+              ) : (
+                <aside aria-label="Sidebar" inert={panelIsModal} className="side scrollbar-subtle">
+                  <SidebarContent
+                    {...sidebarProps}
+                    closeControl={<SidebarCollapse onCollapse={collapseSidebar} />}
+                  />
+                </aside>
               )}
-              <div>
-                <p className="mb-3 text-[14px] font-medium text-muted-foreground">Ask about</p>
-                <HelperBoost
-                  variant="rail"
-                  current={lastEntry?.kind === 'preset' ? lastEntry.item.question : undefined}
-                  submitQuery={submitQuery}
-                  handlePresetReply={handlePresetReply}
-                  commands={commands}
-                />
-              </div>
-            </aside>
 
-            <div className="flex min-h-0 min-w-0 flex-1 flex-col">
-              {/* The scrollbar sits in the gutter, so answers end on the page's right line */}
-              <div ref={scrollerRef} className="scrollbar-subtle min-h-0 flex-1 overflow-y-auto lg:-mr-4 lg:pr-4">
-                <div ref={threadRef} className="flex flex-col gap-8 pt-8 pb-8 sm:gap-10">
-                  <AnimatePresence initial={false}>
-                    {timeline.map((entry) => {
-                      if (entry.kind === 'error') {
+              <main inert={panelIsModal} className="shell__main">
+                <div ref={scrollerRef} className="shell__scroller scrollbar-subtle">
+                  <div ref={threadRef} className="shell__col thread">
+                    <AnimatePresence initial={false}>
+                      {timeline.map((entry) => {
+                        if (entry.kind === 'pending') {
+                          return <Thinking key={entry.key} />;
+                        }
+
+                        if (entry.kind === 'error') {
+                          return entry.failure === 'rate' ? (
+                            <QuotaNotice
+                              key={entry.key}
+                              onQuick={() => {
+                                setErrorItem(null);
+                                const preset =
+                                  presetReplies['How do we get started?'];
+                                if (preset)
+                                  addPreset(
+                                    'How do we get started?',
+                                    preset.reply,
+                                    preset.tool
+                                  );
+                              }}
+                              onCommand={() => {
+                                setErrorItem(null);
+                                setPaletteOpen(true);
+                              }}
+                            />
+                          ) : (
+                            <FailureNotice
+                              key={entry.key}
+                              kind={entry.failure}
+                              onRetry={retry}
+                            />
+                          );
+                        }
+
+                        if (entry.kind === 'stopped') {
+                          return (
+                            <StoppedTurn
+                              key={entry.key}
+                              onRemove={() => removeLiveTurn(entry.userId)}
+                              footer={
+                                entry.key === latestKey ? (
+                                  <FollowUps questions={chips} onAsk={submitQuery} />
+                                ) : undefined
+                              }
+                            />
+                          );
+                        }
+
+                        if (entry.kind === 'preset') {
+                          const p = entry.item;
+                          return (
+                            <motion.div
+                              key={entry.key}
+                              className="flex flex-col"
+                              initial={false}
+                              exit={{
+                                opacity: 0,
+                                y: -4,
+                                transition: { duration: 0.15 },
+                              }}
+                            >
+                              <UserBubble
+                                turnKey={entry.key}
+                                text={p.question}
+                                onRemove={() => removePreset(p.id)}
+                              />
+                              <PresetReply
+                                reply={p.reply}
+                                tool={p.tool}
+                                onRemove={() => removePreset(p.id)}
+                                footer={
+                                  entry.key === latestKey ? (
+                                    <FollowUps
+                                      questions={chips}
+                                      onAsk={submitQuery}
+                                      onAskLive={() => {
+                                        // Escalating replaces the instant card with the
+                                        // live answer. Otherwise the AI re-renders the same
+                                        // tool card and shows it twice.
+                                        if (sendLive(p.question)) removePreset(p.id);
+                                      }}
+                                    />
+                                  ) : undefined
+                                }
+                              />
+                            </motion.div>
+                          );
+                        }
+
+                        // Chat message
+                        const m = entry.message;
+                        if (m.role === 'user') {
+                          return (
+                            <UserBubble
+                              key={entry.key}
+                              turnKey={entry.key}
+                              text={textOf(m)}
+                              onRemove={() => removeLiveTurn(m.id)}
+                            />
+                          );
+                        }
                         return (
-                          <QuotaNotice
+                          <AssistantTurn
                             key={entry.key}
-                            onQuick={() => {
-                              setErrorItem(null);
-                              const preset =
-                                presetReplies['How do we get started?'];
-                              if (preset)
-                                addPreset(
-                                  'How do we get started?',
-                                  preset.reply,
-                                  preset.tool
-                                );
-                            }}
-                            onCommand={() => {
-                              setErrorItem(null);
-                              setPaletteOpen(true);
-                            }}
+                            message={m}
+                            isStreaming={isLoading && m.id === messages[messages.length - 1]?.id}
+                            stopped={!!entry.userId && stoppedIds.has(entry.userId)}
+                            onRemove={() => removeLiveTurn(m.id)}
+                            footer={
+                              entry.key === latestKey ? (
+                                <FollowUps questions={chips} onAsk={submitQuery} />
+                              ) : undefined
+                            }
                           />
                         );
-                      }
+                      })}
+                    </AnimatePresence>
 
-                      if (entry.kind === 'preset') {
-                        const p = entry.item;
-                        return (
-                          <motion.div
-                            key={entry.key}
-                            className="flex flex-col gap-5"
-                            initial={false}
-                            exit={{
-                              opacity: 0,
-                              y: -4,
-                              transition: { duration: 0.15 },
-                            }}
-                          >
-                            <UserBubble text={p.question} />
-                            <PresetReply
-                              question={p.question}
-                              reply={p.reply}
-                              tool={p.tool}
-                              canEscalate={p.id === latestPresetId}
-                              onGetAIResponse={(q) => {
-                                // Escalating replaces the instant card with the
-                                // live answer. Otherwise the AI re-renders the same
-                                // tool card and shows it twice.
-                                removePreset(p.id);
-                                handleGetAIResponse(q);
-                              }}
-                              onClose={() => removePreset(p.id)}
-                            />
-                          </motion.div>
-                        );
-                      }
-
-                      // Chat message
-                      const m = entry.message;
-                      if (m.role === 'user') {
-                        const text = (m.parts ?? [])
-                          .filter((part) => part.type === 'text')
-                          .map((part) =>
-                            part.type === 'text' ? part.text : ''
-                          )
-                          .join('');
-                        return <UserBubble key={entry.key} text={text} />;
-                      }
-                      return (
-                        <AssistantTurn
-                          key={entry.key}
-                          message={m}
-                          isLoading={isLoading}
-                          reload={regenerate}
-                        />
-                      );
-                    })}
-                  </AnimatePresence>
-
-                  {loadingSubmit && (
-                    <div className="reveal flex flex-col gap-2" role="status">
-                      <TurnHeader kind="ai" />
-                      <div className="flex items-center gap-2.5 py-1">
-                        <span className="composing flex items-center gap-1" aria-hidden>
-                          <span />
-                          <span />
-                          <span />
-                        </span>
-                        <span className="text-[14px] text-muted-foreground">Thinking</span>
-                      </div>
-                    </div>
-                  )}
-
-                  <div ref={bottomRef} className="h-px w-full" />
-                </div>
-                <div ref={spacerRef} aria-hidden />
-              </div>
-
-              {/* Composer */}
-              <div className="relative z-30 shrink-0 bg-background pb-[env(safe-area-inset-bottom)]">
-                <div className="flex flex-col gap-2 pt-2 pb-2">
-                  <div className="hidden sm:block lg:hidden">
-                    <HelperBoost
-                      submitQuery={submitQuery}
-                      handlePresetReply={handlePresetReply}
-                      commands={commands}
-                    />
+                    <div ref={bottomRef} className="h-px w-full" />
                   </div>
-                  <ChatBottombar {...composerProps} variant="shell" focusOnMount />
+                  <div ref={spacerRef} aria-hidden />
                 </div>
-              </div>
+
+                <div className="shell__composer">
+                  <div ref={composerColRef} className="shell__col relative">
+                    {hasNewerBelow && (
+                      <button
+                        type="button"
+                        onClick={scrollToLatest}
+                        aria-label="Scroll to latest"
+                        title="Scroll to latest"
+                        className="scroll-latest fade-in"
+                      >
+                        <ArrowDown className="h-4 w-4" aria-hidden />
+                      </button>
+                    )}
+                    <ChatBottombar {...composerProps} variant="shell" focusOnMount />
+                  </div>
+                </div>
+              </main>
+
+              {panel && PANEL_TITLES[panel.tool] && (
+                <SidePanel
+                  title={PANEL_TITLES[panel.tool]}
+                  phase={panel.phase}
+                  modal={panelIsModal}
+                  blocked={hireOpen || paletteOpen || sidebarFloating}
+                  onClose={closePanel}
+                >
+                  {/* Skills opens on the capability that was picked. Projects move inside the panel. */}
+                  <div key={panel.tool === 'getSkills' ? (panel.detail ?? 0) : 0}>
+                    {renderToolArtifact(panel.tool)}
+                  </div>
+                </SidePanel>
+              )}
             </div>
-          </main>
-        </div>
+
+            {sidebarFloating && (
+              <SidebarFloat
+                {...sidebarProps}
+                onClose={closeFloat}
+                blocked={hireOpen || paletteOpen}
+                onBackToPortfolio={sidebarDocks ? undefined : goHome}
+                onOpenCommand={
+                  sidebarDocks
+                    ? undefined
+                    : () => {
+                        setSidebarFloating(false);
+                        setPaletteOpen(true);
+                      }
+                }
+              />
+            )}
+          </div>
+        </PanelContext.Provider>
       )}
     </MotionConfig>
   );
 };
 
-function UserBubble({ text }: { text: string }) {
+/** Past this a paste folds, so it stays a message rather than a wall. */
+const LONG_TEXT = 700;
+const LONG_LINES = 10;
+
+function UserBubble({
+  turnKey,
+  text,
+  onRemove,
+}: {
+  turnKey: string;
+  text: string;
+  onRemove: () => void;
+}) {
+  const [expanded, setExpanded] = useState(false);
   if (!text.trim()) return null;
+  const long = text.length > LONG_TEXT || text.split('\n').length > LONG_LINES;
   return (
-    <div data-turn-start className="reveal flex justify-end">
-      <p className="max-w-[85%] rounded-2xl rounded-br-md bg-brand px-4 py-2.5 text-[16px] leading-relaxed break-words whitespace-pre-wrap text-brand-foreground lg:max-w-[70%]">
-        <span className="sr-only">You asked: </span>
-        {text}
+    <div
+      data-turn-start
+      data-turn-key={turnKey}
+      tabIndex={-1}
+      className="msg msg--user fade-in"
+    >
+      <p className="bubble">
+        <span className={long && !expanded ? 'bubble__clamp' : undefined}>
+          <span className="sr-only">You asked: </span>
+          {text}
+        </span>
       </p>
+      <div className="flex items-center justify-end gap-0.5">
+        {long && (
+          <button
+            type="button"
+            onClick={() => setExpanded((e) => !e)}
+            aria-expanded={expanded}
+            className="msg-action"
+          >
+            {expanded ? 'Show less' : 'Show more'}
+          </button>
+        )}
+        <MessageActions
+          align="end"
+          getText={() => text}
+          onRemove={onRemove}
+          removeLabel="Remove this question and its answer"
+        />
+      </div>
     </div>
   );
 }
@@ -613,34 +1117,47 @@ function QuotaNotice({
   onCommand: () => void;
 }) {
   return (
-    <div className="reveal" role="alert">
-      <div className="rounded-lg border border-border bg-card">
-        <div className="flex items-center gap-2 border-b border-border-subtle px-5 py-2.5">
-          <span aria-hidden className="h-1.5 w-1.5 rounded-full bg-warning" />
-          <span className="meta text-muted-foreground">
-            Live answers paused
-          </span>
-        </div>
-        <div className="px-5 py-4">
-          <h3 className="font-display text-[1.25rem] leading-tight text-foreground">
-            Live answers are paused for a moment
-          </h3>
-          <p className="measure mt-1.5 text-[16px] leading-relaxed text-ink-soft">
-            The AI model hit its rate limit. Everything else still works: the
-            instant answers and the search menu are pre-written and need no AI call.
-          </p>
-          <div className="mt-4 flex flex-wrap gap-2">
-            <button onClick={onQuick} className="btn btn--primary">
-              How to reach me
-            </button>
-            <button
-              onClick={onCommand}
-              className="btn btn--secondary"
-            >
-              Open the search menu
-            </button>
-          </div>
-        </div>
+    <div className="notice fade-in" role="alert">
+      <p className="notice__label">Live answers paused</p>
+      <div>
+        <h3 className="notice__title">Live answers are paused for a moment</h3>
+        <p className="mt-1">
+          The AI model hit its rate limit. Everything else still works: the
+          instant answers and the search menu are pre-written and need no AI call.
+        </p>
+      </div>
+      <div className="notice__actions">
+        <button onClick={onQuick} className="btn btn--secondary btn--sm">
+          How to reach me
+        </button>
+        <button onClick={onCommand} className="btn btn--secondary btn--sm">
+          Open the search menu
+        </button>
+      </div>
+    </div>
+  );
+}
+
+const FAILURE_COPY: Record<Exclude<FailureKind, 'rate'>, string> = {
+  network: 'The connection dropped before the answer finished.',
+  server: 'Something went wrong on my end, so this answer didn’t finish.',
+  empty: 'The model came back with an empty answer.',
+};
+
+function FailureNotice({
+  kind,
+  onRetry,
+}: {
+  kind: Exclude<FailureKind, 'rate'>;
+  onRetry: () => void;
+}) {
+  return (
+    <div className="notice fade-in" role="alert">
+      <p className="notice__label">{FAILURE_COPY[kind]}</p>
+      <div className="notice__actions">
+        <button onClick={onRetry} className="btn btn--secondary btn--sm">
+          Retry
+        </button>
       </div>
     </div>
   );

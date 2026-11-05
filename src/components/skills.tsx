@@ -88,15 +88,11 @@ const Skills = () => {
   return (
     <Artifact label="Skills">
       <ArtifactHeader
-        kicker={
-          <>
-            Skills
-          </>
-        }
+        kicker="Skills"
         title="What I build, with proof I&apos;ve shipped it"
         standfirst={skills.intro}
         aside={
-          <dl className="flex gap-6 text-right">
+          <dl className="flex gap-6 sm:text-right">
             <div className="flex flex-col gap-1">
               <dt className="meta text-muted-foreground">Capabilities</dt>
               <dd className="num order-first text-[1.75rem] leading-none text-foreground">
@@ -135,7 +131,7 @@ const Skills = () => {
                 {lang.usage}
               </span>
             </span>
-            <span className="text-[13px] leading-snug text-muted-foreground">
+            <span className="text-[14px] leading-snug text-muted-foreground">
               {lang.note}
             </span>
           </li>
@@ -205,11 +201,11 @@ const Skills = () => {
             </p>
 
             <p className="meta mt-6 mb-2.5 text-muted-foreground">Proof</p>
-            <ul className="space-y-2">
+            <ul>
               {current.proof.map((p) => (
                 <li
                   key={p}
-                  className="flex gap-3 border-l-2 border-brand py-0.5 pl-3 text-[16px] leading-snug text-foreground"
+                  className="border-b border-border-subtle py-2.5 text-[16px] leading-snug text-foreground first:pt-0 last:border-b-0 last:pb-0"
                 >
                   {p}
                 </li>
@@ -221,10 +217,7 @@ const Skills = () => {
                 <p className="meta mb-2 text-muted-foreground">Shipped at</p>
                 <ul className="flex flex-wrap gap-1.5">
                   {current.shippedAt.map((s) => (
-                    <li
-                      key={s}
-                      className="flex h-7 items-center rounded-md border border-border-strong px-2.5 text-[13px] font-medium text-foreground"
-                    >
+                    <li key={s} className="tag tag--line">
                       {s}
                     </li>
                   ))}
@@ -250,11 +243,11 @@ const Skills = () => {
                   true
                 )
               }
-              className="press mt-6 -ml-1 flex items-center gap-1.5 rounded-sm px-1 py-0.5 text-[13px] text-ink-soft hover:text-foreground"
+              className="text-btn mt-5"
             >
-              <Sparkles className="h-3.5 w-3.5 text-brand" aria-hidden />
+              <Sparkles className="h-4 w-4 text-brand" aria-hidden />
               Ask my twin how I did it
-              <ArrowRight className="h-3.5 w-3.5" aria-hidden />
+              <ArrowRight className="text-btn__arrow h-4 w-4" aria-hidden />
             </button>
           </div>
         </div>
@@ -324,14 +317,14 @@ function ToolLookup({
 
       <div id={listId} aria-live="polite" className="mt-3 min-h-[1.75rem]">
         {q.length < 2 ? (
-          <p className="flex flex-wrap items-center gap-1.5 text-[13px] text-muted-foreground">
+          <p className="flex flex-wrap items-center gap-1.5 text-[14px] text-muted-foreground">
             Try
             {suggestions.map((s) => (
               <button
                 key={s}
                 type="button"
                 onClick={() => setQuery(s)}
-                className="press tag hover:border-border-strong hover:text-foreground"
+                className="press tag tag--raised"
               >
                 {s}
               </button>
@@ -340,7 +333,7 @@ function ToolLookup({
         ) : matches.length ? (
           <ul className="space-y-2.5">
             {matches.map((m) => (
-              <li key={m.name} className="flex gap-2.5 text-[14px] leading-snug">
+              <li key={m.name} className="flex gap-2.5 text-[16px] leading-snug">
                 <Check className="mt-0.5 h-4 w-4 shrink-0 text-success" aria-hidden />
                 <span className="min-w-0 text-foreground">
                   <span className="font-medium">Yes — {m.name}.</span>{' '}
@@ -354,7 +347,7 @@ function ToolLookup({
                       key={c}
                       type="button"
                       onClick={() => onPick(c)}
-                      className="press mr-1.5 inline-flex items-center gap-1 text-[13px] text-brand-ink underline decoration-brand/40 underline-offset-4 hover:decoration-brand"
+                      className="press mr-1.5 inline-flex items-center gap-1 text-[14px] text-brand-ink underline decoration-brand/40 underline-offset-4 hover:decoration-brand"
                     >
                       {capabilityNames[c]}
                     </button>
@@ -364,7 +357,7 @@ function ToolLookup({
             ))}
           </ul>
         ) : (
-          <p className="flex flex-wrap items-center gap-x-3 gap-y-2 text-[14px] text-ink-soft">
+          <p className="flex flex-wrap items-center gap-x-3 gap-y-2 text-[16px] text-ink-soft">
             Not on my list — I&apos;d rather tell you honestly than pad it.
             <button
               type="button"
@@ -376,7 +369,7 @@ function ToolLookup({
               }
               className="btn btn--secondary"
             >
-              <Sparkles className="h-3.5 w-3.5 text-brand" aria-hidden />
+              <Sparkles className="h-4 w-4 text-brand" aria-hidden />
               Ask me about {query.trim()}
             </button>
           </p>

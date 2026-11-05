@@ -65,14 +65,14 @@ export function PresetReply({
               className="reveal flex flex-wrap items-center justify-between gap-x-4 gap-y-2 pt-1"
               style={{ '--i': 4 } as React.CSSProperties}
             >
-              <p className="text-[14px] text-muted-foreground">
+              <p className="text-[16px] text-muted-foreground">
                 Want an answer specific to your project? Ask my twin live.
               </p>
               <button
                 onClick={handleGetAIResponse}
                 className="btn btn--secondary"
               >
-                <Sparkles className="h-3.5 w-3.5 text-brand" aria-hidden />
+                <Sparkles className="h-4 w-4 text-brand" aria-hidden />
                 Ask my AI twin live
               </button>
             </div>

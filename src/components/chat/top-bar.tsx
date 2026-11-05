@@ -62,7 +62,7 @@ export function TopBar({ onOpenCommand, onHome, onHire, conversation = false }: 
 
         <nav aria-label="Sections" className="hidden items-center gap-5 lg:flex xl:gap-7">
           {conversation ? (
-            <button onClick={onHome} className="nav__word flex items-center gap-1.5">
+            <button onClick={onHome} className="nav__word gap-1.5">
               <ArrowLeft className="h-4 w-4" aria-hidden />
               Back to portfolio
             </button>

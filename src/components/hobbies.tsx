@@ -13,19 +13,19 @@ interface ChessSummary {
   live: boolean;
 }
 
-/** A corner of the board: an 8×8 in the page's own tones, one knight on f3. */
+/** A corner of the board in the page's own tones, the knight on its lit square. */
 function Board() {
   const squares = [];
-  for (let r = 0; r < 8; r++) {
-    for (let c = 0; c < 8; c++) {
+  for (let r = 0; r < 4; r++) {
+    for (let c = 0; c < 4; c++) {
       squares.push(
         <rect
           key={`${r}-${c}`}
-          x={c * 12}
-          y={r * 12}
-          width="12"
-          height="12"
-          style={{ fill: (r + c) % 2 ? 'var(--oat)' : 'var(--card)' }}
+          x={c * 24}
+          y={r * 24}
+          width="24"
+          height="24"
+          style={{ fill: (r + c) % 2 ? 'var(--border-strong)' : 'var(--card)' }}
         />
       );
     }
@@ -33,12 +33,12 @@ function Board() {
   return (
     <svg viewBox="0 0 96 96" aria-hidden className="h-full w-full">
       {squares}
-      <rect x="60" y="60" width="12" height="12" style={{ fill: 'var(--brand)' }} />
+      <rect x="48" y="24" width="24" height="24" style={{ fill: 'var(--brand)' }} />
       <text
-        x="66"
-        y="70.5"
+        x="60"
+        y="43"
         textAnchor="middle"
-        fontSize="11"
+        fontSize="20"
         style={{ fill: 'var(--brand-foreground)' }}
       >
         ♞
@@ -48,7 +48,7 @@ function Board() {
 }
 
 /** A 4-3-3 on a hairline pitch, with my spot in the middle lit. */
-function Pitch({ label }: { label: string }) {
+function Pitch() {
   const players: Array<[number, number, boolean?]> = [
     [10, 40],
     [30, 12], [30, 30], [30, 50], [30, 68],
@@ -66,19 +66,7 @@ function Pitch({ label }: { label: string }) {
       </g>
       {players.map(([x, y, me], i) =>
         me ? (
-          <g key={i}>
-            <circle cx={x} cy={y} r="5.2" style={{ fill: 'var(--brand)' }} />
-            <text
-              x={x}
-              y={y + 1.9}
-              textAnchor="middle"
-              fontSize="4.6"
-              fontWeight="600"
-              style={{ fill: 'var(--brand-foreground)' }}
-            >
-              {label}
-            </text>
-          </g>
+          <circle key={i} cx={x} cy={y} r="4.4" style={{ fill: 'var(--brand)' }} />
         ) : (
           <circle key={i} cx={x} cy={y} r="2.2" style={{ fill: 'var(--border-strong)' }} />
         )
@@ -113,11 +101,7 @@ export function Hobbies() {
   return (
     <Artifact label="Off the clock">
       <ArtifactHeader
-        kicker={
-          <>
-            Personal
-          </>
-        }
+        kicker="Personal"
         title="Off the clock."
         standfirst={hobbies.intro}
       />
@@ -129,7 +113,7 @@ export function Hobbies() {
           className="reveal flex flex-col bg-card"
           style={{ '--i': 1 } as React.CSSProperties}
         >
-          <div className="flex items-center gap-4 border-b border-border-subtle bg-sunken px-5 py-4 sm:px-6">
+          <div className="flex items-center gap-4 border-b border-border-subtle bg-sunken px-5 py-4 sm:min-h-[6.75rem] sm:px-6">
             <div className="h-16 w-16 shrink-0 overflow-hidden rounded-sm border border-border">
               <Board />
             </div>
@@ -137,26 +121,26 @@ export function Hobbies() {
               <h3 id="hobby-chess" className="font-display text-[1.375rem] leading-tight text-foreground">
                 Chess
               </h3>
-              <p className="num mt-0.5 truncate text-[13px] text-muted-foreground">
+              <p className="num mt-0.5 truncate text-[14px] text-muted-foreground">
                 chess.com/{chess.username}
               </p>
             </div>
           </div>
-          <dl className="grid grid-cols-3 gap-px bg-border-subtle">
+          <dl className="flex flex-1 flex-col px-5 sm:px-6">
             {[
               { term: 'Peak rapid', value: stats.peakRapid.toLocaleString('en-US') },
               { term: 'Rapid games', value: `${stats.rapidGames.toLocaleString('en-US')}` },
               { term: 'League', value: stats.league },
             ].map((s) => (
-              <div key={s.term} className="flex min-w-0 flex-col gap-1 bg-card px-4 py-4 sm:px-5">
-                <dt className="text-[13px] text-muted-foreground">{s.term}</dt>
-                <dd className="num order-first truncate text-[1.125rem] leading-none text-foreground">
+              <div key={s.term} className="flex flex-1 items-center justify-between gap-4 border-b border-border-subtle py-3">
+                <dt className="text-[16px] text-ink-soft">{s.term}</dt>
+                <dd className="num text-[20px] leading-none font-medium text-foreground">
                   {s.value}
                 </dd>
               </div>
             ))}
           </dl>
-          <div className="mt-auto flex items-center justify-between gap-3 px-5 py-3.5 sm:px-6">
+          <div className="flex items-center justify-between gap-3 px-5 py-2 sm:px-6">
             <span className="meta flex items-center gap-1.5 text-muted-foreground">
               {stats.live && <span className="status-dot" aria-hidden />}
               {stats.live ? 'Live from chess.com' : 'Last synced stats'}
@@ -165,10 +149,10 @@ export function Hobbies() {
               href={chess.url}
               target="_blank"
               rel="noopener noreferrer"
-              className="press flex items-center gap-1 text-[13px] text-ink-soft hover:text-foreground"
+              className="text-btn"
             >
               Challenge me
-              <ArrowUpRight className="h-3.5 w-3.5" aria-hidden />
+              <ArrowUpRight className="h-4 w-4" aria-hidden />
               <span className="sr-only">(opens chess.com in a new tab)</span>
             </a>
           </div>
@@ -180,15 +164,15 @@ export function Hobbies() {
           className="reveal flex flex-col bg-card"
           style={{ '--i': 2 } as React.CSSProperties}
         >
-          <div className="flex items-center gap-4 border-b border-border-subtle bg-sunken px-5 py-4 sm:px-6">
+          <div className="flex items-center gap-4 border-b border-border-subtle bg-sunken px-5 py-4 sm:min-h-[6.75rem] sm:px-6">
             <div className="h-16 w-20 shrink-0">
-              <Pitch label={football.positionShort} />
+              <Pitch />
             </div>
             <div className="min-w-0">
               <h3 id="hobby-football" className="font-display text-[1.375rem] leading-tight text-foreground">
                 Football
               </h3>
-              <p className="mt-0.5 text-[13px] text-muted-foreground">
+              <p className="mt-0.5 text-[14px] text-muted-foreground">
                 I play {football.position.toLowerCase()} ({football.positionShort})
               </p>
             </div>
@@ -199,16 +183,13 @@ export function Hobbies() {
               <p className="meta mb-2 text-muted-foreground">I support</p>
               <ul className="flex flex-wrap gap-1.5">
                 {football.clubs.map((club) => (
-                  <li
-                    key={club}
-                    className="flex h-7 items-center rounded-md border border-border-strong px-2.5 text-[13px] font-medium text-foreground"
-                  >
+                  <li key={club} className="tag tag--line">
                     {club}
                   </li>
                 ))}
               </ul>
             </div>
-            <p className="mt-auto border-l-2 border-brand py-0.5 pl-3 text-[14px] leading-snug text-foreground">
+            <p className="mt-auto border-t border-border-subtle pt-3 text-[16px] leading-snug text-foreground">
               <span className="font-medium">{football.idol.name}.</span>{' '}
               <span className="text-ink-soft">{football.idol.note}</span>
             </p>

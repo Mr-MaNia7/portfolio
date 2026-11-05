@@ -12,7 +12,7 @@ import { getConfig } from '@/lib/config-loader';
  */
 export function UpworkBadge({
   className = '',
-  iconClassName = 'h-4 w-auto',
+  iconClassName = 'h-4 min-w-4 w-auto',
 }: {
   className?: string;
   iconClassName?: string;

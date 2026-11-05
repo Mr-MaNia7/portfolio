@@ -153,7 +153,7 @@ export function CommandPalette({
           transition={{ duration: 0.16 }}
         >
           <div
-            className="absolute inset-0 bg-[#0b0c0e]/30 dark:bg-black/55"
+            className="absolute inset-0 bg-[#0b0c0e]/45 dark:bg-black/65"
             onClick={() => onOpenChange(false)}
             aria-hidden
           />
@@ -233,14 +233,14 @@ export function CommandPalette({
                         data-index={index}
                         onMouseMove={() => setActive(index)}
                         onClick={() => onRun(cmd)}
-                        className={`flex cursor-pointer items-center gap-3 rounded-md px-3 py-2 text-[14px] transition-colors duration-150 ${
+                        className={`flex min-h-10 cursor-pointer items-center gap-3 rounded-sm px-3 py-1.5 text-[15px] transition-colors duration-150 ${
                           isActive
-                            ? 'bg-secondary text-foreground shadow-[inset_2px_0_0_var(--brand)]'
+                            ? 'bg-brand-soft text-foreground'
                             : 'text-ink-soft'
                         }`}
                       >
                         <Icon
-                          className={`h-4 w-4 shrink-0 ${isActive ? 'text-brand' : 'text-muted-foreground'}`}
+                          className={`h-4 w-4 shrink-0 ${isActive ? 'text-brand-ink' : 'text-muted-foreground'}`}
                         />
                         <span className="min-w-0 flex-1 truncate">
                           {cmd.label}

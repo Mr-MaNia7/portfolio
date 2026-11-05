@@ -81,13 +81,13 @@ export function Contact() {
             {contactInfo.email}
           </a>
         </div>
-        <div className="flex shrink-0 gap-2">
+        <div className="flex shrink-0 gap-3">
           <CopyEmail email={contactInfo.email} label="Copy" />
           <a
             href={`mailto:${contactInfo.email}`}
-            className="btn btn--primary.5 text-[13px]"
+            className="btn btn--primary"
           >
-            <Mail className="h-3.5 w-3.5" aria-hidden />
+            <Mail className="h-4 w-4" aria-hidden />
             Write
           </a>
         </div>
@@ -110,10 +110,10 @@ export function Contact() {
                 className="group flex items-center gap-4 px-5 py-3.5 transition-colors duration-200 hover:bg-sunken sm:px-7"
               >
                 <Icon className="h-4 w-4 shrink-0 text-muted-foreground transition-colors group-hover:text-foreground" />
-                <span className="w-20 shrink-0 text-[14px] font-medium text-foreground">
+                <span className="w-20 shrink-0 text-[16px] font-medium text-foreground">
                   {social.name}
                 </span>
-                <span className="num min-w-0 flex-1 truncate text-[13px] text-muted-foreground">
+                <span className="num min-w-0 flex-1 truncate text-[14px] text-muted-foreground">
                   {handleFor(social.name, social.url, personal.upworkBadge)}
                 </span>
                 <ArrowUpRight

@@ -3,7 +3,7 @@
 import { AnimatePresence, motion } from 'framer-motion';
 import { ArrowLeft, ArrowRight, ArrowUpRight, X } from 'lucide-react';
 import Image from 'next/image';
-import { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
 import type { Project } from '@/types/portfolio';
 import { pad2, splitMetric } from '@/components/artifact/artifact';
@@ -61,6 +61,13 @@ export function ProjectDialog({
     observer.observe(linksEl);
     return () => observer.disconnect();
   }, [linksEl]);
+
+  // Closing hands focus back to whatever opened the dialog.
+  useEffect(() => {
+    if (!open) return;
+    const returnTo = document.activeElement as HTMLElement | null;
+    return () => returnTo?.focus?.({ preventScroll: true });
+  }, [open]);
 
   useEffect(() => {
     if (!open) return;
@@ -138,7 +145,7 @@ export function ProjectDialog({
             className="scrollbar-subtle relative max-h-[92vh] w-full max-w-3xl overflow-y-auto rounded-xl border border-border-strong bg-card shadow-[var(--shadow-float)] sm:max-h-[88vh]"
           >
             {/* Header rail */}
-            <div className="sticky top-0 z-10 flex items-center justify-between gap-3 border-b border-border-subtle bg-card px-5 py-2.5 sm:px-8">
+            <div className="sticky top-0 z-10 flex min-h-16 items-center justify-between gap-3 border-b border-border-subtle bg-card px-5 py-2 sm:px-8">
               <p className="meta truncate text-muted-foreground">
                 <span className="num">{pad2(index + 1)}</span>
                 <span className="text-border-strong">
@@ -155,7 +162,7 @@ export function ProjectDialog({
                       rel="noopener noreferrer"
                       tabIndex={showTopLink ? undefined : -1}
                       aria-hidden={!showTopLink}
-                      className={`btn btn--primary gap-1.5 px-3 text-[13px] transition-[opacity,transform] duration-200 ease-[cubic-bezier(0.22,1,0.36,1)] ${
+                      className={`btn btn--primary btn--sm gap-1.5 transition-[opacity,transform] duration-200 ease-[cubic-bezier(0.22,1,0.36,1)] ${
                         showTopLink ? '' : 'pointer-events-none -translate-y-1 opacity-0'
                       }`}
                     >
@@ -181,17 +188,17 @@ export function ProjectDialog({
                     onNavigate((index - 1 + projects.length) % projects.length)
                   }
                   aria-label="Previous project"
-                  className="press flex h-8 w-8 items-center justify-center rounded-md text-muted-foreground hover:bg-secondary hover:text-foreground"
+                  className="icon-btn"
                 >
-                  <ArrowLeft className="h-4 w-4" />
+                  <ArrowLeft className="h-4 w-4" aria-hidden />
                 </button>
                 <button
                   type="button"
                   onClick={() => onNavigate((index + 1) % projects.length)}
                   aria-label="Next project"
-                  className="press flex h-8 w-8 items-center justify-center rounded-md text-muted-foreground hover:bg-secondary hover:text-foreground"
+                  className="icon-btn"
                 >
-                  <ArrowRight className="h-4 w-4" />
+                  <ArrowRight className="h-4 w-4" aria-hidden />
                 </button>
                 <span aria-hidden className="mx-1 h-4 w-px bg-border" />
                 <button
@@ -199,9 +206,9 @@ export function ProjectDialog({
                   type="button"
                   onClick={onClose}
                   aria-label="Close project"
-                  className="press flex h-8 items-center gap-1.5 rounded-md px-2 text-[13px] text-muted-foreground hover:bg-secondary hover:text-foreground"
+                  className="icon-btn -mr-2"
                 >
-                  <X className="h-4 w-4" />
+                  <X className="h-5 w-5" aria-hidden />
                 </button>
               </div>
             </div>
@@ -237,7 +244,17 @@ function ProjectBody({
 
   return (
     <div className="reveal">
-      {/* Cover */}
+      {/* What it is first, then the cover, so the title is on the first screen of the dialog */}
+      <div className="px-5 pt-6 pb-6 sm:px-8 sm:pt-7">
+        <p className="meta text-brand-ink">{project.category}</p>
+        <h2
+          id="project-dialog-title"
+          className="font-display mt-2 text-[2rem] leading-[1.05] tracking-[-0.03em] text-foreground sm:text-[2.5rem]"
+        >
+          {project.title}
+        </h2>
+      </div>
+
       <div
         className={`relative w-full overflow-hidden ${
           /\.(png|jpe?g|webp)$/.test(projectCover(project))
@@ -255,24 +272,19 @@ function ProjectBody({
         />
       </div>
 
-      <div className="px-5 pt-6 pb-8 sm:px-8 sm:pt-8">
-        <p className="meta text-brand-ink">{project.category}</p>
-        <h2
-          id="project-dialog-title"
-          className="font-display mt-2 text-[2rem] leading-[1.05] tracking-[-0.03em] text-foreground sm:text-[2.5rem]"
-        >
-          {project.title}
-        </h2>
-
+      <div className="px-5 pt-6 pb-8 sm:px-8">
         {/* Facts */}
-        <dl className="mt-6 grid grid-cols-2 gap-px overflow-hidden rounded-md border border-border bg-border-subtle sm:grid-cols-4">
+        <dl
+          className="grid grid-cols-2 gap-px overflow-hidden rounded-md border border-border bg-border-subtle sm:grid-cols-[repeat(var(--facts),minmax(0,1fr))]"
+          style={{ '--facts': facts.length } as React.CSSProperties}
+        >
           {facts.map(({ term, detail }) => (
             <div
               key={term}
               className="flex flex-col gap-1 bg-sunken px-3.5 py-3"
             >
               <dt className="meta text-muted-foreground">{term}</dt>
-              <dd className="num text-[13px] leading-snug text-foreground">
+              <dd className="num text-[14px] leading-snug text-foreground">
                 {detail}
               </dd>
             </div>
@@ -303,7 +315,7 @@ function ProjectBody({
                         {m.figure}
                       </span>
                       {m.caption && (
-                        <span className="text-[13px] text-muted-foreground">
+                        <span className="text-[14px] text-muted-foreground">
                           {m.caption}
                         </span>
                       )}
@@ -329,7 +341,7 @@ function ProjectBody({
               {project.highlights.map((h, i) => (
                 <li
                   key={h}
-                  className="flex gap-4 border-b border-border-subtle py-2.5 text-[16px] leading-snug text-foreground last:border-b-0"
+                  className="flex gap-4 border-b border-border-subtle py-2.5 text-[16px] leading-snug text-foreground first:pt-0 last:border-b-0"
                 >
                   <span className="num pt-0.5 text-[13px] text-brand-ink">
                     {pad2(i + 1)}
@@ -349,7 +361,7 @@ function ProjectBody({
             </h3>
             <ul className="flex flex-wrap gap-1.5">
               {project.techStack.map((t) => (
-                <li key={t} className="tag !h-6 !px-2 !text-[13px]">
+                <li key={t} className="tag">
                   {t}
                 </li>
               ))}
@@ -369,7 +381,7 @@ function ProjectBody({
                 href={link.url}
                 target="_blank"
                 rel="noopener noreferrer"
-                className={`${i === 0 ? 'btn btn--primary' : 'btn btn--secondary'} h-9 px-4 text-[13px]`}
+                className={i === 0 ? 'btn btn--primary' : 'btn btn--secondary'}
               >
                 {link.name}
                 <ArrowUpRight className="h-4 w-4" aria-hidden />

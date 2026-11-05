@@ -39,15 +39,11 @@ export default function AllProjects() {
   return (
     <Artifact label="Projects">
       <ArtifactHeader
-        kicker={
-          <>
-            Selected work
-          </>
-        }
+        kicker="Selected work"
         title="Products I've shipped"
         standfirst="Client work and research. Open any card for the full case study."
         aside={
-          <p className="num text-right text-[13px] leading-relaxed text-muted-foreground">
+          <p className="num text-[14px] leading-relaxed text-muted-foreground sm:text-right">
             <span className="block text-[1.75rem] leading-none text-foreground">
               {pad2(projects.length)}
             </span>
@@ -87,19 +83,13 @@ export default function AllProjects() {
           type="button"
           onClick={() => setExpanded((e) => !e)}
           aria-expanded={expanded}
-          className="press flex w-full items-center justify-center gap-2 border-t border-border bg-sunken py-3 text-[13px] text-ink-soft hover:text-foreground"
+          className="press flex min-h-11 w-full items-center justify-center gap-2 border-t border-border bg-sunken py-2 text-[14px] font-medium text-ink-soft hover:text-foreground"
         >
           <ChevronDown
             aria-hidden
             className={`h-4 w-4 transition-transform duration-200 ${expanded ? 'rotate-180' : ''}`}
           />
-          {expanded ? (
-            'Show fewer'
-          ) : (
-            <>
-              Show <span className="num">{hidden}</span> more
-            </>
-          )}
+          <span>{expanded ? 'Show fewer' : `Show ${hidden} more`}</span>
         </button>
       )}
 
@@ -145,10 +135,10 @@ const ProjectTile = React.forwardRef<
     >
       {/* Cover — branded raster covers are 4:3 and must not be cropped */}
       <span
-        className={`relative block shrink-0 overflow-hidden ${raster ? 'bg-sunken' : 'bg-primary'} ${
+        className={`relative block shrink-0 overflow-hidden ${raster ? (lead ? 'bg-white' : 'bg-sunken') : 'bg-primary'} ${
           raster
             ? lead
-              ? 'aspect-[4/3] sm:w-[46%] sm:self-start'
+              ? 'aspect-[4/3] sm:aspect-auto sm:min-h-full sm:w-1/2 sm:self-stretch'
               : wide
                 ? 'aspect-[4/3] sm:w-[34%] sm:self-start'
                 : 'aspect-[4/3]'
@@ -168,7 +158,7 @@ const ProjectTile = React.forwardRef<
               ? '(min-width: 640px) 340px, 100vw'
               : '(min-width: 640px) 360px, 100vw'
           }
-          className="object-cover transition-transform duration-[240ms] ease-[cubic-bezier(0.22,1,0.36,1)] group-hover:scale-[1.035] motion-reduce:transition-none motion-reduce:group-hover:scale-100"
+          className={`${lead ? 'object-contain' : 'object-cover'} transition-transform duration-[240ms] ease-[cubic-bezier(0.22,1,0.36,1)] group-hover:scale-[1.03] motion-reduce:transition-none motion-reduce:group-hover:scale-100`}
         />
       </span>
 
@@ -194,19 +184,19 @@ const ProjectTile = React.forwardRef<
         </span>
 
         {(lead || wide) && (
-          <span className="line-clamp-3 text-[14px] leading-relaxed text-ink-soft">
-            {project.description}
+          <span className="text-[16px] leading-relaxed text-ink-soft">
+            {project.description?.split('. ')[0]}.
           </span>
         )}
 
         {metric && (
-          <span className="flex items-baseline gap-2 border-l-2 border-brand py-0.5 pl-3">
+          <span className="flex items-baseline gap-2">
             {metric.figure && (
-              <span className="num text-[1.125rem] leading-none text-foreground">
+              <span className="num text-[20px] leading-none font-medium text-foreground">
                 {metric.figure}
               </span>
             )}
-            <span className="line-clamp-1 text-[13px] text-muted-foreground">
+            <span className="text-[14px] text-muted-foreground">
               {metric.caption}
             </span>
           </span>
@@ -221,7 +211,7 @@ const ProjectTile = React.forwardRef<
             ))}
             {more > 0 && <span className="tag !bg-transparent">+{more}</span>}
           </span>
-          <span className="flex shrink-0 items-center gap-1 text-[13px] text-muted-foreground transition-colors group-hover:text-foreground">
+          <span className="flex shrink-0 items-center gap-1 text-[14px] text-muted-foreground transition-colors group-hover:text-foreground">
             <span className={lead ? '' : 'sr-only'}>Open case study</span>
             <ArrowUpRight
               aria-hidden

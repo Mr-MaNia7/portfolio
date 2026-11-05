@@ -132,9 +132,9 @@ export function HireSheet({
                 type="button"
                 onClick={onClose}
                 aria-label="Close"
-                className="press -mr-2 flex h-9 w-9 shrink-0 items-center justify-center rounded-md text-muted-foreground hover:bg-secondary hover:text-foreground"
+                className="icon-btn -mt-1 -mr-2"
               >
-                <X className="h-4 w-4" />
+                <X className="h-5 w-5" aria-hidden />
               </button>
             </div>
 
@@ -151,7 +151,7 @@ export function HireSheet({
                     <Briefcase className="h-4 w-4" aria-hidden />
                   </span>
                   <span className="min-w-0 flex-1">
-                    <span className="flex items-center gap-2 text-[16px] font-semibold text-foreground">
+                    <span className="flex flex-wrap items-center gap-2 text-[16px] font-medium text-foreground">
                       Hire me on Upwork
                       <span className="tag !h-5 !border-brand/30 !bg-brand-soft !text-brand-ink">
                         Recommended
@@ -175,17 +175,17 @@ export function HireSheet({
                   <Mail className="h-4 w-4" aria-hidden />
                 </span>
                 <span className="min-w-0 flex-1">
-                  <span className="block text-[16px] font-semibold text-foreground">
+                  <span className="block text-[16px] font-medium text-foreground">
                     Email me directly
                   </span>
                   <a
                     href={`mailto:${personal.email}?subject=${encodeURIComponent('Project enquiry')}`}
-                    className="num mt-0.5 block truncate text-[14px] text-ink-soft underline decoration-border-strong underline-offset-4 hover:text-foreground hover:decoration-brand"
+                    className="num mt-0.5 inline-block max-w-full truncate text-[14px] text-ink-soft underline decoration-border-strong underline-offset-4 hover:text-foreground hover:decoration-brand"
                   >
                     {personal.email}
                   </a>
                 </span>
-                <CopyEmail email={personal.email} label="Copy" />
+                <CopyEmail email={personal.email} label="Copy" className="btn--sm" />
               </li>
 
               <li>
@@ -199,7 +199,7 @@ export function HireSheet({
                     <Users className="h-4 w-4" aria-hidden />
                   </span>
                   <span className="min-w-0 flex-1">
-                    <span className="block text-[16px] font-semibold text-foreground">
+                    <span className="block text-[16px] font-medium text-foreground">
                       Need a team? {agency.name}
                     </span>
                     <span className="mt-0.5 block text-[14px] leading-snug text-muted-foreground">
@@ -221,8 +221,8 @@ export function HireSheet({
               <p className="meta mb-2.5 text-muted-foreground">What happens next</p>
               <ol className="space-y-1.5">
                 {steps.map((s, i) => (
-                  <li key={s} className="flex gap-3 text-[14px] leading-snug text-ink-soft">
-                    <span className="num pt-px text-[13px] text-brand-ink">{pad2(i + 1)}</span>
+                  <li key={s} className="flex gap-3 text-[16px] leading-snug text-ink-soft">
+                    <span className="num pt-0.5 text-[14px] text-brand-ink">{pad2(i + 1)}</span>
                     {s}
                   </li>
                 ))}

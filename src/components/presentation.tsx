@@ -8,6 +8,7 @@ import {
   Artifact,
   ArtifactHeader,
   ArtifactSection,
+  ArtifactStats,
 } from '@/components/artifact/artifact';
 
 /** "About" dossier: portrait, the bio set as an essay, and a facts ledger. */
@@ -30,7 +31,7 @@ export function Presentation() {
     },
     {
       term: 'Standing',
-      detail: <UpworkBadge className="!text-[14px] !text-foreground" />,
+      detail: <UpworkBadge className="!text-[16px] !text-foreground" />,
     },
     {
       term: 'Education',
@@ -42,11 +43,7 @@ export function Presentation() {
   return (
     <Artifact label="About">
       <ArtifactHeader
-        kicker={
-          <>
-            About
-          </>
-        }
+        kicker="About"
         title={profile.name}
         standfirst={profile.title}
         aside={
@@ -92,24 +89,7 @@ export function Presentation() {
         </dl>
       </ArtifactSection>
 
-      <dl
-        className="reveal grid grid-cols-2 gap-px border-t border-border-subtle bg-border-subtle sm:grid-cols-4"
-        style={{ '--i': 3 } as React.CSSProperties}
-      >
-        {stats.map((s) => (
-          <div
-            key={s.label}
-            className="flex flex-col gap-1.5 bg-sunken px-5 py-4 sm:px-7"
-          >
-            <dt className="text-[13px] leading-snug text-muted-foreground">
-              {s.label}
-            </dt>
-            <dd className="num order-first text-[1.25rem] leading-none text-foreground">
-              {s.value}
-            </dd>
-          </div>
-        ))}
-      </dl>
+      <ArtifactStats stats={stats} index={3} />
     </Artifact>
   );
 }

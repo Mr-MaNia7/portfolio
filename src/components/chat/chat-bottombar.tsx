@@ -325,7 +325,7 @@ export default function ChatBottombar({
             className="flex min-h-9 flex-wrap items-center justify-between gap-x-2 px-1 pt-1.5 text-[13px] leading-snug text-muted-foreground"
           >
             <span aria-live="polite">{status ?? 'AI answers. It can make mistakes.'}</span>
-            {suggestionActive && (
+            {suggestionActive && !isLoading && (
               <button
                 type="button"
                 onClick={acceptSuggestion}

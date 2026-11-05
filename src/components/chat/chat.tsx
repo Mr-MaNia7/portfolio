@@ -51,6 +51,9 @@ type TimelineItem =
   | { key: string; kind: 'preset'; item: PresetItem }
   | { key: string; kind: 'error' };
 
+/** Space kept above a pinned question: the thread's own top padding. */
+const PIN_GAP = 32;
+
 const Chat = () => {
   const searchParams = useSearchParams();
   const initialQuery = searchParams.get('query');
@@ -73,7 +76,10 @@ const Chat = () => {
   const orderRef = useRef(0);
   const nextOrder = () => orderRef.current++;
 
+  const scrollerRef = useRef<HTMLDivElement>(null);
+  const threadRef = useRef<HTMLDivElement>(null);
   const bottomRef = useRef<HTMLDivElement>(null);
+  const spacerRef = useRef<HTMLDivElement>(null);
   const reduceMotion = useReducedMotion();
 
   const { messages, status, stop, regenerate, sendMessage, setMessages } =
@@ -162,18 +168,61 @@ const Chat = () => {
   const latestPresetId =
     !loadingSubmit && lastEntry?.kind === 'preset' ? lastEntry.item.id : null;
 
-  // Keep the newest turn in view (new turns and while streaming).
-  useEffect(() => {
-    bottomRef.current?.scrollIntoView({
-      behavior: reduceMotion ? 'auto' : 'smooth',
-      block: 'end',
-    });
-  }, [timeline.length, loadingSubmit, reduceMotion]);
-  useEffect(() => {
-    if (status === 'streaming') {
-      bottomRef.current?.scrollIntoView({ behavior: 'auto', block: 'end' });
+  // The question that started the newest turn. Answers are taller than the screen,
+  // so a new turn pins this to the top of the transcript and reads downward.
+  const lastTurnKey = useMemo(() => {
+    for (let i = timeline.length - 1; i >= 0; i--) {
+      const e = timeline[i];
+      if (e.kind === 'preset' || (e.kind === 'msg' && e.message.role === 'user')) return e.key;
     }
-  }, [messages, status]);
+    return null;
+  }, [timeline]);
+
+  // How far the newest question sits below the top of the thread, ignoring its entrance rise.
+  const lastTurnOffset = useCallback(() => {
+    const thread = threadRef.current;
+    const starts = thread?.querySelectorAll<HTMLElement>('[data-turn-start]');
+    const last = starts?.[starts.length - 1];
+    if (!thread || !last) return null;
+    const rise = new DOMMatrixReadOnly(getComputedStyle(last).transform).m42;
+    return last.getBoundingClientRect().top - rise - thread.getBoundingClientRect().top;
+  }, []);
+
+  // A short answer needs room under it, or the transcript cannot scroll far enough to pin it.
+  const syncSpacer = useCallback(() => {
+    const scroller = scrollerRef.current;
+    const thread = threadRef.current;
+    const bottom = bottomRef.current;
+    const spacer = spacerRef.current;
+    const offset = lastTurnOffset();
+    if (!scroller || !thread || !bottom || !spacer || offset === null) return;
+    const tail = bottom.getBoundingClientRect().bottom - thread.getBoundingClientRect().top - offset;
+    const below = thread.getBoundingClientRect().bottom - bottom.getBoundingClientRect().bottom;
+    const room = Math.max(0, scroller.clientHeight - PIN_GAP - tail - below);
+    spacer.style.height = `${room}px`;
+  }, [lastTurnOffset]);
+
+  const hasTurns = !isEmptyState;
+  useEffect(() => {
+    const scroller = scrollerRef.current;
+    const thread = threadRef.current;
+    if (!hasTurns || !scroller || !thread) return;
+    const ro = new ResizeObserver(syncSpacer);
+    ro.observe(scroller);
+    ro.observe(thread);
+    return () => ro.disconnect();
+  }, [hasTurns, syncSpacer]);
+
+  useEffect(() => {
+    if (!lastTurnKey) return;
+    syncSpacer();
+    const offset = lastTurnOffset();
+    if (offset === null) return;
+    scrollerRef.current?.scrollTo({
+      top: Math.max(0, offset - PIN_GAP),
+      behavior: reduceMotion ? 'auto' : 'smooth',
+    });
+  }, [lastTurnKey, reduceMotion, syncSpacer, lastTurnOffset]);
 
   const addPreset = useCallback(
     (question: string, reply: string, tool: string) => {
@@ -390,7 +439,7 @@ const Chat = () => {
             {/* Who you are talking to, always in view on a desktop */}
             <aside
               aria-label="About this twin"
-              className="scrollbar-subtle hidden w-[320px] shrink-0 flex-col gap-6 overflow-y-auto py-8 lg:flex"
+              className="scrollbar-subtle hidden w-[280px] shrink-0 flex-col gap-6 overflow-x-hidden overflow-y-auto py-8 pl-3 -ml-3 lg:flex xl:w-[320px]"
             >
               <div className="flex items-center gap-3">
                 <span className="relative h-12 w-12 shrink-0 overflow-hidden rounded-xl">
@@ -413,6 +462,7 @@ const Chat = () => {
                 <p className="mb-3 text-[14px] font-medium text-muted-foreground">Ask about</p>
                 <HelperBoost
                   variant="rail"
+                  current={lastEntry?.kind === 'preset' ? lastEntry.item.question : undefined}
                   submitQuery={submitQuery}
                   handlePresetReply={handlePresetReply}
                   commands={commands}
@@ -421,8 +471,9 @@ const Chat = () => {
             </aside>
 
             <div className="flex min-h-0 min-w-0 flex-1 flex-col">
-              <div className="scrollbar-subtle min-h-0 flex-1 overflow-y-auto">
-                <div className="flex flex-col gap-8 pt-6 pb-8 sm:gap-10 sm:pt-8 lg:pr-4">
+              {/* The scrollbar sits in the gutter, so answers end on the page's right line */}
+              <div ref={scrollerRef} className="scrollbar-subtle min-h-0 flex-1 overflow-y-auto lg:-mr-4 lg:pr-4">
+                <div ref={threadRef} className="flex flex-col gap-8 pt-8 pb-8 sm:gap-10">
                   <AnimatePresence initial={false}>
                     {timeline.map((entry) => {
                       if (entry.kind === 'error') {
@@ -518,10 +569,11 @@ const Chat = () => {
 
                   <div ref={bottomRef} className="h-px w-full" />
                 </div>
+                <div ref={spacerRef} aria-hidden />
               </div>
 
               {/* Composer */}
-              <div className="relative z-30 shrink-0 bg-background pb-[env(safe-area-inset-bottom)] lg:pr-4">
+              <div className="relative z-30 shrink-0 bg-background pb-[env(safe-area-inset-bottom)]">
                 <div className="flex flex-col gap-2 pt-2 pb-2">
                   <div className="hidden sm:block lg:hidden">
                     <HelperBoost
@@ -544,7 +596,7 @@ const Chat = () => {
 function UserBubble({ text }: { text: string }) {
   if (!text.trim()) return null;
   return (
-    <div className="reveal flex justify-end">
+    <div data-turn-start className="reveal flex justify-end">
       <p className="max-w-[85%] rounded-2xl rounded-br-md bg-brand px-4 py-2.5 text-[16px] leading-relaxed break-words whitespace-pre-wrap text-brand-foreground lg:max-w-[70%]">
         <span className="sr-only">You asked: </span>
         {text}
@@ -573,7 +625,7 @@ function QuotaNotice({
           <h3 className="font-display text-[1.25rem] leading-tight text-foreground">
             Live answers are paused for a moment
           </h3>
-          <p className="measure mt-1.5 text-[14px] leading-relaxed text-ink-soft">
+          <p className="measure mt-1.5 text-[16px] leading-relaxed text-ink-soft">
             The AI model hit its rate limit. Everything else still works: the
             instant answers and the search menu are pre-written and need no AI call.
           </p>

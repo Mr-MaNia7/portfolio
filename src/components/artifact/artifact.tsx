@@ -2,8 +2,8 @@ import { cn } from '@/lib/utils';
 import type { CSSProperties, ReactNode } from 'react';
 
 /**
- * The sheet every tool-rendered card is printed on: one warm step above the
- * ground, a 1px hairline, a 12px corner. No shadow — it rests on the desk.
+ * The sheet every tool-rendered card sits on: one step above the ground, a 1px
+ * hairline, the card radius. No shadow.
  */
 export function Artifact({
   children,
@@ -28,7 +28,7 @@ export function Artifact({
   );
 }
 
-/** Kicker + serif title + standfirst, with an optional aside on the right. */
+/** Label + title + standfirst, with an optional aside on the right. */
 export function ArtifactHeader({
   kicker,
   title,
@@ -65,7 +65,7 @@ export function ArtifactHeader({
   );
 }
 
-/** A ruled section inside an artifact, with an optional mono label. */
+/** A ruled section inside an artifact, with an optional label. */
 export function ArtifactSection({
   label,
   children,
@@ -90,6 +90,31 @@ export function ArtifactSection({
       {label && <p className="meta mb-3 text-muted-foreground">{label}</p>}
       {children}
     </div>
+  );
+}
+
+/** The one stat strip every answer uses. */
+export function ArtifactStats({
+  stats,
+  index,
+}: {
+  stats: Array<{ value: string; label: string }>;
+  index?: number;
+}) {
+  return (
+    <dl
+      className="stat-strip reveal"
+      style={index !== undefined ? ({ '--i': index } as CSSProperties) : undefined}
+    >
+      {stats.map((s) => (
+        <div key={s.label}>
+          <dt className="text-[14px] leading-snug text-muted-foreground">{s.label}</dt>
+          <dd className="num order-first text-[24px] leading-none font-medium tracking-tight text-foreground">
+            {s.value}
+          </dd>
+        </div>
+      ))}
+    </dl>
   );
 }
 

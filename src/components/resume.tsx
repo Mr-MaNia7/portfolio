@@ -30,11 +30,7 @@ export function Resume() {
   return (
     <Artifact label="Résumé">
       <ArtifactHeader
-        kicker={
-          <>
-            Résumé
-          </>
-        }
+        kicker="Résumé"
         title="Experience"
         standfirst={resumeDetails.description}
       />
@@ -49,7 +45,7 @@ export function Resume() {
           aria-hidden
         />
         <div className="min-w-0 flex-1">
-          <p className="num truncate text-[13px] text-foreground">{fileName}</p>
+          <p className="num truncate text-[14px] text-foreground">{fileName}</p>
           <p className="meta text-muted-foreground">
             {resumeDetails.fileType}
             {hasSize ? ` · ${resumeDetails.fileSize}` : ''} · Updated{' '}
@@ -91,10 +87,10 @@ export function Resume() {
             <h3 className="font-display text-[1.1875rem] leading-snug text-foreground">
               {education.degree}
             </h3>
-            <p className="mt-1 text-[14px] text-ink-soft">
+            <p className="mt-1 text-[16px] text-ink-soft">
               {education.institution}
             </p>
-            <p className="num mt-2 text-[13px] text-muted-foreground">
+            <p className="num mt-2 text-[14px] text-muted-foreground">
               {[
                 education.stream && `${education.stream} stream`,
                 education.gpa && `GPA ${education.gpa}`,
@@ -113,7 +109,7 @@ export function Resume() {
               <h3 className="font-display text-[1.1875rem] leading-snug text-foreground">
                 {education.research.title}
               </h3>
-              <p className="mt-1 text-[14px] leading-relaxed text-ink-soft">
+              <p className="mt-1 text-[16px] leading-relaxed text-ink-soft">
                 {education.research.summary}
               </p>
               {education.research.link && (
@@ -121,9 +117,9 @@ export function Resume() {
                   href={education.research.link}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="mt-2 inline-flex items-center gap-1.5 text-[13px] font-medium text-brand-ink underline decoration-brand/40 underline-offset-4 hover:decoration-brand"
+                  className="mt-2 inline-flex min-h-9 items-center gap-1.5 text-[14px] font-medium text-brand-ink underline decoration-brand/40 underline-offset-4 hover:decoration-brand"
                 >
-                  <FileText className="size-3.5" aria-hidden />
+                  <FileText className="size-4" aria-hidden />
                   Read the paper · DOI {education.research.link.replace(/^https?:\/\/doi\.org\//, '')}
                 </a>
               )}
@@ -138,7 +134,7 @@ export function Resume() {
             {education.achievements.map((a, i) => (
               <li
                 key={a}
-                className="flex gap-3 border-b border-border-subtle py-2.5 text-[14px] leading-snug text-foreground last:border-b-0 sm:[&:nth-last-child(2)]:border-b-0"
+                className="flex gap-3 border-t border-border-subtle py-2.5 text-[16px] leading-snug text-foreground first:border-t-0 first:pt-0 sm:[&:nth-child(2)]:border-t-0 sm:[&:nth-child(2)]:pt-0"
               >
                 <span className="num pt-px text-[13px] text-muted-foreground">
                   {pad2(i + 1)}
@@ -169,12 +165,12 @@ function TimelineEntry({
 
   return (
     <li
-      className="reveal grid gap-x-6 sm:grid-cols-[8.5rem_1fr]"
+      className="reveal grid gap-x-6 sm:grid-cols-[9.5rem_1fr]"
       style={{ '--i': index + 2 } as React.CSSProperties}
     >
       {/* Date rail */}
       <div className="pt-5 sm:pt-6">
-        <p className="num text-[13px] whitespace-nowrap text-foreground">
+        <p className="num text-[14px] whitespace-nowrap text-foreground">
           {exp.duration}
         </p>
         <p className="meta mt-1 text-muted-foreground">{exp.type}</p>
@@ -189,10 +185,10 @@ function TimelineEntry({
           }`}
         />
         <div className="border-b border-border-subtle pt-2 pb-5 sm:pt-5">
-          <h3 className="text-[16px] leading-snug font-semibold text-foreground">
+          <h3 className="text-[18px] leading-snug font-medium text-foreground">
             {exp.position}
           </h3>
-          <p className="mt-0.5 text-[14px] text-brand-ink">
+          <p className="mt-1 text-[14px] text-brand-ink">
             {exp.company}
             {exp.location && (
               <span className="text-muted-foreground"> · {exp.location}</span>
@@ -209,11 +205,11 @@ function TimelineEntry({
                 onClick={onToggle}
                 aria-expanded={open}
                 aria-controls={panelId}
-                className="press mt-3 -ml-1 flex items-center gap-1.5 rounded-sm px-1 py-0.5 text-[13px] text-muted-foreground hover:text-foreground"
+                className="text-btn mt-2"
               >
                 <ChevronDown
                   aria-hidden
-                  className={`h-3.5 w-3.5 transition-transform duration-200 ${open ? 'rotate-180' : ''}`}
+                  className={`h-4 w-4 transition-transform duration-200 ${open ? 'rotate-180' : ''}`}
                 />
                 {open ? 'Hide' : 'Show'} highlights &amp; stack
               </button>
@@ -230,11 +226,11 @@ function TimelineEntry({
               >
                 <div className="overflow-hidden">
                   {exp.highlights && exp.highlights.length > 0 && (
-                    <ul className="hang mt-3 space-y-1.5">
+                    <ul className="hang mt-2 space-y-2">
                       {exp.highlights.map((h) => (
                         <li
                           key={h}
-                          className="flex gap-2.5 text-[14px] leading-snug text-foreground"
+                          className="flex gap-2.5 text-[16px] leading-snug text-foreground"
                         >
                           <span aria-hidden className="text-brand">
                             –

@@ -9,6 +9,8 @@ interface HelperBoostProps {
   commands: Command[];
   /** rail: full questions in the desktop side column. row: short topic chips above the composer. */
   variant?: 'rail' | 'row';
+  /** The question the newest answer belongs to, marked in the rail. */
+  current?: string;
 }
 
 /** Quick answers for a conversation under way: the same instant answers as the landing page. */
@@ -17,6 +19,7 @@ export default function HelperBoost({
   handlePresetReply,
   commands,
   variant = 'row',
+  current,
 }: HelperBoostProps) {
   const handleClick = (q: string) => {
     const preset = presetReplies[q as keyof typeof presetReplies];
@@ -35,13 +38,14 @@ export default function HelperBoost({
 
   return (
     <nav aria-label="Quick answers" className="w-full">
-      <ul className={variant === 'rail' ? 'flex flex-col gap-2' : 'flex flex-wrap gap-2'}>
+      <ul className={variant === 'rail' ? 'flex flex-col gap-0.5' : 'flex flex-wrap gap-2'}>
         {chips.map((cmd) => (
           <li key={cmd.id}>
             <button
               onClick={() => handleClick(cmd.payload || cmd.label)}
               title={cmd.label}
-              className={`chip ${variant === 'rail' ? 'w-full' : ''}`}
+              aria-current={variant === 'rail' && (cmd.payload || cmd.label) === current ? 'true' : undefined}
+              className={variant === 'rail' ? 'rail-link' : 'chip'}
             >
               {variant === 'rail' ? cmd.label : short(cmd)}
             </button>

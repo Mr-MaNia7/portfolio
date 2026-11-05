@@ -102,7 +102,7 @@ const ChatLanding: React.FC<ChatLandingProps> = ({
       {stats.map((s) => (
         <div key={s.label} className="flex flex-col gap-1">
           <dt className="text-[14px] leading-snug text-muted-foreground">{s.label}</dt>
-          <dd className="num order-first text-[28px] leading-none font-medium tracking-tight text-foreground">{s.value}</dd>
+          <dd className="hero__stat-figure num order-first leading-none font-medium tracking-tight text-foreground">{s.value}</dd>
         </div>
       ))}
     </>
@@ -138,7 +138,7 @@ const ChatLanding: React.FC<ChatLandingProps> = ({
                   </span>
                 )}
               </p>
-              <div className="mt-7 flex flex-wrap gap-3 max-sm:hidden">
+              <div className="hero__actions flex flex-wrap gap-3 max-sm:hidden">
                 <button type="button" onClick={onHire} aria-haspopup="dialog" className="btn btn--primary">
                   Hire me
                   <ArrowUpRight className="h-4 w-4" aria-hidden />
@@ -147,12 +147,13 @@ const ChatLanding: React.FC<ChatLandingProps> = ({
                   See the {flagship.client ?? 'flagship'} case study
                 </button>
               </div>
-              <div className="mt-4 max-sm:hidden">
+              {/* The proof, as one block at the foot of the column */}
+              <div className="hero__proof max-sm:hidden">
                 <UpworkBadge className="!text-[14px]" />
+                <dl className="hidden grid-cols-2 gap-x-6 gap-y-5 lg:grid [@media(max-height:820px)]:hidden">
+                  {statList}
+                </dl>
               </div>
-              <dl className="mt-auto hidden grid-cols-2 gap-x-6 gap-y-5 pt-8 lg:grid [@media(max-height:820px)]:hidden">
-                {statList}
-              </dl>
             </div>
 
             <div className="hero__art">
@@ -179,22 +180,41 @@ const ChatLanding: React.FC<ChatLandingProps> = ({
                 </div>
 
                 <div className="scrollbar-subtle flex min-h-0 flex-1 flex-col gap-3 overflow-y-auto px-4 py-4 sm:px-5 sm:py-5">
-                  <p className="max-w-[34rem] rounded-2xl rounded-tl-md bg-sunken px-4 py-3 text-[16px] leading-[1.45] text-foreground">
+                  <p className="twin-msg max-w-[34rem] rounded-2xl rounded-tl-md bg-sunken px-4 py-3 text-foreground">
                     I&apos;m {personal.shortName}&apos;s AI twin. Ask what you&apos;d ask in a first interview: what
                     I&apos;ve shipped, how I&apos;d handle your project, whether I&apos;m the right fit.
                   </p>
                   {/* A real exchange from the instant answers, so the window shows what it does. */}
-                  <div className="hidden flex-col gap-3 xl:flex [@media(max-height:760px)]:hidden">
-                    <p className="ml-auto max-w-[80%] rounded-2xl rounded-br-md bg-brand px-4 py-2.5 text-[16px] leading-[1.45] text-brand-foreground">
+                  <div className="twin-exchange flex-col gap-3">
+                    <p className="twin-msg ml-auto max-w-[80%] rounded-2xl rounded-br-md bg-brand px-4 py-2.5 text-brand-foreground">
                       Can I trust you with a production system?
                     </p>
-                    <div className="max-w-[34rem] rounded-2xl rounded-tl-md bg-sunken px-4 py-3 text-[16px] leading-[1.45] text-foreground">
+                    <div className="twin-msg max-w-[34rem] rounded-2xl rounded-tl-md bg-sunken px-4 py-3 text-foreground">
                       {flagship.client} hired me on a 45-day trial to make its backend multi-tenant. Since June 2025 my scope has grown to the whole platform, with {flagship.metrics?.[0]} so far.{' '}
                       <button type="button" onClick={() => setOpenIndex(flagshipIndex)} aria-haspopup="dialog" className="link">
                         Read the case study
                       </button>
                     </div>
                   </div>
+                  {/* Taller windows show more of the same answers, in their own approved words. */}
+                  <div className="twin-exchange--tall flex-col gap-3">
+                    <p className="twin-msg ml-auto max-w-[80%] rounded-2xl rounded-br-md bg-brand px-4 py-2.5 text-brand-foreground">
+                      {index.find((c) => c.id === 'availability')?.label}
+                    </p>
+                    <p className="twin-msg max-w-[34rem] rounded-2xl rounded-tl-md bg-sunken px-4 py-3 text-foreground">
+                      {availability.headline}. {availability.workStyle}
+                    </p>
+                  </div>
+                  {shortQuotes[0] && (
+                    <div className="twin-exchange--taller flex-col gap-3">
+                      <p className="twin-msg ml-auto max-w-[80%] rounded-2xl rounded-br-md bg-brand px-4 py-2.5 text-brand-foreground">
+                        {index.find((c) => c.id === 'reviews')?.label}
+                      </p>
+                      <p className="twin-msg max-w-[34rem] rounded-2xl rounded-tl-md bg-sunken px-4 py-3 text-foreground">
+                        “{shortQuotes[0].text}”
+                      </p>
+                    </div>
+                  )}
                   <ul className="twin-chips mt-auto flex flex-wrap gap-2 pt-1" aria-label="Suggested questions">
                     {index.slice(0, 3).map((cmd) => (
                       <li key={cmd.id}>
@@ -203,7 +223,7 @@ const ChatLanding: React.FC<ChatLandingProps> = ({
                         </button>
                       </li>
                     ))}
-                    <li className="hidden sm:max-lg:block xl:block">
+                    <li className="twin-chip-extra">
                       <button type="button" onClick={() => submitQuery(LIVE_EXAMPLES[2])} className="chip">
                         {LIVE_EXAMPLES[2]}
                       </button>
@@ -237,18 +257,16 @@ const ChatLanding: React.FC<ChatLandingProps> = ({
               type="button"
               onClick={() => setOpenIndex(flagshipIndex)}
               aria-haspopup="dialog"
-              className="card card--link w-full lg:grid lg:grid-cols-12 lg:items-stretch lg:gap-6"
+              className="flagship card card--link w-full"
             >
-              <span className="relative block aspect-[4/3] w-full overflow-hidden lg:col-span-6 lg:self-center">
-                <Image src={projectCover(flagship)} alt={`${flagship.title} cover`} fill sizes="(min-width: 1024px) 50vw, 100vw" className="zoom object-cover" />
-              </span>
-              <span className="flex min-w-0 flex-col gap-4 p-6 lg:col-span-6 lg:py-8 lg:pr-8 lg:pl-2">
+              {/* The rows take the height the cover sets, so nothing floats above the action */}
+              <span className="flagship__body flex min-w-0 flex-col gap-3 px-6 lg:pr-0 lg:pl-7">
                 <span className="flex items-center justify-between gap-3 text-[14px] text-muted-foreground">
                   <span className="font-medium text-brand-ink">{flagship.category}</span>
                   <span className="num shrink-0">{flagship.date}</span>
                 </span>
-                <span className="font-display text-[24px] leading-[1.15] text-foreground">{flagship.title}</span>
-                <ul className="flex flex-col gap-2">
+                <span className="flagship__title font-display leading-[1.15] text-foreground">{flagship.title}</span>
+                <ul className="flagship__rows">
                   {flagship.highlights?.slice(0, 4).map((h) => (
                     <li key={h} className="text-[16px] leading-snug text-ink-soft">
                       {h}
@@ -256,10 +274,13 @@ const ChatLanding: React.FC<ChatLandingProps> = ({
                   ))}
                 </ul>
                 <Metrics project={flagship} />
-                <span className="mt-auto flex items-center gap-1.5 pt-2 text-[16px] font-medium text-foreground">
+                <span className="flex items-center gap-1.5 pt-1 text-[16px] font-medium text-foreground">
                   Read the case study
                   <ArrowRight aria-hidden className="h-4 w-4" />
                 </span>
+              </span>
+              <span className="flagship__cover max-lg:-order-1 w-full">
+                <Image src={projectCover(flagship)} alt={`${flagship.title} cover`} fill sizes="(min-width: 1024px) 60vw, 100vw" className="zoom object-contain" />
               </span>
             </button>
           </div>
@@ -298,16 +319,16 @@ const ChatLanding: React.FC<ChatLandingProps> = ({
                 <p className="section__lead">Pick the problem closest to yours. My twin explains how I&apos;d approach it.</p>
               </div>
             </div>
-            <div className="grid-12">
-              <ol className="col-span-12 lg:col-span-7">
+            <div className="grid-12 section__body">
+              <ol className="row-list col-span-12 lg:col-span-7">
                 {availability.focusAreas.map((area) => (
                   <li key={area} className="border-b border-border">
                     <button
                       type="button"
                       onClick={() => submitQuery(`How would you help with this: ${area}?`)}
-                      className="group flex min-h-[72px] w-full items-center gap-4 py-3 text-left"
+                      className="group flex w-full items-center gap-4 py-2 text-left"
                     >
-                      <span className="font-display flex-1 text-[20px] leading-snug text-foreground sm:text-[24px]">{area}</span>
+                      <span className="row-list__title font-display flex-1 leading-snug text-foreground">{area}</span>
                       <span className="flex shrink-0 items-center gap-1.5 text-[15px] font-medium text-brand-ink">
                         <span className="hidden sm:inline">Ask my twin</span>
                         <ArrowRight aria-hidden className="h-4 w-4 transition-transform duration-150 group-hover:translate-x-[3px]" />
@@ -316,10 +337,10 @@ const ChatLanding: React.FC<ChatLandingProps> = ({
                   </li>
                 ))}
               </ol>
-              <div className="col-span-12 flex flex-col gap-6 max-sm:gap-3 lg:col-span-5">
-                <div className="card p-6">
+              <div className="services-side col-span-12 flex flex-col lg:col-span-5">
+                <div className="services-card card flex-1">
                   <h3 className="font-display text-[20px] leading-tight">The stack I ship with</h3>
-                  <ul className="mt-5 grid grid-cols-4 gap-x-2 gap-y-5">
+                  <ul className="services-card__tools grid flex-1 grid-cols-4 content-evenly gap-x-2">
                     {TOOLS.map((t) => (
                       <li key={t.name} className="flex flex-col items-center gap-2 text-center">
                         <Image src={t.src} alt="" width={32} height={32} unoptimized className="h-8 w-8 object-contain dark:[&[src*='nextjs']]:invert" />
@@ -328,7 +349,7 @@ const ChatLanding: React.FC<ChatLandingProps> = ({
                     ))}
                   </ul>
                 </div>
-                <a href={agency.url} target="_blank" rel="noopener noreferrer" className="card card--link flex-1 gap-3 p-6">
+                <a href={agency.url} target="_blank" rel="noopener noreferrer" className="services-card card card--link flex-1 gap-3">
                   <span className="font-display text-[20px] leading-tight text-foreground">Need a team? Meet {agency.name}.</span>
                   <span className="text-[16px] leading-relaxed text-ink-soft">{agency.pitch}</span>
                   <span className="mt-auto flex items-center gap-1.5 pt-1 text-[16px] font-medium text-foreground">
@@ -358,7 +379,7 @@ const ChatLanding: React.FC<ChatLandingProps> = ({
             </div>
             <div className="grid-12">
               <figure className="col-span-12 lg:col-span-7">
-                <blockquote className="font-display text-[24px] leading-[1.3] tracking-[-0.02em] text-foreground sm:text-[32px]">
+                <blockquote className="quote-lead font-display leading-[1.3] tracking-[-0.02em] text-foreground">
                   “{lead.text}”
                 </blockquote>
                 <figcaption className="mt-5 text-[15px] text-muted-foreground">
@@ -368,8 +389,8 @@ const ChatLanding: React.FC<ChatLandingProps> = ({
               </figure>
               <ul className="col-span-12 flex flex-col gap-6 max-sm:gap-3 lg:col-span-5">
                 {shortQuotes.map((q) => (
-                  <li key={q.text} className="card flex-1 justify-between gap-3 p-6">
-                    <p className="text-[16px] leading-relaxed text-foreground">“{q.text}”</p>
+                  <li key={q.text} className="quote-card card flex-1 justify-between gap-3">
+                    <p className="leading-relaxed text-foreground">“{q.text}”</p>
                     <p className="text-[14px] text-muted-foreground">
                       {q.engagement} · <span className="num">{q.date}</span>
                     </p>
@@ -400,15 +421,16 @@ const ChatLanding: React.FC<ChatLandingProps> = ({
                 <kbd className="kbd max-[1023px]:hidden">⌘K</kbd>
               </button>
             </div>
-            <ul className="grid grid-cols-2 gap-6 max-sm:gap-3 lg:grid-cols-4">
+            <div className="section__body flex flex-col">
+            <ul className="question-grid grid grid-cols-2 lg:grid-cols-4">
               {index.map((cmd) => (
                 <li key={cmd.id} className="flex">
                   <button
                     type="button"
                     onClick={() => ask(cmd.payload || cmd.label)}
-                    className="card card--link min-h-[104px] w-full justify-between gap-3 p-4 sm:p-5"
+                    className="question-card card card--link w-full justify-between gap-3"
                   >
-                    <span className="font-display text-[18px] leading-[1.2] text-foreground sm:text-[20px]">{cmd.label}</span>
+                    <span className="question-card__title font-display leading-[1.2] text-foreground">{cmd.label}</span>
                     <span className="flex items-center gap-1 text-[14px] font-medium text-brand-ink">
                       Get the answer
                       <ArrowRight aria-hidden className="h-4 w-4" />
@@ -417,13 +439,13 @@ const ChatLanding: React.FC<ChatLandingProps> = ({
                 </li>
               ))}
             </ul>
-            <ul className="mt-6">
+            <ul className="mt-4 lg:mt-5">
               {LIVE_EXAMPLES.map((q) => (
                 <li key={q} className="border-b border-border">
                   <button
                     type="button"
                     onClick={() => submitQuery(q)}
-                    className="group flex min-h-12 w-full items-center gap-3 py-1 text-left text-[16px] text-ink-soft hover:text-foreground"
+                    className="group flex min-h-11 w-full items-center gap-3 py-1 text-left text-[16px] text-ink-soft hover:text-foreground"
                   >
                     <span className="flex-1">{q}</span>
                     <ArrowRight aria-hidden className="h-4 w-4 shrink-0 text-brand-ink transition-transform duration-150 group-hover:translate-x-[3px]" />
@@ -431,6 +453,7 @@ const ChatLanding: React.FC<ChatLandingProps> = ({
                 </li>
               ))}
             </ul>
+            </div>
           </div>
         </section>
       </main>
@@ -439,10 +462,10 @@ const ChatLanding: React.FC<ChatLandingProps> = ({
       <footer className="closing" aria-labelledby="close-heading">
         <div className="wrap">
           <div>
-            <h2 id="close-heading" className="max-w-[16ch] text-[clamp(44px,1rem+5vw,96px)] leading-[1] font-medium tracking-[-0.04em]">
+            <h2 id="close-heading" className="close__title max-w-[16ch] leading-[1] font-medium tracking-[-0.04em]">
               Tell me what you need built
             </h2>
-            <p className="mt-6 max-w-[62ch] text-[18px] leading-relaxed text-[var(--band-muted)]">
+            <p className="mt-8 max-w-[62ch] text-[18px] leading-relaxed text-[var(--band-muted)]">
               Send a few lines about the project. I reply within 0–4 hours with questions and an honest read on whether I&apos;m the right fit.
             </p>
             <div className="mt-8 flex flex-wrap gap-3 max-sm:flex-col">
@@ -483,12 +506,12 @@ const ChatLanding: React.FC<ChatLandingProps> = ({
 function Metrics({ project }: { project: Project }) {
   if (!project.metrics?.length) return null;
   return (
-    <span className="flex flex-wrap gap-x-6 gap-y-2">
+    <span className="flagship__metrics">
       {project.metrics.map((m) => {
         const { figure, caption } = splitMetric(m);
         return (
-          <span key={m} className="flex items-baseline gap-1.5">
-            {figure && <span className="num text-[20px] leading-none font-medium text-foreground">{figure}</span>}
+          <span key={m} className="flagship__metric">
+            {figure && <span className="flagship__figure num leading-none font-medium text-foreground">{figure}</span>}
             <span className="text-[14px] text-muted-foreground">{caption}</span>
           </span>
         );
@@ -509,7 +532,7 @@ function WorkTile({ project, onOpen }: { project: Project; onOpen: () => void })
           <span className="num shrink-0">{project.date}</span>
         </span>
         <span className="font-display text-[20px] leading-[1.2] text-foreground">{project.title}</span>
-        <span className="text-[16px] leading-relaxed text-ink-soft">{project.description?.split('. ')[0]}.</span>
+        <span className="work-tile__line text-[16px] leading-relaxed text-ink-soft">{project.description?.split('. ')[0]}.</span>
       </span>
     </button>
   );

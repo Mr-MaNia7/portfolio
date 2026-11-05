@@ -45,15 +45,11 @@ export function Reviews() {
   return (
     <Artifact label="Reviews">
       <ArtifactHeader
-        kicker={
-          <>
-            Reviews
-          </>
-        }
+        kicker="Reviews"
         title="In my clients' words."
         standfirst={`${reviews.summary}. Quoted verbatim — nothing edited.`}
         aside={
-          <div className="text-right">
+          <div className="sm:text-right">
             <p className="num text-[2.25rem] leading-none text-foreground">
               {reviews.rating}
             </p>
@@ -97,7 +93,7 @@ export function Reviews() {
                   onClick={() => setI(n)}
                   aria-current={n === i}
                   aria-label={`Quote ${n + 1}: ${q.engagement}`}
-                  className={`press num flex h-7 min-w-7 items-center justify-center rounded-sm px-1.5 text-[13px] ${
+                  className={`press num flex h-9 min-w-9 items-center justify-center rounded-sm px-1.5 text-[14px] ${
                     n === i
                       ? 'bg-primary text-primary-foreground'
                       : 'text-muted-foreground hover:bg-secondary hover:text-foreground'
@@ -113,7 +109,7 @@ export function Reviews() {
               type="button"
               onClick={() => step(-1)}
               aria-label="Previous quote"
-              className="btn btn--secondary w-8"
+              className="icon-btn icon-btn--line"
             >
               <ArrowLeft className="h-4 w-4" aria-hidden />
             </button>
@@ -121,7 +117,7 @@ export function Reviews() {
               type="button"
               onClick={() => step(1)}
               aria-label="Next quote"
-              className="btn btn--secondary w-8"
+              className="icon-btn icon-btn--line"
             >
               <ArrowRight className="h-4 w-4" aria-hidden />
             </button>
@@ -143,7 +139,7 @@ export function Reviews() {
                 </span>
               </span>
               <Stars rating={r.rating} />
-              <span className="text-[13px] leading-snug text-muted-foreground">
+              <span className="text-[14px] leading-snug text-muted-foreground">
                 {r.detail}
               </span>
             </li>
@@ -157,7 +153,7 @@ export function Reviews() {
           {reviews.endorsements.map((e) => (
             <li
               key={e.label}
-              className="grid grid-cols-[9.5rem_1fr_1.5rem] items-center gap-3 text-[14px] sm:grid-cols-[11rem_1fr_2rem]"
+              className="grid grid-cols-[9.5rem_1fr_1.5rem] items-center gap-3 text-[16px] sm:grid-cols-[11rem_1fr_2rem]"
             >
               <span className="text-foreground">{e.label}</span>
               <span className="h-1.5 overflow-hidden rounded-full bg-sunken">
@@ -175,10 +171,10 @@ export function Reviews() {
       </ArtifactSection>
 
       <div
-        className="reveal flex flex-wrap items-center gap-2 border-t border-border bg-sunken px-5 py-4 sm:px-7"
+        className="reveal flex flex-wrap items-center gap-3 border-t border-border bg-sunken px-5 py-4 sm:px-7"
         style={{ '--i': 4 } as React.CSSProperties}
       >
-        <button type="button" onClick={openHire} className="btn-brand h-9 px-4 text-[13px]">
+        <button type="button" onClick={openHire} aria-haspopup="dialog" className="btn btn--primary">
           Work with me
         </button>
         <a

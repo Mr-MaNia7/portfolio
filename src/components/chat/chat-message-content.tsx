@@ -89,7 +89,7 @@ const MARKDOWN: Components = {
     </h3>
   ),
   h3: ({ children }) => (
-    <h4 className="mt-5 mb-1.5 text-[16px] font-semibold text-foreground first:mt-0">
+    <h4 className="mt-5 mb-1.5 text-[16px] font-medium text-foreground first:mt-0">
       {children}
     </h4>
   ),
@@ -99,16 +99,16 @@ const MARKDOWN: Components = {
     </ul>
   ),
   ol: ({ children }) => (
-    <ol className="my-3 list-decimal space-y-1.5 pl-5 marker:font-mono marker:text-[13px] marker:text-muted-foreground">
+    <ol className="my-3 list-decimal space-y-1.5 pl-5 marker:text-muted-foreground">
       {children}
     </ol>
   ),
   li: ({ children }) => <li className="pl-1">{children}</li>,
   strong: ({ children }) => (
-    <strong className="font-semibold text-foreground">{children}</strong>
+    <strong className="font-medium text-foreground">{children}</strong>
   ),
   em: ({ children }) => (
-    <em className="font-display text-[1.05em] italic">{children}</em>
+    <em className="italic">{children}</em>
   ),
   blockquote: ({ children }) => (
     <blockquote className="font-display hang my-4 border-l-2 border-brand pl-4 text-[1.125rem] leading-snug text-ink-soft italic">
@@ -154,7 +154,7 @@ export default function ChatMessageContent({
   message,
 }: ChatMessageContentProps) {
   return (
-    <div className="measure w-full text-[15.5px] leading-[1.7] text-foreground">
+    <div className="measure w-full text-[16px] leading-[1.7] text-foreground">
       {message.parts?.map((part, partIndex) => {
         if (part.type !== 'text' || !part.text) return null;
 

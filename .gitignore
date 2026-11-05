@@ -44,3 +44,7 @@ next-env.d.ts
 
 # landing page repo (separate repository)
 /landing-page/
+
+
+/.claude/skills/design-taste-frontend/
+/.agents/skills/design-taste-frontend/

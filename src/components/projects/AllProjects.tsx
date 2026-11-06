@@ -8,8 +8,8 @@ import {
   Artifact,
   ArtifactHeader,
   pad2,
-  splitMetric,
 } from '@/components/artifact/artifact';
+import { splitMetric } from '@/lib/metrics';
 import { usePanel } from '@/components/chat/side-panel';
 import { FadeImage } from '@/components/ui/fade-image';
 import { projectCover } from '@/lib/project-cover';

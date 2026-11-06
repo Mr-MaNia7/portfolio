@@ -12,9 +12,73 @@
 2. **robots.txt blocks `/_next/`.** That stops Googlebot loading the site's own scripts, styles and optimized images, which it needs to render the page.
 3. **Most of the proof is out of reach of crawlers.** The bio, the employment history, the Turing figures, the thesis and the answers to the question cards only appear after a click, in chat presets or an `ssr:false` dialog. Search engines and AI answer engines never read them.
 
-**A search for the owner's full name returned 19 results, all of them other people.** The site, LinkedIn and Upwork were all missing. Without Search Console it's unknown whether the site is unindexed or just ranks low.
+**A search for the owner's full name returned 19 results, all of them other people.** The site, LinkedIn and Upwork were all missing. Search Console shows this is a ranking problem, not an indexing one:
+
+- **Coverage:** the homepage is "Submitted and indexed".
+- **Last crawl:** 2026-10-27, by the mobile crawler.
+- **Canonical:** Google already treats `https://www.abdulkarimg.com/` as the official URL and ignores the declared `https://abdulkarimg.com/`. Search Console reports a canonical mismatch.
+- **Traffic:** 0 impressions and 0 clicks between 2026-08-08 and 2026-11-03. The property was only verified on 2026-11-06, so recheck after a few days before treating that as final.
+- **Sitemaps:** none submitted.
 
 Most of what's wrong is copy and structure, so the planned copy rewrite is the main fix. Section 4 lists what the rewrite needs to cover.
+
+## Implementation status (2026-11-06)
+
+Everything that could be done in code is done, but not yet deployed. Sections 1–8 below are the audit as written, before the fixes.
+
+| # | Action | Status | What changed |
+|---|---|---|---|
+| 1 | `www` as the official host | Done | New `src/lib/site.ts` is the one place the site URL comes from. It defaults to `https://www.abdulkarimg.com` and upgrades the bare domain to `www`, even if `NEXT_PUBLIC_SITE_URL` is set to it. So Vercel needs no change. Canonical URLs are now set per page; one in the root layout would have pointed every page at the homepage. |
+| 2 | robots.txt | Done | `/_next/` is crawlable again, `Host:` is removed and `Sitemap:` uses `www`. |
+| 3 | Sitemap, then Search Console | Code done; **you submit it after deploying** | The sitemap lists 12 URLs: home, `/work` and the 10 case studies. `lastmod` is the config's `meta.lastUpdated`, not the build time. |
+| 4 | Copy | Done, with your review | See "Copy changes" below. |
+| 5 | Case-study pages | Done | `/work` lists all 10 projects, and `/work/<slug>` has one static page per project. The landing page's case-study cards and buttons are now real links to these pages. A normal click still opens the dialog; Cmd/Ctrl-click or a new tab opens the page. |
+| 6 | Structured data | Done | `src/lib/structured-data.ts` builds one connected graph: WebSite, ProfilePage, Person and Organization (Eaglix Tech, with you as founder). Each case study gets a CreativeWork, or a ScholarlyArticle for the thesis, plus breadcrumbs. Person carries all four name variants as `alternateName`. The placeholder SVG is left out of `image` until the real headshot exists. |
+| 7 | `/llms.txt` | Done | Generated from the config at build time, so it can't drift from the site. |
+| 8 | Links back to the site | **Yours to do** | Add `https://www.abdulkarimg.com` to your GitHub profile's Website field and to LinkedIn → Contact info. |
+| 9 | Performance | Partly done | AVIF is enabled for images, and the avatar SVG no longer goes through the image optimizer. The search button's accessible name now matches its visible text. The mobile "Hire me" button is 44 px tall, and the chat header no longer truncates on narrow phones. The bundle analysis for the ~231 KiB of unused JS was not done. |
+| 10 | Security headers | Done | `nosniff`, `Referrer-Policy`, `frame-ancestors 'self'` plus `X-Frame-Options`, and `Permissions-Policy`. A full CSP is deliberately left out: Next's inline scripts and Vercel Analytics need a nonce setup, and a wrong CSP would break the live site. |
+| 11 | Vercel domain setup | **Yours to check** | Make `www` the primary domain, with the bare domain redirecting. |
+
+### Copy changes
+
+- **Title:** "Abdulkarim G. Mohammed — Freelance AI & Full-Stack Engineer".
+- **Meta description:** the 155-character version from section 4.
+- **The meta tags search engines ignore** (`keywords`, `category`, `page-type`, `site-kind`) are removed.
+- **H1:** now opens with a small line, "Abdulkarim G. Mohammed · Freelance AI engineer". "Interview my AI twin before you hire me" stays as the large headline.
+- **Intro:** now names AI voice agents and multi-tenant SaaS.
+- **Availability line:** now says "freelance".
+- **Section headings:**
+  - "AI and SaaS products I've shipped"
+  - "Services: AI, SaaS, cloud and SOC 2"
+  - "Client reviews: 5.0★ on Upwork"
+  - "FAQ: questions to ask before you hire me"
+  - The AIVI heading is unchanged: the longer "case study" version broke the one-screen layout.
+- **Reviews line:** now says the quotes are other clients' verbatim reviews, and links to Upwork.
+- **New About section:** "About Abdulkarim Getachew Mohammed". It shows the first three paragraphs of your bio and four facts: current role, Eaglix Tech, the Turing results, and education with the Zenodo thesis.
+- **Nav:** "Twin" is now "AI twin", and a new "About" link is added.
+
+### Decided against
+
+- **Short answers inside the question cards.** They overflowed the one-screen layout at every desktop size and had to be clamped mid-sentence. The About section and the case-study pages now put the important facts in the HTML instead.
+- **The thesis DOI in the Person's `sameAs`.** `sameAs` is for profiles of the same person. The thesis is marked up as a ScholarlyArticle on its own case-study page.
+
+### Verified
+
+All checks ran against a local production build.
+
+- `tsc`, `eslint` and `next build` pass, and every page is prerendered as static HTML.
+- With `NEXT_PUBLIC_SITE_URL` set to the bare domain, canonical, `og:url`, the sitemap, robots.txt, JSON-LD and `llms.txt` all use `www`.
+- Every landing section is exactly one screen at 1920×1080 and 1440×900. At 1280×720, About is 2 px over. At 1024×768, About is 26 px over and Reviews is 4 px over, which matches the live site.
+- The phone hero is exactly 812 px at 375×812, so the composer stays on the first screen.
+- There is no horizontal overflow at any size.
+- No console errors on `/`, `/work` or the case-study pages.
+- The AI SDK is still absent from first-load JS. That JS is 313 KB gzipped, against 308 KB before; the difference is `next/link` and the About section.
+- A plain click on a case-study card opens the dialog and stays on `/`.
+
+### Common Crawl
+
+The domain is not in Common Crawl's January–March 2026 web graph, in either the rankings or the vertices. That is expected for a new site with almost no links, and it is the baseline to beat.
 
 ## 1. Scores
 
@@ -46,7 +110,7 @@ Most of what's wrong is copy and structure, so the planned copy rewrite is the m
 |---|---|---|---|---|
 | 1 | Make `www` the official host everywhere (details below) | 15m | none | view-source canonical shows `https://www.abdulkarimg.com/`; Search Console's "Google-selected canonical" matches |
 | 2 | Fix robots.txt: remove `Disallow: /_next/` and the `Host:` line, keep `/api/` | 5m | none | Search Console's URL Inspection reports no resources blocked by robots.txt |
-| 3 | Set up Google Search Console and submit `https://www.abdulkarimg.com/sitemap.xml` | 20m | 1 | URL Inspection reports "URL is on Google"; impressions start appearing for the name |
+| 3 | Search Console: the property is verified (2026-11-06) and the homepage is indexed. Once step 1 is deployed, submit `https://www.abdulkarimg.com/sitemap.xml` and click Request indexing on the homepage | 5m | 1 | Google's canonical and the declared canonical both show `www`; impressions start appearing for the name |
 | 4 | Rewrite the copy (section 4) | your rewrite | none | the site appears for its own name within 2–6 weeks |
 | 5 | Put the proof in the initial HTML: add `/work/[slug]` case-study pages linked with real `<a>` tags | 4–6h | 4 | the sitemap lists more than 1 URL; impressions for project and stack queries |
 | 6 | Update the structured data (section 5, and Appendix A) | 1h | 1 | the Rich Results Test is clean and shows one connected set of nodes |
@@ -160,8 +224,17 @@ The current block, at `src/app/layout.tsx:105-154`, is valid. What needs fixing:
 - It has no `@id`, and there is no `WebSite` or `ProfilePage` node.
 - `image` is `/headshot-placeholder.svg`. A real raster headshot (JPG, PNG or WebP, at least 400 px square) is already on the backlog.
 - `addressLocality` is "Addis Ababa, Ethiopia". Split it into `addressLocality` and `addressCountry`.
-- It has no `alternateName`. "Abdulkarim G. Mohammed" stays as the display name; `alternateName` only links the other name used on GitHub and in git, so the profiles connect without renaming any of them.
-- `sameAs` is missing the Zenodo thesis DOI and eaglix.dev, and there is no `founder` link to Eaglix Tech.
+- It has no `alternateName`. The full name is **Abdulkarim Getachew Mohammed**, and each profile shows a different form of it:
+
+  | Where | Name shown |
+  |---|---|
+  | GitHub and git | Abdulkarim Getachew |
+  | LinkedIn | Abdulkarim Mohammed |
+  | Upwork | Abdulkarim G. (Upwork shows only a first name and last initial) |
+  | This site | Abdulkarim G. Mohammed (the display name; keep it) |
+
+  Without `alternateName`, search engines and AI assistants treat these as different people, so the site gets no credibility from the established profiles. Listing every variant tells them it's one person, without renaming any profile. Also write the full name once in the About paragraph, for example "Abdulkarim Getachew Mohammed (Abdulkarim G. Mohammed)", and link GitHub and LinkedIn back to the site.
+- There is no `founder` link to Eaglix Tech. (The thesis DOI belongs on the thesis's own markup, not in the Person's `sameAs`, which is for profiles of the same person.)
 
 **Not recommended:**
 - `Review` or `AggregateRating` for on-site testimonials, because self-serving reviews aren't eligible for rich results.
@@ -222,8 +295,8 @@ The only security header sent today is HSTS. Add these in `next.config.ts`:
 | Gap | Why | What it needs |
 |---|---|---|
 | Real-user Core Web Vitals, including INP | CrUX has no data for the origin yet, because of low Chrome traffic | More traffic; recheck in a few months. Lighthouse lab results are in section 6. |
-| Indexing status, impressions, queries | The Domain property is verified, but the Search Console API needs a quota project on the gcloud sign-in | `gcloud auth application-default set-quota-project <your-project-id>` |
-| Common Crawl link graph | The download timed out after about 8 minutes | A rerun in the background; no key needed |
+| Search queries and impressions | Measured: none so far (see Summary). The property was verified on 2026-11-06 | A recheck after a few days, then again 2–6 weeks after the rewrite |
+| Common Crawl link graph | Measured: the domain is not in the January–March 2026 graph (see Implementation status) | A recheck after the next Common Crawl release |
 | Domain authority and referring domains | No Moz, Bing or DataForSEO keys | Optional: a free Moz API key |
 
 After the rewrite ships, capture a baseline with `/seo drift baseline https://www.abdulkarimg.com` so later changes can be compared against it.
@@ -233,7 +306,6 @@ After the rewrite ships, capture a baseline with `/seo drift baseline https://ww
 Replaces the object passed to `JSON.stringify` at `src/app/layout.tsx:108-152`. Build the `@id`s and URLs from `siteUrl` in code. Before shipping:
 
 - Swap `REAL-HEADSHOT.jpg` for the real photo path.
-- Confirm the `alternateName` value.
 - Add any further `sameAs` URLs you want listed.
 
 ```json
@@ -259,7 +331,7 @@ Replaces the object passed to `JSON.stringify` at `src/app/layout.tsx:108-152`. 
       "@type": "Person",
       "@id": "https://www.abdulkarimg.com/#person",
       "name": "Abdulkarim G. Mohammed",
-      "alternateName": "Abdulkarim Getachew",
+      "alternateName": ["Abdulkarim Getachew Mohammed", "Abdulkarim Getachew", "Abdulkarim Mohammed", "Abdulkarim G."],
       "jobTitle": "Senior Full-Stack & AI Platform Engineer",
       "url": "https://www.abdulkarimg.com/",
       "image": "https://www.abdulkarimg.com/REAL-HEADSHOT.jpg",
@@ -268,8 +340,7 @@ Replaces the object passed to `JSON.stringify` at `src/app/layout.tsx:108-152`. 
       "sameAs": [
         "https://www.upwork.com/freelancers/~01dc65c291b2936bc3",
         "https://github.com/Mr-MaNia7",
-        "https://www.linkedin.com/in/abdulkarim-mohammed-b3b0201b1/",
-        "https://doi.org/10.5281/zenodo.23663622"
+        "https://www.linkedin.com/in/abdulkarim-mohammed-b3b0201b1/"
       ],
       "alumniOf": { "@type": "CollegeOrUniversity", "name": "Addis Ababa University" },
       "worksFor": { "@type": "Organization", "name": "AIVI", "url": "https://aivi.io" },

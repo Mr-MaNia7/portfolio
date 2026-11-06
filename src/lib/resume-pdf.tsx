@@ -109,7 +109,7 @@ export function ResumeDocument({
   const { personal, stats, experience, skills, education, social, availability, resume } =
     config;
   const canonical = /localhost|127\.0\.0\.1/.test(siteUrl)
-    ? 'https://abdulkarimg.com'
+    ? 'https://www.abdulkarimg.com'
     : siteUrl;
   const host = new URL(canonical).host;
   const [intro, current] = personal.bio.split(/\n{2,}/);

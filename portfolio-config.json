@@ -1,6 +1,8 @@
 {
   "personal": {
     "name": "Abdulkarim G. Mohammed",
+    "fullName": "Abdulkarim Getachew Mohammed",
+    "alternateNames": ["Abdulkarim Getachew Mohammed", "Abdulkarim Getachew", "Abdulkarim Mohammed", "Abdulkarim G."],
     "shortName": "Abdulkarim",
     "initials": "AG",
     "title": "Senior Full-Stack & AI Platform Engineer",
@@ -30,7 +32,7 @@
   ],
   "availability": {
     "open": true,
-    "headline": "Available now for full- or part-time contracts",
+    "headline": "Available now for freelance contracts, full- or part-time",
     "types": ["Contract · part-time", "Contract · full-time", "Team builds via Eaglix Tech"],
     "workMode": "Remote",
     "location": "Addis Ababa, Ethiopia — overlapping US & EU hours",
@@ -325,6 +327,7 @@
   "projects": [
     {
       "title": "AIVI — Multi-Region AI Voice Platform",
+      "slug": "aivi",
       "category": "AI · Platform",
       "role": "Software Engineer: Platform & Full-Stack",
       "client": "AIVI",
@@ -355,6 +358,7 @@
     },
     {
       "title": "Svetness — Legacy Rebuild & Unified Comms",
+      "slug": "svetness",
       "category": "SaaS · Systems design",
       "role": "System Designer & Full-Stack Engineer",
       "client": "Svetness",
@@ -381,6 +385,7 @@
     },
     {
       "title": "Aladia — Build Your Academy. Find Your Academy.",
+      "slug": "aladia",
       "category": "EdTech · Frontend",
       "role": "Senior Frontend Engineer",
       "client": "Aladia",
@@ -407,6 +412,7 @@
     },
     {
       "title": "Alertix AI — Amazon Listing Monitoring",
+      "slug": "alertix",
       "category": "SaaS · AI",
       "role": "Full-Stack Developer & AI",
       "client": "Upwork client",
@@ -432,6 +438,7 @@
     },
     {
       "title": "ATCOM — Real-Time Call-Center Management",
+      "slug": "atcom",
       "category": "Telecom · Full-Stack",
       "role": "Full-Stack Developer",
       "client": "Canal+",
@@ -458,6 +465,7 @@
     },
     {
       "title": "FINN — Earned Wage Access App",
+      "slug": "finn",
       "category": "Fintech · Backend & Security",
       "role": "Backend Engineer",
       "client": "EWA Services",
@@ -485,6 +493,7 @@
     },
     {
       "title": "Google Bard → Gemini — LLM Training",
+      "slug": "gemini-llm-training",
       "category": "AI · LLM training",
       "role": "Expert LLM Trainer (coding domain)",
       "client": "Google (via Turing)",
@@ -506,6 +515,7 @@
     },
     {
       "title": "Afaan Oromoo Audio-Based Sentiment Analysis",
+      "slug": "afaan-oromoo-sentiment-analysis",
       "category": "Research · Speech & NLP",
       "role": "Co-author · team of five",
       "description": "Our final-year BSc thesis in the AI stream: can you read sentiment straight from Afaan Oromoo speech, a low-resource language? We built a 40,000-clip audio dataset labelled negative, neutral or positive, then compared two routes: spectrogram CNNs on the raw audio, and text models (CNN with FastText, CNN with Word2Vec, BERT) on machine transcripts. Audio won: 74% test accuracy, against 61% for the best text model.",
@@ -532,6 +542,7 @@
     },
     {
       "title": "HiyaScaffold — Rental Management System",
+      "slug": "hiyascaffold",
       "category": "Web App · Operations",
       "role": "Full-stack & DevOps engineer",
       "client": "Hiya General Trading PLC",
@@ -558,6 +569,7 @@
     },
     {
       "title": "This Portfolio — Conversational AI Site",
+      "slug": "portfolio",
       "category": "AI · Web",
       "role": "Designer & Engineer",
       "description": "The site you're on, designed and built end to end. Scan it in seconds, or ask it anything about my work and it answers in my voice with structured cards. Curated answers render instantly with no model call; open questions go to a live model that can call seven tools. One config file drives the site, the AI's system prompt, the résumé PDF and the social cards, so none of them can drift.",

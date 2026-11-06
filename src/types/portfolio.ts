@@ -1,5 +1,9 @@
 export interface PersonalInfo {
   name: string;
+  /** Full legal name. The display name above is a shortened form of it. */
+  fullName: string;
+  /** Every form of the name used on other profiles, so search engines can tie them together. */
+  alternateNames: string[];
   shortName: string;
   initials: string;
   title: string;
@@ -154,6 +158,8 @@ export interface ProjectImage {
 
 export interface Project {
   title: string;
+  /** URL segment of the project's case-study page: /work/<slug>. */
+  slug: string;
   category: string;
   role?: string;
   client?: string;

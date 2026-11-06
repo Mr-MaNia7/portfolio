@@ -138,17 +138,3 @@ export function ArtifactStats({
 /** Two-digit editorial index: 1 → "01". */
 export const pad2 = (n: number) => String(n).padStart(2, '0');
 
-/**
- * Splits a metric string into its figure and caption so the figure can be set
- * large: "~35% quality improvement" → { figure: "~35%", caption: "quality improvement" }.
- */
-export function splitMetric(metric: string): {
-  figure?: string;
-  caption: string;
-} {
-  const m = metric.match(
-    /^([~≈$]?\d[\d.,]*\s?(?:%|★|\+|x|k|K|M)*\+?)\s*[—–-]?\s*(.*)$/
-  );
-  if (!m) return { caption: metric };
-  return { figure: m[1].trim(), caption: m[2].trim() };
-}

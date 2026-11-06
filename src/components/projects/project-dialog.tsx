@@ -6,7 +6,8 @@ import Image from 'next/image';
 import React, { useEffect, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
 import type { Project } from '@/types/portfolio';
-import { pad2, splitMetric } from '@/components/artifact/artifact';
+import { pad2 } from '@/components/artifact/artifact';
+import { splitMetric } from '@/lib/metrics';
 import { FadeImage } from '@/components/ui/fade-image';
 import { projectCover } from '@/lib/project-cover';
 

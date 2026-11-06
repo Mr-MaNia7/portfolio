@@ -2,11 +2,13 @@
 
 import dynamic from 'next/dynamic';
 import Image from 'next/image';
+import Link from 'next/link';
 import { ArrowRight, ArrowUpRight } from 'lucide-react';
 import React, { useEffect, useRef, useState } from 'react';
 
-import { splitMetric } from '@/components/artifact/artifact';
+import { splitMetric } from '@/lib/metrics';
 import { projectCover } from '@/lib/project-cover';
+import { workPath } from '@/lib/site';
 import { UpworkBadge } from '@/components/ui/upwork-badge';
 import { useLocalTime } from '@/hooks/use-local-time';
 import { presetReplies, getConfig } from '@/lib/config-loader';
@@ -75,6 +77,14 @@ const ChatLanding: React.FC<ChatLandingProps> = ({
 
   const closeDialog = () => setOpenIndex(null);
 
+  // Case studies are real links to their own pages, so crawlers and new tabs get
+  // the page. A plain click opens the same story in the dialog instead.
+  const openCaseStudy = (i: number) => (e: React.MouseEvent<HTMLAnchorElement>) => {
+    if (e.metaKey || e.ctrlKey || e.shiftKey || e.altKey || e.button !== 0) return;
+    e.preventDefault();
+    setOpenIndex(i);
+  };
+
   usePointerGlow();
 
   useEffect(() => {
@@ -98,6 +108,13 @@ const ChatLanding: React.FC<ChatLandingProps> = ({
   const index = commands.filter((c) => c.group === 'Ask');
   const [lead, ...moreQuotes] = reviews.quotes;
   const shortQuotes = moreQuotes.filter((q) => q.text.length < 140).slice(0, 2);
+  const rated = reviews.ratings.map((r) => r.client);
+  const ratedClients = rated.length > 1 ? `${rated.slice(0, -1).join(', ')} and ${rated[rated.length - 1]}` : rated[0];
+  const { education } = config;
+  // Work history only: the last paragraph (chess, football) has its own answer card.
+  const bio = personal.bio.split(/\n{2,}/).slice(0, 3);
+  const current = config.experience.find((e) => e.company === personal.currently?.company);
+  const turing = projects.find((p) => p.slug === 'gemini-llm-training');
 
   const ask = (q: string, showDetail = false) => {
     const preset = presetReplies[q as keyof typeof presetReplies];
@@ -131,16 +148,18 @@ const ChatLanding: React.FC<ChatLandingProps> = ({
             <div className="hero-text">
             <div className="hero__text">
               {availability.open && (
-                <p className="hero__notice flex items-center gap-2 text-[14px] font-medium text-ink-soft">
+                <p className="hero__notice flex items-center gap-2 text-[14px] font-medium text-ink-soft max-sm:hidden">
                   <span className="status-dot" aria-hidden />
                   {availability.headline}
                 </p>
               )}
+              {/* The name and role open the heading, so search engines read who this is; the promise stays the headline. */}
               <h1 id="hero-heading" className="mt-4 text-foreground">
-                Interview my AI twin before you hire me
+                <span className="hero__name">{personal.name} · Freelance AI engineer</span>
+                <span className="block">Interview my AI twin before you hire me</span>
               </h1>
               <p className="hero__lead">
-                I&apos;m a senior full-stack and AI engineer. I take AI products to production and get them ready for enterprise buyers.
+                I&apos;m a senior full-stack and AI engineer. I take AI voice agents and multi-tenant SaaS to production, ready for enterprise buyers.
                 Ask my twin what you&apos;d ask in a first call.
                 {personal.currently && (
                   <span className="max-sm:hidden">
@@ -157,9 +176,9 @@ const ChatLanding: React.FC<ChatLandingProps> = ({
                   Hire me
                   <ArrowUpRight className="nudge-ur h-4 w-4" aria-hidden />
                 </button>
-                <button type="button" onClick={() => setOpenIndex(flagshipIndex)} aria-haspopup="dialog" className="btn btn--secondary">
+                <a href={workPath(flagship)} onClick={openCaseStudy(flagshipIndex)} aria-haspopup="dialog" className="btn btn--secondary">
                   See the {flagship.client ?? 'flagship'} case study
-                </button>
+                </a>
               </div>
               {/* The proof, as one block at the foot of the column */}
               <div className="hero__proof max-sm:hidden">
@@ -174,7 +193,7 @@ const ChatLanding: React.FC<ChatLandingProps> = ({
               <div className="twin">
                 <div className="flex items-center gap-3 border-b border-border px-4 py-3 sm:px-5">
                   <span className="relative h-10 w-10 shrink-0 overflow-hidden rounded-xl">
-                    <Image src={personal.avatar} alt="" fill sizes="40px" className="object-cover" priority />
+                    <Image src={personal.avatar} alt="" fill sizes="40px" unoptimized className="object-cover" priority />
                   </span>
                   <span className="min-w-0 flex-1">
                     <span className="block truncate text-[16px] leading-tight font-medium text-foreground">
@@ -185,7 +204,7 @@ const ChatLanding: React.FC<ChatLandingProps> = ({
                       Online
                     </span>
                   </span>
-                  <span className="text-right text-[13px] leading-tight text-muted-foreground" suppressHydrationWarning>
+                  <span className="text-right text-[13px] leading-tight text-muted-foreground max-[400px]:hidden" suppressHydrationWarning>
                     {city}
                     <span className="num block text-foreground" suppressHydrationWarning>
                       {time?.label ?? '--:--'} {offset}
@@ -210,9 +229,9 @@ const ChatLanding: React.FC<ChatLandingProps> = ({
                       </span>
                       <span className="play-a__text block">
                       {flagship.client} hired me on a 45-day trial to make its backend multi-tenant. Since June 2025 my scope has grown to the whole platform, with {flagship.metrics?.[0]} so far.{' '}
-                      <button type="button" onClick={() => setOpenIndex(flagshipIndex)} aria-haspopup="dialog" className="link">
+                      <a href={workPath(flagship)} onClick={openCaseStudy(flagshipIndex)} aria-haspopup="dialog" className="link">
                         Read the case study
-                      </button>
+                      </a>
                       </span>
                     </div>
                   </div>
@@ -281,9 +300,9 @@ const ChatLanding: React.FC<ChatLandingProps> = ({
                 </p>
               </div>
             </div>
-            <button
-              type="button"
-              onClick={() => setOpenIndex(flagshipIndex)}
+            <a
+              href={workPath(flagship)}
+              onClick={openCaseStudy(flagshipIndex)}
               aria-haspopup="dialog"
               className="flagship card card--link w-full"
             >
@@ -310,7 +329,7 @@ const ChatLanding: React.FC<ChatLandingProps> = ({
               <span className="flagship__cover max-lg:-order-1 w-full">
                 <Image src={projectCover(flagship)} alt={`${flagship.title} cover`} fill sizes="(min-width: 1024px) 60vw, 100vw" className="zoom object-contain" />
               </span>
-            </button>
+            </a>
           </div>
         </section>
 
@@ -319,19 +338,19 @@ const ChatLanding: React.FC<ChatLandingProps> = ({
           <div className="wrap">
             <div className="section__head">
               <div>
-                <h2 id="work-heading" className="title">Products I&apos;ve shipped for other teams</h2>
+                <h2 id="work-heading" className="title">AI and SaaS products I&apos;ve shipped</h2>
                 <p className="section__lead">
                   Work shipped for {clients.slice(0, -1).join(', ')} and {clients[clients.length - 1]}.
                 </p>
               </div>
-              <button type="button" onClick={() => ask('What have you shipped?', true)} className="btn btn--secondary max-sm:w-full">
+              <Link href="/work" className="btn btn--secondary max-sm:w-full">
                 See all {projects.length} case studies
-              </button>
+              </Link>
             </div>
             <ul className="grid gap-6 max-sm:gap-3 lg:grid-cols-3">
               {selected.map(({ p, i }) => (
                 <li key={p.title} className="flex">
-                  <WorkTile project={p} onOpen={() => setOpenIndex(i)} />
+                  <WorkTile project={p} onOpen={openCaseStudy(i)} />
                 </li>
               ))}
             </ul>
@@ -343,7 +362,7 @@ const ChatLanding: React.FC<ChatLandingProps> = ({
           <div className="wrap">
             <div className="section__head">
               <div>
-                <h2 id="services-heading" className="title">Where I can help your team</h2>
+                <h2 id="services-heading" className="title">Services: AI, SaaS, cloud and SOC 2</h2>
                 <p className="section__lead">Pick the problem closest to yours. My twin explains how I&apos;d approach it.</p>
               </div>
             </div>
@@ -395,10 +414,15 @@ const ChatLanding: React.FC<ChatLandingProps> = ({
           <div className="wrap">
             <div className="section__head">
               <div>
-                <h2 id="reviews-heading" className="title">What clients say after working with me</h2>
+                <h2 id="reviews-heading" className="title">Client reviews: {reviews.rating}★ on Upwork</h2>
+                {/* The rated clients left stars, not text, so the quotes are credited to the clients who wrote them. */}
                 <p className="section__lead">
-                  <span className="num font-medium text-foreground">{reviews.rating}★</span> from{' '}
-                  {reviews.ratings.map((r) => r.client).join(', ')}. {reviews.summary}
+                  <span className="num font-medium text-foreground">{reviews.rating}★</span> from {ratedClients}. The quotes are other
+                  clients&apos; reviews, verbatim from{' '}
+                  <a href={reviews.source.url} target="_blank" rel="noopener noreferrer" className="link text-foreground">
+                    {reviews.source.name}
+                  </a>
+                  .
                 </p>
               </div>
               <button type="button" onClick={() => ask('What do past clients say?', true)} className="btn btn--secondary max-sm:w-full">
@@ -430,12 +454,63 @@ const ChatLanding: React.FC<ChatLandingProps> = ({
           </div>
         </section>
 
-        {/* ── Questions ────────────────────────────────────── */}
-        <section id="questions" aria-labelledby="questions-heading" className="section">
+        {/* ── About ────────────────────────────────────────── */}
+        {/* Who this is, in plain sentences in the HTML: what search engines and AI assistants quote. */}
+        <section id="about" aria-labelledby="about-heading" className="section">
           <div className="wrap">
             <div className="section__head">
               <div>
-                <h2 id="questions-heading" className="title">Questions to ask before you hire me</h2>
+                <h2 id="about-heading" className="title">About {personal.fullName}</h2>
+              </div>
+            </div>
+            <div className="grid-12">
+              <div className="col-span-12 flex flex-col gap-4 text-[16px] leading-relaxed text-ink-soft lg:col-span-7 lg:text-[17px] lg:[@media(max-height:800px)]:gap-3 lg:[@media(max-height:800px)]:text-[16px]">
+                {bio.map((p) => (
+                  <p key={p.slice(0, 32)}>{p}</p>
+                ))}
+              </div>
+              <dl className="card col-span-12 gap-4 p-6 lg:col-span-5">
+                {personal.currently && current && (
+                  <AboutFact label="Now">
+                    {personal.currently.role} at {personal.currently.company} · <span className="num">{current.duration}</span>
+                  </AboutFact>
+                )}
+                <AboutFact label="Founded">
+                  <a href={agency.url} target="_blank" rel="noopener noreferrer" className="link text-foreground">
+                    {agency.name}
+                  </a>
+                  , an agency of Ethiopian software engineers
+                </AboutFact>
+                {turing && (
+                  <AboutFact label="LLM training">
+                    <a href={workPath(turing)} className="link text-foreground">
+                      Trained Google&apos;s Bard (now Gemini) via Turing
+                    </a>
+                    : {turing.metrics?.join(', ')}
+                  </AboutFact>
+                )}
+                <AboutFact label="Education">
+                  {education.degree}, {education.institution} · {education.stream} stream · GPA {education.gpa}
+                  {education.research?.link && (
+                    <>
+                      {' '}·{' '}
+                      <a href={education.research.link} target="_blank" rel="noopener noreferrer" className="link text-foreground">
+                        thesis on Zenodo
+                      </a>
+                    </>
+                  )}
+                </AboutFact>
+              </dl>
+            </div>
+          </div>
+        </section>
+
+        {/* ── Questions ────────────────────────────────────── */}
+        <section id="questions" aria-labelledby="questions-heading" className="section section--alt">
+          <div className="wrap">
+            <div className="section__head">
+              <div>
+                <h2 id="questions-heading" className="title">FAQ: questions to ask before you hire me</h2>
                 <p className="section__lead">
                   These cards answer instantly. Type anything else and my twin answers live.
                 </p>
@@ -508,6 +583,7 @@ const ChatLanding: React.FC<ChatLandingProps> = ({
           </div>
           <div className="flex flex-col gap-6 border-t border-[var(--band-line)] pt-6 text-[14px] text-[var(--band-muted)]">
             <ul className="flex flex-wrap gap-x-8 gap-y-3">
+              <li><Link className="foot nav__word !text-[var(--band-ink)]" href="/work">Case studies</Link></li>
               {social.github && <li><a className="foot nav__word !text-[var(--band-ink)]" href={social.github} target="_blank" rel="noopener noreferrer">GitHub</a></li>}
               {social.linkedin && <li><a className="foot nav__word !text-[var(--band-ink)]" href={social.linkedin} target="_blank" rel="noopener noreferrer">LinkedIn</a></li>}
               {social.upwork && <li><a className="foot nav__word !text-[var(--band-ink)]" href={social.upwork} target="_blank" rel="noopener noreferrer">Upwork</a></li>}
@@ -550,9 +626,18 @@ function Metrics({ project }: { project: Project }) {
   );
 }
 
-function WorkTile({ project, onOpen }: { project: Project; onOpen: () => void }) {
+function AboutFact({ label, children }: { label: string; children: React.ReactNode }) {
   return (
-    <button type="button" onClick={onOpen} aria-haspopup="dialog" className="card card--link w-full sm:max-lg:flex-row">
+    <div className="flex flex-col gap-0.5 border-b border-border pb-4 last:border-b-0 last:pb-0">
+      <dt className="text-[14px] text-muted-foreground">{label}</dt>
+      <dd className="text-[16px] leading-snug text-foreground">{children}</dd>
+    </div>
+  );
+}
+
+function WorkTile({ project, onOpen }: { project: Project; onOpen: (e: React.MouseEvent<HTMLAnchorElement>) => void }) {
+  return (
+    <a href={workPath(project)} onClick={onOpen} aria-haspopup="dialog" className="card card--link w-full sm:max-lg:flex-row">
       <span className="relative block aspect-[4/3] w-full shrink-0 overflow-hidden border-b border-border bg-sunken sm:max-lg:w-2/5 sm:max-lg:border-r sm:max-lg:border-b-0">
         <Image src={projectCover(project)} alt={`${project.title} cover`} fill sizes="(min-width: 1024px) 33vw, (min-width: 640px) 40vw, 100vw" className="zoom object-cover" />
       </span>
@@ -564,7 +649,7 @@ function WorkTile({ project, onOpen }: { project: Project; onOpen: () => void })
         <span className="font-display text-[20px] leading-[1.2] text-foreground">{project.title}</span>
         <span className="work-tile__line text-[16px] leading-relaxed text-ink-soft">{project.description?.split('. ')[0]}.</span>
       </span>
-    </button>
+    </a>
   );
 }
 

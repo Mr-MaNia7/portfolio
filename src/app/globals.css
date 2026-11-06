@@ -1515,6 +1515,19 @@
     font-weight: 500;
     letter-spacing: -0.04em;
   }
+  /* Name and role, set small at the top of the h1: read by search engines, quiet for people */
+  .hero__name {
+    display: block;
+    margin-bottom: 0.5em;
+    font-size: 16px;
+    line-height: 1.4;
+    font-weight: 500;
+    letter-spacing: -0.005em;
+    color: var(--ink-soft);
+  }
+  @media (min-width: 1280px) and (min-height: 1000px) { .hero__name { font-size: 18px; } }
+  /* Phones: smaller, so the name line stays on one line */
+  @media (max-width: 639px) { .hero__name { font-size: 14px; } }
   .hero__lead { margin-top: 24px; font-size: 20px; line-height: 30px; color: var(--ink-soft); max-width: 34em; }
   .hero__actions { margin-top: 28px; }
   @media (min-width: 1280px) and (min-height: 1000px) {
@@ -1678,6 +1691,8 @@
     color: var(--band-ink);
   }
   .closing > .wrap { display: flex; flex-direction: column; justify-content: space-between; gap: 64px; }
+  /* Case-study pages: the same band, sized to its content instead of a full screen */
+  .closing--compact { min-height: 0; padding-top: 72px; }
   .closing .btn--secondary { border-color: var(--band-muted); color: var(--band-ink); }
   @media (hover: hover) and (pointer: fine) {
     .closing .btn--secondary:hover:not(:disabled) { background: color-mix(in oklab, var(--band-ink) 10%, transparent); border-color: var(--band-ink); }

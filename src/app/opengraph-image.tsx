@@ -1,7 +1,7 @@
 import { ImageResponse } from 'next/og';
 import { getConfig } from '@/lib/config-loader';
 
-export const alt = 'Abdulkarim G. Mohammed — Senior Full-Stack Engineer & AI/LLM Specialist';
+export const alt = 'Abdulkarim G. Mohammed — Senior Full-Stack & AI Platform Engineer';
 export const size = { width: 1200, height: 630 };
 export const contentType = 'image/png';
 

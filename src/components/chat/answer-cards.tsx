@@ -5,7 +5,7 @@ import type { ReactNode } from 'react';
 import { CopyEmail } from '@/components/artifact/copy-email';
 import { SIDE_PANEL_ID, usePanel } from '@/components/chat/side-panel';
 import { projectCover } from '@/lib/project-cover';
-import { splitMetric } from '@/components/artifact/artifact';
+import { splitMetric } from '@/lib/metrics';
 import { useChessStats } from '@/components/hobbies';
 import { Stars } from '@/components/reviews';
 import { TOOL_INDEX, ToolLookup } from '@/components/skills';

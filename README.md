@@ -129,7 +129,7 @@ pnpm dev                      # http://localhost:3000
 | Variable | Required | Purpose |
 |---|---|---|
 | `GOOGLE_GENERATIVE_AI_API_KEY` | For live answers | Free key from [Google AI Studio](https://aistudio.google.com/apikey). Without it, every instant answer, the ⌘K menu and slash commands still work. |
-| `NEXT_PUBLIC_SITE_URL` | For production | Your domain — used for canonical URLs, Open Graph and the sitemap. |
+| `NEXT_PUBLIC_SITE_URL` | Optional | The site's address, used for canonical URLs, Open Graph, structured data, `llms.txt` and the sitemap. Defaults to `https://www.abdulkarimg.com`; the bare `abdulkarimg.com` is upgraded to `www`, because it only redirects there. Set it to `http://localhost:3000` locally. |
 
 | Script | Does |
 |---|---|
@@ -227,7 +227,7 @@ src/
 Built for **Vercel**:
 
 1. Import the repo at [vercel.com/new](https://vercel.com/new) — Next.js and pnpm are detected.
-2. Add `GOOGLE_GENERATIVE_AI_API_KEY` and `NEXT_PUBLIC_SITE_URL` under *Environment Variables*.
+2. Add `GOOGLE_GENERATIVE_AI_API_KEY` under *Environment Variables*. `NEXT_PUBLIC_SITE_URL` is only needed for a different domain.
 3. Deploy.
 
 ---

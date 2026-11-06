@@ -20,10 +20,11 @@ interface TopBarProps {
 }
 
 const WORDS = [
-  { href: '#twin', label: 'Twin' },
+  { href: '#twin', label: 'AI twin' },
   { href: '#work', label: 'Work' },
   { href: '#services', label: 'Services' },
   { href: '#reviews', label: 'Reviews' },
+  { href: '#about', label: 'About' },
   { href: '#questions', label: 'Questions' },
 ];
 
@@ -96,7 +97,7 @@ export function TopBar({ onOpenCommand, onHome, onHire, conversation = false, on
             aria-label={`${personal.name}, back to start`}
           >
             <span className="relative h-8 w-8 shrink-0 overflow-hidden rounded-lg">
-              <Image src={personal.avatar} alt="" fill sizes="32px" className="object-cover" priority />
+              <Image src={personal.avatar} alt="" fill sizes="32px" unoptimized className="object-cover" priority />
             </span>
             <span className="font-display truncate text-[18px] leading-none text-foreground">
               <span className="sm:hidden lg:inline xl:hidden">{personal.shortName}</span>
@@ -119,12 +120,12 @@ export function TopBar({ onOpenCommand, onHome, onHire, conversation = false, on
           <button
             onClick={onOpenCommand}
             className="press hidden h-11 items-center gap-2 rounded-xl px-3 text-[15px] font-medium text-ink-soft hover:text-foreground lg:flex"
-            aria-label="Open command menu"
+            aria-label="Search"
             aria-keyshortcuts="Meta+K Control+K"
           >
             <Search className="h-4 w-4" aria-hidden />
             <span className="hidden xl:inline">Search</span>
-            <kbd className="kbd hidden xl:inline-flex">⌘K</kbd>
+            <kbd className="kbd hidden xl:inline-flex" aria-hidden>⌘K</kbd>
           </button>
 
           {social.github && !conversation && (
@@ -141,7 +142,7 @@ export function TopBar({ onOpenCommand, onHome, onHire, conversation = false, on
 
           <ThemeToggle className="!hidden lg:!inline-flex" />
 
-          <button type="button" onClick={onHire} aria-haspopup="dialog" className="btn btn--primary ml-2 max-sm:!min-h-10 max-sm:!px-3.5">
+          <button type="button" onClick={onHire} aria-haspopup="dialog" className="btn btn--primary ml-2 max-sm:!px-3.5">
             Hire me
             <ArrowUpRight className="nudge-ur hidden h-4 w-4 sm:block" aria-hidden />
           </button>

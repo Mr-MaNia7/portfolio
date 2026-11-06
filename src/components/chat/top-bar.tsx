@@ -3,7 +3,7 @@
 import { ArrowUpRight, Menu, Search, X } from 'lucide-react';
 import { Github } from '@/components/ui/brand-icons';
 import Image from 'next/image';
-import { useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { ThemeToggle } from '@/components/theme-toggle';
 import { getConfig } from '@/lib/config-loader';
 
@@ -46,6 +46,23 @@ export function TopBar({ onOpenCommand, onHome, onHire, conversation = false, on
 
   const close = () => setMenuOpen(false);
 
+  // Section links glide instead of jumping. Only these links: a global smooth
+  // scroll would also slow every scroll the app makes itself.
+  const glide = (e: React.MouseEvent<HTMLAnchorElement>, afterClose = false) => {
+    const { hash } = e.currentTarget;
+    const target = document.querySelector(hash);
+    if (!target) return;
+    e.preventDefault();
+    const go = () => {
+      const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      target.scrollIntoView({ behavior: reduce ? 'auto' : 'smooth', block: 'start' });
+      history.replaceState(null, '', hash);
+    };
+    // The open menu locks the page; scroll once it has closed.
+    if (afterClose) requestAnimationFrame(() => requestAnimationFrame(go));
+    else go();
+  };
+
   return (
     <header className={`nav ${conversation ? 'nav--static' : ''}`}>
       <div className="wrap">
@@ -79,7 +96,7 @@ export function TopBar({ onOpenCommand, onHome, onHire, conversation = false, on
         {!conversation && (
           <nav aria-label="Sections" className="hidden items-center gap-5 lg:flex xl:gap-7">
             {WORDS.map((w) => (
-              <a key={w.href} href={w.href} className="nav__word">
+              <a key={w.href} href={w.href} onClick={glide} className="nav__word">
                 {w.label}
               </a>
             ))}
@@ -114,7 +131,7 @@ export function TopBar({ onOpenCommand, onHome, onHire, conversation = false, on
 
           <button type="button" onClick={onHire} aria-haspopup="dialog" className="btn btn--primary ml-2 max-sm:!min-h-10 max-sm:!px-3.5">
             Hire me
-            <ArrowUpRight className="hidden h-4 w-4 sm:block" aria-hidden />
+            <ArrowUpRight className="nudge-ur hidden h-4 w-4 sm:block" aria-hidden />
           </button>
 
           {!conversation && (
@@ -142,7 +159,10 @@ export function TopBar({ onOpenCommand, onHome, onHire, conversation = false, on
               <a
                 key={w.href}
                 href={w.href}
-                onClick={close}
+                onClick={(e) => {
+                  close();
+                  glide(e, true);
+                }}
                 className="flex h-14 items-center border-b border-border text-[20px] font-medium"
               >
                 {w.label}

@@ -2,7 +2,8 @@
 
 import { useTheme } from 'next-themes';
 import { Moon, Sun } from 'lucide-react';
-import { useEffect, useState } from 'react';
+import { useEffect, useState, type MouseEvent } from 'react';
+import { flushSync } from 'react-dom';
 
 export function ThemeToggle({ className = '' }: { className?: string }) {
   const { resolvedTheme, setTheme } = useTheme();
@@ -11,6 +12,35 @@ export function ThemeToggle({ className = '' }: { className?: string }) {
   useEffect(() => setMounted(true), []);
 
   const isDark = resolvedTheme === 'dark';
+
+  // The new theme opens as a circle from the button. Browsers without view
+  // transitions, and visitors who ask for less motion, get the plain swap.
+  const toggle = (e: MouseEvent<HTMLButtonElement>) => {
+    const next = isDark ? 'light' : 'dark';
+    const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    if (!document.startViewTransition || reduce) {
+      setTheme(next);
+      return;
+    }
+    const { left, top, width, height } = e.currentTarget.getBoundingClientRect();
+    const x = left + width / 2;
+    const y = top + height / 2;
+    const r = Math.hypot(Math.max(x, innerWidth - x), Math.max(y, innerHeight - y));
+    const root = document.documentElement;
+    const vt = document.startViewTransition(() => {
+      // next-themes applies the class in an effect; set it here so the snapshot is the new theme.
+      root.classList.remove('light', 'dark');
+      root.classList.add(next);
+      root.style.colorScheme = next;
+      flushSync(() => setTheme(next));
+    });
+    vt.ready.then(() => {
+      root.animate(
+        { clipPath: [`circle(0px at ${x}px ${y}px)`, `circle(${r}px at ${x}px ${y}px)`] },
+        { duration: 520, easing: 'cubic-bezier(0.2, 0.8, 0.2, 1)', pseudoElement: '::view-transition-new(root)' },
+      );
+    });
+  };
 
   return (
     <button
@@ -22,7 +52,7 @@ export function ThemeToggle({ className = '' }: { className?: string }) {
             : 'Switch to dark theme'
           : 'Toggle theme'
       }
-      onClick={() => setTheme(isDark ? 'light' : 'dark')}
+      onClick={toggle}
       className={`icon-btn ${className}`}
     >
       {mounted ? (

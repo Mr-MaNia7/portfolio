@@ -106,6 +106,8 @@
   /* Lit ground behind the chat window */
   --lit: #c6d3df;
   --lit-glow: #e4ecf3;
+  /* The light that follows the pointer: a soft lift of the panel, not a white spot */
+  --lit-follow: #d3dde7;
 
   /* The inverse band (footer) */
   --band: #0b0c0e;
@@ -196,6 +198,7 @@
 
   --lit: #141c2a;
   --lit-glow: #22304a;
+  --lit-follow: #22304a;
 
   --band: #000000;
   --band-ink: #eef0f3;
@@ -349,6 +352,9 @@
   .btn--primary {
     background: var(--brand);
     color: var(--brand-foreground);
+    /* A lit top edge, so the one filled button reads as something to press */
+    box-shadow: inset 0 1px 0 rgb(255 255 255 / 0.18), 0 1px 2px rgb(11 12 14 / 0.14);
+    transition: transform 140ms var(--ease-out-expo), background-color 140ms var(--ease-out-expo), box-shadow 200ms var(--ease-out-expo);
   }
   .btn--secondary {
     border-color: var(--border-strong);
@@ -358,7 +364,11 @@
   @media (hover: hover) and (pointer: fine) {
     .btn:hover:not(:disabled) { transform: translateY(-1px); }
     .btn:active:not(:disabled) { transform: translateY(1px) scale(0.985); }
-    .btn--primary:hover:not(:disabled) { background: color-mix(in oklab, var(--brand) 86%, var(--foreground)); }
+    .btn--primary:hover:not(:disabled) {
+      background: color-mix(in oklab, var(--brand) 86%, var(--foreground));
+      box-shadow: inset 0 1px 0 rgb(255 255 255 / 0.18), 0 8px 20px -10px color-mix(in oklab, var(--brand) 70%, transparent);
+    }
+    .btn--primary:active:not(:disabled) { box-shadow: inset 0 1px 0 rgb(255 255 255 / 0.12); }
     .btn--secondary:hover:not(:disabled) { background: color-mix(in oklab, var(--foreground) 6%, transparent); border-color: var(--foreground); }
   }
   .btn:disabled {
@@ -457,10 +467,19 @@
     inset: 0 0 auto 0;
     z-index: 40;
     height: var(--nav);
-    border-bottom: 1px solid var(--border);
-    background: var(--background);
+    border-bottom: 1px solid color-mix(in oklab, var(--border) 70%, transparent);
+    background: color-mix(in oklab, var(--background) 62%, transparent);
+    -webkit-backdrop-filter: saturate(1.8) blur(20px);
+    backdrop-filter: saturate(1.8) blur(20px);
   }
-  .nav--static { position: relative; flex-shrink: 0; }
+  .nav--static {
+    position: relative;
+    flex-shrink: 0;
+    border-bottom-color: var(--border);
+    background: var(--background);
+    -webkit-backdrop-filter: none;
+    backdrop-filter: none;
+  }
   .nav > .wrap {
     display: flex;
     height: 100%;
@@ -586,6 +605,35 @@
     .card--link:hover .zoom { transform: scale(1.03); }
   }
   .zoom { transition: transform 600ms var(--ease-out-expo); }
+
+  /* Arrows lean the way they point when their button or card is hovered */
+  .nudge, .nudge-ur { flex-shrink: 0; transition: transform 200ms var(--ease-out-expo); }
+  @media (hover: hover) and (pointer: fine) {
+    .card--link:hover .nudge { transform: translateX(3px); }
+    .btn:hover .nudge-ur,
+    .card--link:hover .nudge-ur { transform: translate(2px, -2px); }
+  }
+
+  /* A light follows the pointer round a linked card's edge (set by usePointerGlow) */
+  .card--link { position: relative; isolation: isolate; }
+  .card--link::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: 2;
+    padding: 1px;
+    border-radius: inherit;
+    background: radial-gradient(260px circle at var(--mx, 50%) var(--my, 50%), color-mix(in oklab, var(--brand) 75%, transparent), transparent 70%);
+    -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+    -webkit-mask-composite: xor;
+    mask: linear-gradient(#000 0 0) content-box exclude, linear-gradient(#000 0 0);
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 240ms var(--ease-out-expo);
+  }
+  @media (hover: hover) and (pointer: fine) {
+    .card--link:hover::after { opacity: 1; }
+  }
 
   /* Flagship: words on the page's left line, the cover on the hero's split line. Its
      height is what the screen leaves under the heading, so the 4:3 cover fills the cell. */
@@ -1412,7 +1460,15 @@
     min-height: 480px;
     padding: 32px;
     border-radius: var(--radius-lg);
-    background: radial-gradient(90% 70% at 70% 0%, var(--lit-glow), transparent 70%), var(--lit);
+    background: radial-gradient(90% 70% at var(--gx) var(--gy), var(--glow), transparent 70%), var(--lit);
+    --gx: 70%;
+    --gy: 0%;
+    --glow: var(--lit-glow);
+    transition: --gx 900ms var(--ease-out-expo), --gy 900ms var(--ease-out-expo), --glow 600ms var(--ease-out-expo);
+  }
+  /* The light drifts toward the pointer, dimmed so it never glares, and settles back when it leaves */
+  @media (hover: hover) and (pointer: fine) {
+    .hero__art:hover { --gx: var(--px, 70%); --gy: var(--py, 0%); --glow: var(--lit-follow); }
   }
   .hero h1 {
     font-size: clamp(38px, 1.1rem + 3.2vw, 88px);
@@ -1566,8 +1622,11 @@
     inset: auto 0 0 0;
     z-index: 30;
     padding: 12px 0 calc(12px + env(safe-area-inset-bottom));
-    border-top: 1px solid var(--border);
-    background: var(--background);
+    border-top: 1px solid color-mix(in oklab, var(--border) 70%, transparent);
+    background: color-mix(in oklab, var(--background) 64%, transparent);
+    -webkit-backdrop-filter: saturate(1.8) blur(20px);
+    backdrop-filter: saturate(1.8) blur(20px);
+    animation: dock-in 280ms var(--ease-out-expo) both;
   }
 
   /* Closing band and footer */
@@ -1705,6 +1764,66 @@ pre {
 }
 .fade-img[data-loaded="true"] { opacity: 1; }
 
+/* The guided values the hero's light glides between */
+@property --gx { syntax: "<percentage>"; inherits: false; initial-value: 70%; }
+@property --gy { syntax: "<percentage>"; inherits: false; initial-value: 0%; }
+@property --glow { syntax: "<color>"; inherits: false; initial-value: transparent; }
+
+@keyframes dock-in {
+  from { transform: translateY(100%); }
+  to { transform: none; }
+}
+
+/* The hero's chat plays its sample exchanges once, one after another: each
+   question lands, the twin types (or thinks), then answers. Each exchange sets
+   its own moments; the starters arrive at once. */
+@keyframes typing-out { to { opacity: 0; visibility: hidden; } }
+@keyframes typing-dot {
+  0%, 100% { transform: none; opacity: 0.45; }
+  50% { transform: translateY(-3px); opacity: 1; }
+}
+.twin-play .play-1 { --q: 450ms; --in: 850ms; --out: 1620ms; --a: 1700ms; }
+.twin-play .play-2 { --q: 2300ms; --in: 2700ms; --out: 3800ms; --a: 3880ms; }
+.twin-play .play-3 { --q: 4450ms; --in: 4850ms; --out: 5620ms; --a: 5700ms; }
+.twin-play .play-q { animation: reveal 320ms var(--ease-out-expo) var(--q) both; }
+.twin-play .play-a { position: relative; }
+.twin-play .play-a__text { animation: reveal 360ms var(--ease-out-expo) var(--a) both; }
+.twin-play .typing,
+.twin-play .play-think {
+  position: absolute;
+  top: 0;
+  left: 0;
+  opacity: 0;
+  animation: fade 180ms var(--ease-out-expo) var(--in) forwards, typing-out 160ms var(--ease-out-expo) var(--out) forwards;
+}
+.twin-play .typing {
+  display: inline-flex;
+  gap: 4px;
+  padding: 12px 14px;
+  border-radius: var(--radius-lg);
+  background: var(--bubble);
+}
+.twin-play .typing i {
+  width: 6px;
+  height: 6px;
+  border-radius: 9999px;
+  background: var(--muted-foreground);
+  animation: typing-dot 560ms ease-in-out calc(var(--in) + var(--d, 0ms)) 2;
+}
+.twin-play .typing i:nth-child(2) { --d: 120ms; }
+.twin-play .typing i:nth-child(3) { --d: 240ms; }
+.twin-play .twin-chips li { animation: reveal 280ms var(--ease-out-expo) both; animation-delay: calc(200ms + var(--c, 0) * 60ms); }
+.twin-play .twin-chips li:nth-child(2) { --c: 1; }
+.twin-play .twin-chips li:nth-child(3) { --c: 2; }
+.twin-play .twin-chips li:nth-child(4) { --c: 3; }
+
+/* Theme switch: the new theme opens as a circle from the toggle */
+::view-transition-old(root),
+::view-transition-new(root) {
+  animation: none;
+  mix-blend-mode: normal;
+}
+
 /* The panel slides once. What is inside it does not arrive again */
 .side-panel .reveal,
 .side-panel .reveal-sheet {
@@ -1719,6 +1838,13 @@ pre {
   .swap {
     animation: fade 1ms both;
   }
+  .twin-play *,
+  .dock {
+    animation: none !important;
+  }
+  .twin-play .typing,
+  .twin-play .play-think { display: none; }
+  .hero__art { transition: none; }
   .side-panel,
   .side-panel[data-phase="closing"],
   .side-float,

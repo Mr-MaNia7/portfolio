@@ -63,6 +63,8 @@ const ChatLanding: React.FC<ChatLandingProps> = ({
   const [openIndex, setOpenIndex] = useState<number | null>(null);
   const composerRef = useRef<HTMLDivElement>(null);
 
+  usePointerGlow();
+
   useEffect(() => {
     const el = composerRef.current;
     if (!el) return;
@@ -141,7 +143,7 @@ const ChatLanding: React.FC<ChatLandingProps> = ({
               <div className="hero__actions flex flex-wrap gap-3 max-sm:hidden">
                 <button type="button" onClick={onHire} aria-haspopup="dialog" className="btn btn--primary">
                   Hire me
-                  <ArrowUpRight className="h-4 w-4" aria-hidden />
+                  <ArrowUpRight className="nudge-ur h-4 w-4" aria-hidden />
                 </button>
                 <button type="button" onClick={() => setOpenIndex(flagshipIndex)} aria-haspopup="dialog" className="btn btn--secondary">
                   See the {flagship.client ?? 'flagship'} case study
@@ -156,7 +158,7 @@ const ChatLanding: React.FC<ChatLandingProps> = ({
               </div>
             </div>
 
-            <div className="hero__art">
+            <div className="hero__art" data-glow>
               <div className="twin">
                 <div className="flex items-center gap-3 border-b border-border px-4 py-3 sm:px-5">
                   <span className="relative h-10 w-10 shrink-0 overflow-hidden rounded-xl">
@@ -179,40 +181,54 @@ const ChatLanding: React.FC<ChatLandingProps> = ({
                   </span>
                 </div>
 
-                <div className="scrollbar-subtle flex min-h-0 flex-1 flex-col gap-3 overflow-y-auto px-4 py-4 sm:px-5 sm:py-5">
+                <div className="twin-play scrollbar-subtle flex min-h-0 flex-1 flex-col gap-3 overflow-y-auto px-4 py-4 sm:px-5 sm:py-5">
                   <p className="twin-msg max-w-[34rem] text-foreground">
                     I&apos;m {personal.shortName}&apos;s AI twin. Ask what you&apos;d ask in a first interview: what
                     I&apos;ve shipped, how I&apos;d handle your project, whether I&apos;m the right fit.
                   </p>
                   {/* A real exchange from the instant answers, so the window shows what it does. */}
-                  <div className="twin-exchange flex-col gap-3">
-                    <p className="bubble twin-msg ml-auto">
+                  <div className="twin-exchange play-1 flex-col gap-3">
+                    <p className="play-q bubble twin-msg ml-auto">
                       Can I trust you with a production system?
                     </p>
-                    <div className="twin-msg max-w-[34rem] text-foreground">
+                    {/* Played once on load: the question lands, the twin types, then answers. */}
+                    <div className="play-a twin-msg max-w-[34rem] text-foreground">
+                      <span className="typing" aria-hidden>
+                        <i /><i /><i />
+                      </span>
+                      <span className="play-a__text block">
                       {flagship.client} hired me on a 45-day trial to make its backend multi-tenant. Since June 2025 my scope has grown to the whole platform, with {flagship.metrics?.[0]} so far.{' '}
                       <button type="button" onClick={() => setOpenIndex(flagshipIndex)} aria-haspopup="dialog" className="link">
                         Read the case study
                       </button>
+                      </span>
                     </div>
                   </div>
                   {/* Taller windows show more of the same answers, in their own approved words. */}
-                  <div className="twin-exchange--tall flex-col gap-3">
-                    <p className="bubble twin-msg ml-auto">
+                  <div className="twin-exchange--tall play-2 flex-col gap-3">
+                    <p className="play-q bubble twin-msg ml-auto">
                       {index.find((c) => c.id === 'availability')?.label}
                     </p>
-                    <p className="twin-msg max-w-[34rem] text-foreground">
-                      {availability.headline}. {availability.workStyle}
-                    </p>
+                    <div className="play-a twin-msg max-w-[34rem] text-foreground">
+                      <span className="play-think" aria-hidden>
+                        <span className="shimmer">Thinking</span>
+                      </span>
+                      <span className="play-a__text block">
+                        {availability.headline}. {availability.workStyle}
+                      </span>
+                    </div>
                   </div>
                   {shortQuotes[0] && (
-                    <div className="twin-exchange--taller flex-col gap-3">
-                      <p className="bubble twin-msg ml-auto">
+                    <div className="twin-exchange--taller play-3 flex-col gap-3">
+                      <p className="play-q bubble twin-msg ml-auto">
                         {index.find((c) => c.id === 'reviews')?.label}
                       </p>
-                      <p className="twin-msg max-w-[34rem] text-foreground">
-                        “{shortQuotes[0].text}”
-                      </p>
+                      <div className="play-a twin-msg max-w-[34rem] text-foreground">
+                        <span className="typing" aria-hidden>
+                          <i /><i /><i />
+                        </span>
+                        <span className="play-a__text block">“{shortQuotes[0].text}”</span>
+                      </div>
                     </div>
                   )}
                   <ul className="twin-chips mt-auto flex flex-wrap gap-2 pt-1" aria-label="Suggested questions">
@@ -276,7 +292,7 @@ const ChatLanding: React.FC<ChatLandingProps> = ({
                 <Metrics project={flagship} />
                 <span className="flex items-center gap-1.5 pt-1 text-[16px] font-medium text-foreground">
                   Read the case study
-                  <ArrowRight aria-hidden className="h-4 w-4" />
+                  <ArrowRight aria-hidden className="nudge h-4 w-4" />
                 </span>
               </span>
               <span className="flagship__cover max-lg:-order-1 w-full">
@@ -354,7 +370,7 @@ const ChatLanding: React.FC<ChatLandingProps> = ({
                   <span className="text-[16px] leading-relaxed text-ink-soft">{agency.pitch}</span>
                   <span className="mt-auto flex items-center gap-1.5 pt-1 text-[16px] font-medium text-foreground">
                     {new URL(agency.url).hostname.replace('www.', '')}
-                    <ArrowUpRight className="h-4 w-4" aria-hidden />
+                    <ArrowUpRight className="nudge-ur h-4 w-4" aria-hidden />
                   </span>
                 </a>
               </div>
@@ -433,7 +449,7 @@ const ChatLanding: React.FC<ChatLandingProps> = ({
                     <span className="question-card__title font-display leading-[1.2] text-foreground">{cmd.label}</span>
                     <span className="flex items-center gap-1 text-[14px] font-medium text-brand-ink">
                       Get the answer
-                      <ArrowRight aria-hidden className="h-4 w-4" />
+                      <ArrowRight aria-hidden className="nudge h-4 w-4" />
                     </span>
                   </button>
                 </li>
@@ -471,7 +487,7 @@ const ChatLanding: React.FC<ChatLandingProps> = ({
             <div className="mt-8 flex flex-wrap gap-3 max-sm:flex-col">
               <button type="button" onClick={onHire} aria-haspopup="dialog" className="btn btn--primary">
                 Hire me
-                <ArrowUpRight className="h-4 w-4" aria-hidden />
+                <ArrowUpRight className="nudge-ur h-4 w-4" aria-hidden />
               </button>
               <a href={`mailto:${personal.email}`} className="btn btn--secondary">
                 Email {personal.email}
@@ -536,6 +552,42 @@ function WorkTile({ project, onOpen }: { project: Project; onOpen: () => void })
       </span>
     </button>
   );
+}
+
+/**
+ * A soft light follows the pointer across the hero's lit panel and around the
+ * edge of linked cards. One passive listener, one write per frame, and only on
+ * a real pointer: touch screens never see it.
+ */
+function usePointerGlow() {
+  useEffect(() => {
+    if (!window.matchMedia('(hover: hover) and (pointer: fine)').matches) return;
+    let frame = 0;
+    let last: PointerEvent | null = null;
+    const paint = () => {
+      frame = 0;
+      const e = last;
+      if (!e || !(e.target instanceof Element)) return;
+      const el = e.target.closest<HTMLElement>('[data-glow], .card--link');
+      if (!el) return;
+      const r = el.getBoundingClientRect();
+      const x = e.clientX - r.left;
+      const y = e.clientY - r.top;
+      el.style.setProperty('--mx', `${x}px`);
+      el.style.setProperty('--my', `${y}px`);
+      el.style.setProperty('--px', `${(x / r.width) * 100}%`);
+      el.style.setProperty('--py', `${(y / r.height) * 100}%`);
+    };
+    const onMove = (e: PointerEvent) => {
+      last = e;
+      if (!frame) frame = requestAnimationFrame(paint);
+    };
+    document.addEventListener('pointermove', onMove, { passive: true });
+    return () => {
+      document.removeEventListener('pointermove', onMove);
+      cancelAnimationFrame(frame);
+    };
+  }, []);
 }
 
 export default ChatLanding;

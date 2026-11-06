@@ -1,6 +1,6 @@
 'use client';
 
-import { ChatRequestOptions } from 'ai';
+import type { ChatRequestOptions } from 'ai';
 import { AnimatePresence, motion } from 'framer-motion';
 import { ArrowUp, CornerDownLeft, Plus, Square } from 'lucide-react';
 import React, { useEffect, useId, useMemo, useRef, useState } from 'react';
@@ -98,7 +98,13 @@ export default function ChatBottombar({
   // something the user actually entered.
   const suggestionActive = input.length === 0 && !isLoading && !showSlash;
 
-  useEffect(() => setActive(0), [input]);
+  // A new draft is a new list of matches: start from the first. Adjusted while
+  // rendering, so the menu never paints with a stale selection.
+  const [activeFor, setActiveFor] = useState(input);
+  if (activeFor !== input) {
+    setActiveFor(input);
+    setActive(0);
+  }
 
   // Auto-grow the textarea up to a max height, then scroll internally.
   useEffect(() => {

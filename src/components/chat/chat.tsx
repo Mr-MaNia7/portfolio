@@ -1,6 +1,5 @@
 'use client';
-import { useChat } from '@ai-sdk/react';
-import { DefaultChatTransport, getToolName, isToolUIPart, type UIMessage } from 'ai';
+import type { UIMessage } from 'ai';
 import {
   AnimatePresence,
   MotionConfig,
@@ -34,12 +33,14 @@ import {
   SidebarFloat,
   SidebarRail,
 } from '@/components/chat/sidebar';
+import { useLiveChat } from '@/hooks/use-live-chat';
 import { useMediaQuery } from '@/hooks/use-media-query';
 import { PANEL_TITLES, TOOL_LABELS, suggestQuestions } from '@/lib/answers';
 import { presetReplies, getConfig } from '@/lib/config-loader';
 import { buildCommands, type Command } from '@/lib/commands';
 import { ICONS } from '@/components/chat/command-icons';
-import { hasContent, textOf } from '@/lib/message-text';
+import { whenIdle } from '@/lib/idle';
+import { getToolName, hasContent, isToolUIPart, textOf } from '@/lib/message-text';
 import { onAsk, onHire } from '@/lib/portfolio-events';
 import { chatStore, chatTitle, type SavedChat } from '@/lib/chat-store';
 
@@ -65,19 +66,13 @@ const HireSheet = dynamic(() => loadHireSheet().then((m) => m.HireSheet), {
 });
 
 function preloadLater() {
-  const run = () => {
+  return whenIdle(() => {
     void loadChatView();
     void loadPresetReply();
     void loadCommandPalette();
     void loadHireSheet();
     void loadToolArtifact();
-  };
-  if ('requestIdleCallback' in window) {
-    const id = window.requestIdleCallback(run, { timeout: 4000 });
-    return () => window.cancelIdleCallback(id);
-  }
-  const t = setTimeout(run, 2000);
-  return () => clearTimeout(t);
+  });
 }
 
 type PresetItem = {
@@ -154,9 +149,6 @@ const sidebarPref = (() => {
     },
   };
 })();
-
-/** One transport for the page's life: it holds no per-render state. */
-const chatTransport = new DefaultChatTransport({ api: '/api/chat' });
 
 const Chat = () => {
   const { setTheme, resolvedTheme } = useTheme();
@@ -236,11 +228,8 @@ const Chat = () => {
   // Opening a saved chat lands on its last question at once, without a glide.
   const instantPinRef = useRef(false);
 
-  const { messages, status, stop, regenerate, sendMessage, setMessages } =
-    useChat({
-      transport: chatTransport,
-      // Words arrive evenly from the server; rendering them in small batches keeps the page calm.
-      throttle: 40,
+  const { messages, status, stop, regenerate, sendMessage, setMessages, engine } =
+    useLiveChat({
       onFinish: ({ message, isAbort, isError, isDisconnect }) => {
         sendingRef.current = false;
         if (isAbort || isError || isDisconnect) return;
@@ -941,8 +930,8 @@ const Chat = () => {
   // stop the landing page from being prerendered.
   useEffect(() => {
     if (autoSubmittedRef.current) return;
-    // A task, not this effect's body: asking sets state. The guard is set when it
-    // runs, so StrictMode's discarded first mount cannot swallow the question.
+    // Asked from a timer, not this effect's body, because asking sets state. The guard
+    // is set inside the timer, so StrictMode's discarded first mount cannot swallow the question.
     const t = setTimeout(() => {
       if (autoSubmittedRef.current) return;
       autoSubmittedRef.current = true;
@@ -1109,6 +1098,7 @@ const Chat = () => {
 
   return (
     <MotionConfig reducedMotion="user">
+      {engine}
       {paletteMounted && (
         <CommandPalette
           commands={paletteCommands}

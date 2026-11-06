@@ -24,6 +24,16 @@ export function CommandPalette({
 }: CommandPaletteProps) {
   const [query, setQuery] = useState('');
   const [active, setActive] = useState(0);
+  // Each opening starts fresh. Reset while rendering, not in an effect, so the
+  // stale query never paints.
+  const [wasOpen, setWasOpen] = useState(open);
+  if (open !== wasOpen) {
+    setWasOpen(open);
+    if (open) {
+      setQuery('');
+      setActive(0);
+    }
+  }
   const inputRef = useRef<HTMLInputElement>(null);
   const listRef = useRef<HTMLDivElement>(null);
   const returnFocusRef = useRef<HTMLElement | null>(null);
@@ -58,18 +68,12 @@ export function CommandPalette({
   useEffect(() => {
     if (open) {
       returnFocusRef.current = document.activeElement as HTMLElement | null;
-      setQuery('');
-      setActive(0);
       const t = setTimeout(() => inputRef.current?.focus(), 30);
       return () => clearTimeout(t);
     }
     // Hand focus back to whatever opened the menu.
     returnFocusRef.current?.focus?.();
   }, [open]);
-
-  useEffect(() => {
-    setActive(0);
-  }, [query]);
 
   useEffect(() => {
     if (!open) return;
@@ -149,7 +153,11 @@ export function CommandPalette({
               <input
                 ref={inputRef}
                 value={query}
-                onChange={(e) => setQuery(e.target.value)}
+                onChange={(e) => {
+                  setQuery(e.target.value);
+                  // A new query is a new list: start from its first item.
+                  setActive(0);
+                }}
                 placeholder="Ask a question or jump to…"
                 aria-label="Search questions and commands"
                 name="command-search"

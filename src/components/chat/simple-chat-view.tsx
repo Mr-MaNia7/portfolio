@@ -1,9 +1,9 @@
 'use client';
 
-import { getToolName, isToolUIPart, type UIMessage } from 'ai';
+import type { UIMessage } from 'ai';
 import type { ReactNode } from 'react';
 import { TOOL_LABELS } from '@/lib/answers';
-import { hasContent, textOf } from '@/lib/message-text';
+import { getToolName, hasContent, isToolUIPart, textOf } from '@/lib/message-text';
 import { renderAnswerCard } from './answer-cards';
 import ChatMessageContent from './chat-message-content';
 import { MessageActions } from './message-actions';

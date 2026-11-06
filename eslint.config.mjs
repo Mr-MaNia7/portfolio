@@ -5,7 +5,9 @@ import next from 'eslint-config-next';
 const eslintConfig = [
   ...next,
   {
-    ignores: ['.next/**', 'node_modules/**'],
+    // Agent tooling, not the app: skill assets and browser test scripts, whose
+    // use*-named helpers are not React hooks.
+    ignores: ['.next/**', 'node_modules/**', '.agents/**', '.claude/**', '.taste-skill/**'],
   },
 ];
 

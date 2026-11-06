@@ -2,14 +2,16 @@
 
 import { useTheme } from 'next-themes';
 import { Moon, Sun } from 'lucide-react';
-import { useEffect, useState, type MouseEvent } from 'react';
+import { useSyncExternalStore, type MouseEvent } from 'react';
 import { flushSync } from 'react-dom';
+
+const subscribeNever = () => () => {};
 
 export function ThemeToggle({ className = '' }: { className?: string }) {
   const { resolvedTheme, setTheme } = useTheme();
-  const [mounted, setMounted] = useState(false);
-
-  useEffect(() => setMounted(true), []);
+  // False while server rendering and hydrating, true after: the theme is only known
+  // in the browser, so the icon waits for it rather than guessing.
+  const mounted = useSyncExternalStore(subscribeNever, () => true, () => false);
 
   const isDark = resolvedTheme === 'dark';
 

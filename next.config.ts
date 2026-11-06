@@ -1,6 +1,9 @@
 import type { NextConfig } from 'next';
 
 const nextConfig: NextConfig = {
+  // Memoizes components automatically. The draft lives at the top of the chat, so
+  // without it every keystroke re-rendered the landing page or the whole transcript.
+  reactCompiler: true,
   images: {
     dangerouslyAllowSVG: true,
     contentDispositionType: 'attachment',

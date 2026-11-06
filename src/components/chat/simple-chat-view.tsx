@@ -3,6 +3,7 @@
 import { getToolName, isToolUIPart, type UIMessage } from 'ai';
 import type { ReactNode } from 'react';
 import { TOOL_LABELS } from '@/lib/answers';
+import { hasContent, textOf } from '@/lib/message-text';
 import { renderAnswerCard } from './answer-cards';
 import ChatMessageContent from './chat-message-content';
 import { MessageActions } from './message-actions';
@@ -11,14 +12,7 @@ import { usePanel } from './side-panel';
 const isFinished = (state: string) =>
   state === 'output-available' || state === 'output-error' || state === 'output-denied';
 
-export const textOf = (m: UIMessage) =>
-  (m.parts ?? [])
-    .map((part) => (part.type === 'text' ? part.text : ''))
-    .join('');
-
-/** Something the visitor can see: words, or a tool that was actually called. */
-export const hasContent = (m: UIMessage) =>
-  textOf(m).trim().length > 0 || (m.parts ?? []).some(isToolUIPart);
+export { hasContent, textOf };
 
 /** The word itself carries the light. Shown only after 300ms, so fast replies never flicker. */
 export function Thinking() {

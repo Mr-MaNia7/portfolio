@@ -9,7 +9,7 @@ import {
   CollapsibleTrigger,
 } from '@/components/ui/collapsible';
 import { ChevronDown, ChevronUp } from 'lucide-react';
-import { useState } from 'react';
+import { memo, useState } from 'react';
 import {
   prepareStreamingMarkdown,
   rehypeStreaming,
@@ -185,9 +185,14 @@ const MARKDOWN: Components = {
   ),
 };
 
+const REMARK_PLUGINS = [remarkGfm];
 const STREAMING_PLUGINS = [rehypeStreaming];
 
-export default function ChatMessageContent({
+/**
+ * Parsing markdown is the costliest render on the page. A settled answer keeps the
+ * same message object, so it is parsed once, not again on every keystroke or stream tick.
+ */
+export default memo(function ChatMessageContent({
   message,
   streaming = false,
 }: ChatMessageContentProps) {
@@ -216,7 +221,7 @@ export default function ChatMessageContent({
               return i % 2 === 0 ? (
                 <div key={`text-${i}`} className="w-full break-words">
                   <Markdown
-                    remarkPlugins={[remarkGfm]}
+                    remarkPlugins={REMARK_PLUGINS}
                     rehypePlugins={tail ? STREAMING_PLUGINS : undefined}
                     components={MARKDOWN}
                   >
@@ -232,4 +237,4 @@ export default function ChatMessageContent({
       })}
     </div>
   );
-}
+});

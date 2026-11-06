@@ -215,7 +215,17 @@
     -webkit-text-size-adjust: 100%;
     text-rendering: optimizeLegibility;
     color-scheme: light;
-    scroll-padding-top: 0;
+    /* Keyboard focus never lands under the fixed nav. Sections cancel it below, so
+       the section links still align each section's top with the screen's. */
+    scroll-padding-top: var(--nav);
+    -webkit-tap-highlight-color: transparent;
+  }
+  main > section[id] {
+    scroll-margin-top: calc(-1 * var(--nav));
+  }
+  /* The skip link's target. It takes focus only to move the reading position. */
+  main:focus {
+    outline: none;
   }
   html.dark {
     color-scheme: dark;
@@ -249,6 +259,27 @@
 
   button:not(:disabled), [role="button"], summary {
     cursor: pointer;
+  }
+
+  /* No double-tap-to-zoom wait on controls. Pinch zoom stays available. */
+  a, button, input, textarea, select, label, summary, [role="button"], [role="option"] {
+    touch-action: manipulation;
+  }
+
+  .skip-link {
+    position: fixed;
+    top: 8px;
+    left: 8px;
+    z-index: 200;
+    padding: 10px 16px;
+    border-radius: 8px;
+    background: var(--foreground);
+    color: var(--background);
+    font-weight: 500;
+    transform: translateY(calc(-100% - 16px));
+  }
+  .skip-link:focus-visible {
+    transform: none;
   }
 
   kbd {

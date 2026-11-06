@@ -93,6 +93,7 @@ export async function POST(req: Request) {
       return new Response('Network error. Please check your connection and try again.', { status: 503 });
     }
     
-    return new Response(`Internal Server Error: ${error instanceof Error ? error.message : 'Unknown error'}`, { status: 500 });
+    // The details stay in the server log; the visitor only needs to know it failed.
+    return new Response('Something went wrong. Please try again.', { status: 500 });
   }
 }

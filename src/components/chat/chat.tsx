@@ -9,7 +9,6 @@ import {
 } from 'framer-motion';
 import { ArrowDown } from 'lucide-react';
 import { useTheme } from 'next-themes';
-import { useSearchParams } from 'next/navigation';
 import React, {
   useCallback,
   useEffect,
@@ -21,19 +20,11 @@ import React, {
 } from 'react';
 import { toast } from 'sonner';
 
+import dynamic from 'next/dynamic';
+
 import ChatBottombar from '@/components/chat/chat-bottombar';
 import ChatLanding from '@/components/chat/chat-landing';
-import {
-  AssistantTurn,
-  StoppedTurn,
-  Thinking,
-  hasContent,
-  textOf,
-} from '@/components/chat/simple-chat-view';
-import { PresetReply } from '@/components/chat/preset-reply';
-import { CommandPalette } from '@/components/chat/command-palette';
 import { TopBar } from '@/components/chat/top-bar';
-import { HireSheet } from '@/components/chat/hire-sheet';
 import { FollowUps } from '@/components/chat/follow-ups';
 import { MessageActions } from '@/components/chat/message-actions';
 import { PanelContext, SidePanel } from '@/components/chat/side-panel';
@@ -43,14 +34,51 @@ import {
   SidebarFloat,
   SidebarRail,
 } from '@/components/chat/sidebar';
-import { renderToolArtifact } from '@/components/chat/tool-renderer';
 import { useMediaQuery } from '@/hooks/use-media-query';
 import { PANEL_TITLES, TOOL_LABELS, suggestQuestions } from '@/lib/answers';
 import { presetReplies, getConfig } from '@/lib/config-loader';
 import { buildCommands, type Command } from '@/lib/commands';
-import { ICONS } from '@/components/chat/command-palette';
+import { ICONS } from '@/components/chat/command-icons';
+import { hasContent, textOf } from '@/lib/message-text';
 import { onAsk, onHire } from '@/lib/portfolio-events';
 import { chatStore, chatTitle, type SavedChat } from '@/lib/chat-store';
+
+// The conversation, the dialogs and the panel details are not part of the landing
+// page's first load. They are fetched once the browser is idle, ahead of first use.
+const loadChatView = () => import('@/components/chat/simple-chat-view');
+const loadPresetReply = () => import('@/components/chat/preset-reply');
+const loadToolArtifact = () => import('@/components/chat/tool-renderer');
+const loadCommandPalette = () => import('@/components/chat/command-palette');
+const loadHireSheet = () => import('@/components/chat/hire-sheet');
+
+const AssistantTurn = dynamic(() => loadChatView().then((m) => m.AssistantTurn));
+const StoppedTurn = dynamic(() => loadChatView().then((m) => m.StoppedTurn));
+const Thinking = dynamic(() => loadChatView().then((m) => m.Thinking));
+const PresetReply = dynamic(() => loadPresetReply().then((m) => m.PresetReply));
+const ToolArtifact = dynamic(() => loadToolArtifact().then((m) => m.ToolArtifact));
+const CommandPalette = dynamic(
+  () => loadCommandPalette().then((m) => m.CommandPalette),
+  { ssr: false }
+);
+const HireSheet = dynamic(() => loadHireSheet().then((m) => m.HireSheet), {
+  ssr: false,
+});
+
+function preloadLater() {
+  const run = () => {
+    void loadChatView();
+    void loadPresetReply();
+    void loadCommandPalette();
+    void loadHireSheet();
+    void loadToolArtifact();
+  };
+  if ('requestIdleCallback' in window) {
+    const id = window.requestIdleCallback(run, { timeout: 4000 });
+    return () => window.cancelIdleCallback(id);
+  }
+  const t = setTimeout(run, 2000);
+  return () => clearTimeout(t);
+}
 
 type PresetItem = {
   id: string;
@@ -127,9 +155,10 @@ const sidebarPref = (() => {
   };
 })();
 
+/** One transport for the page's life: it holds no per-render state. */
+const chatTransport = new DefaultChatTransport({ api: '/api/chat' });
+
 const Chat = () => {
-  const searchParams = useSearchParams();
-  const initialQuery = searchParams.get('query');
   const { setTheme, resolvedTheme } = useTheme();
 
   const config = useMemo(() => getConfig(), []);
@@ -137,6 +166,11 @@ const Chat = () => {
 
   const [paletteOpen, setPaletteOpen] = useState(false);
   const [hireOpen, setHireOpen] = useState(false);
+  // Mounted from the first open on, so their exit animations still run.
+  const [paletteMounted, setPaletteMounted] = useState(false);
+  const [hireMounted, setHireMounted] = useState(false);
+  if (paletteOpen && !paletteMounted) setPaletteMounted(true);
+  if (hireOpen && !hireMounted) setHireMounted(true);
   const [input, setInput] = useState('');
   const [heroComposerVisible, setHeroComposerVisible] = useState(true);
   const [presetItems, setPresetItems] = useState<PresetItem[]>([]);
@@ -175,6 +209,8 @@ const Chat = () => {
   // True from the moment a message is sent until its request ends, so a second click
   // or Enter in the same tick cannot send twice before the status updates.
   const sendingRef = useRef(false);
+  // Changes whenever the conversation moves on, so a stale Undo cannot overwrite newer turns.
+  const historyRef = useRef(0);
   const autoSubmittedRef = useRef(false);
 
   const scrollerRef = useRef<HTMLDivElement>(null);
@@ -202,7 +238,7 @@ const Chat = () => {
 
   const { messages, status, stop, regenerate, sendMessage, setMessages } =
     useChat({
-      transport: new DefaultChatTransport({ api: '/api/chat' }),
+      transport: chatTransport,
       // Words arrive evenly from the server; rendering them in small batches keeps the page calm.
       throttle: 40,
       onFinish: ({ message, isAbort, isError, isDisconnect }) => {
@@ -226,6 +262,8 @@ const Chat = () => {
         });
       },
     });
+
+  useEffect(() => preloadLater(), []);
 
   // Latest messages, readable from event handlers without re-creating callbacks.
   const messagesRef = useRef(messages);
@@ -565,6 +603,8 @@ const Chat = () => {
     [panel, openPanel, setPanelDetail]
   );
 
+  const closeHire = useCallback(() => setHireOpen(false), []);
+
   const closeFloat = useCallback(() => {
     setSidebarFloating(false);
     floatOpenerRef.current?.focus({ preventScroll: true });
@@ -613,6 +653,7 @@ const Chat = () => {
 
   const addPreset = useCallback(
     (question: string, reply: string, tool: string) => {
+      historyRef.current++;
       ensureChat();
       setErrorItem(null);
       setInstantAnnouncement(reply);
@@ -640,6 +681,7 @@ const Chat = () => {
     (text: string) => {
       if (sendingRef.current || isLoadingRef.current) return false;
       sendingRef.current = true;
+      historyRef.current++;
       ensureChat();
       setErrorItem(null);
       const count = messagesRef.current.length;
@@ -727,6 +769,7 @@ const Chat = () => {
   };
 
   const resetConversation = (next: SavedChat | null) => {
+    historyRef.current++;
     setMessages(next?.messages ?? []);
     setPresetItems(next?.presets ?? []);
     setStoppedIds(new Set(next?.stopped ?? []));
@@ -770,6 +813,7 @@ const Chat = () => {
 
   // Reset the conversation in place — no full-page reload. The chat stays saved.
   const goHome = useCallback(() => {
+    historyRef.current++;
     leaveCurrentChat();
     stop();
     sendingRef.current = false;
@@ -893,12 +937,22 @@ const Chat = () => {
   }, []);
 
   // A ?query= link asks once. The address is cleaned, so a reload does not spend another answer.
+  // Read from the address after mounting rather than useSearchParams, which would
+  // stop the landing page from being prerendered.
   useEffect(() => {
-    if (!initialQuery || autoSubmittedRef.current) return;
-    autoSubmittedRef.current = true;
-    submitQuery(initialQuery);
-    window.history.replaceState(null, '', '/');
-  }, [initialQuery, submitQuery]);
+    if (autoSubmittedRef.current) return;
+    // A task, not this effect's body: asking sets state. The guard is set when it
+    // runs, so StrictMode's discarded first mount cannot swallow the question.
+    const t = setTimeout(() => {
+      if (autoSubmittedRef.current) return;
+      autoSubmittedRef.current = true;
+      const initialQuery = new URLSearchParams(window.location.search).get('query');
+      if (!initialQuery) return;
+      submitQuery(initialQuery);
+      window.history.replaceState(null, '', '/');
+    }, 0);
+    return () => clearTimeout(t);
+  }, [submitQuery]);
 
   const onSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -934,7 +988,57 @@ const Chat = () => {
     }
   };
 
+  /**
+   * Removing a turn can be undone for a few seconds, as deleting a chat can. Undo
+   * puts back the conversation exactly as it was, unless something has changed since.
+   */
+  const offerUndo = () => {
+    const chatId = activeChatIdRef.current;
+    const before = {
+      messages: messagesRef.current,
+      presets: presetItems,
+      stopped: stoppedIds,
+      chatId,
+      saved: chatId ? chatStore.get(chatId) : null,
+      wasLoading: isLoadingRef.current,
+    };
+    const version = ++historyRef.current;
+    toast('Removed from this chat', {
+      action: {
+        label: 'Undo',
+        onClick: () => {
+          if (historyRef.current !== version) return;
+          historyRef.current++;
+          let stopped = before.stopped;
+          // Removing the turn stopped its answer: it comes back marked stopped.
+          if (before.wasLoading) {
+            const lastUser = [...before.messages].reverse().find((m) => m.role === 'user');
+            if (lastUser) stopped = new Set(stopped).add(lastUser.id);
+          }
+          setMessages(before.messages);
+          setPresetItems(before.presets);
+          setStoppedIds(stopped);
+          setErrorItem(null);
+          activeChatIdRef.current = before.chatId;
+          setActiveChatId(before.chatId);
+          // The saved copy goes back where it was in the list, not to the top.
+          if (before.saved && !before.wasLoading) {
+            chatStore.restore(before.saved);
+            lastSavedRef.current = JSON.stringify([
+              before.saved.messages,
+              before.saved.presets,
+              before.saved.stopped,
+            ]);
+          } else {
+            lastSavedRef.current = '';
+          }
+        },
+      },
+    });
+  };
+
   const removePreset = (id: string) => {
+    offerUndo();
     setPresetItems((prev) => prev.filter((p) => p.id !== id));
     closePanelIfEmpty(turns.filter((t) => t.key !== `preset-${id}`).length);
   };
@@ -947,6 +1051,7 @@ const Chat = () => {
     if (start < 0) return;
     const count = messages[start + 1]?.role === 'assistant' ? 2 : 1;
     const isCurrent = start + count >= messages.length;
+    offerUndo();
     if (isCurrent && isLoading) {
       stop();
       sendingRef.current = false;
@@ -1004,14 +1109,16 @@ const Chat = () => {
 
   return (
     <MotionConfig reducedMotion="user">
-      <CommandPalette
-        commands={paletteCommands}
-        open={paletteOpen}
-        onOpenChange={setPaletteOpen}
-        onRun={runCommand}
-      />
+      {paletteMounted && (
+        <CommandPalette
+          commands={paletteCommands}
+          open={paletteOpen}
+          onOpenChange={setPaletteOpen}
+          onRun={runCommand}
+        />
+      )}
 
-      <HireSheet open={hireOpen} onClose={() => setHireOpen(false)} />
+      {hireMounted && <HireSheet open={hireOpen} onClose={closeHire} />}
 
       {isEmptyState && !inShell ? (
         <>
@@ -1085,6 +1192,8 @@ const Chat = () => {
               )}
 
               <main
+                id="main"
+                tabIndex={-1}
                 inert={panelIsModal}
                 className={`shell__main${isEmptyState ? ' shell__main--new' : ''}`}
               >
@@ -1266,7 +1375,7 @@ const Chat = () => {
                 >
                   {/* Skills opens on the capability that was picked. Projects move inside the panel. */}
                   <div key={panel.tool === 'getSkills' ? (panel.detail ?? 0) : 0}>
-                    {renderToolArtifact(panel.tool)}
+                    <ToolArtifact tool={panel.tool} />
                   </div>
                 </SidePanel>
               )}

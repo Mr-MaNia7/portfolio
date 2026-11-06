@@ -24,7 +24,6 @@ export function HireSheet({
   onClose: () => void;
 }) {
   const { personal, availability, social, agency } = getConfig();
-  const time = useLocalTime(personal.timezone);
   const city = personal.location.split(',')[0];
   const panelRef = useRef<HTMLDivElement>(null);
   const closeRef = useRef<HTMLButtonElement>(null);
@@ -93,7 +92,7 @@ export function HireSheet({
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: 16, transition: { duration: 0.15 } }}
             transition={{ duration: 0.26, ease: EASE }}
-            className="scrollbar-subtle relative max-h-[92svh] w-full overflow-y-auto rounded-t-xl border border-border-strong bg-card pb-[env(safe-area-inset-bottom)] shadow-[var(--shadow-float)] sm:max-w-xl sm:rounded-xl"
+            className="scrollbar-subtle relative max-h-[92svh] w-full overflow-y-auto overscroll-contain rounded-t-xl border border-border-strong bg-card pb-[env(safe-area-inset-bottom)] shadow-[var(--shadow-float)] sm:max-w-xl sm:rounded-xl"
           >
             {/* Grabber (phones) */}
             <div aria-hidden className="flex justify-center pt-2 sm:hidden">
@@ -114,17 +113,7 @@ export function HireSheet({
                 </h2>
                 <p className="mt-2 text-[16px] leading-relaxed text-ink-soft">
                   {availability.headline}. Replies in 0–4 hours
-                  {time ? (
-                    <>
-                      {' '}— it&apos;s{' '}
-                      <span className="num text-foreground" suppressHydrationWarning>
-                        {time.label}
-                      </span>{' '}
-                      in {city}.
-                    </>
-                  ) : (
-                    '.'
-                  )}
+                  <LocalTimeNote timezone={personal.timezone} city={city} />
                 </p>
               </div>
               <button
@@ -233,6 +222,21 @@ export function HireSheet({
       )}
     </AnimatePresence>,
     document.body
+  );
+}
+
+/** Lives inside the open sheet, so its clock only ticks while the sheet is showing. */
+function LocalTimeNote({ timezone, city }: { timezone: string; city: string }) {
+  const time = useLocalTime(timezone);
+  if (!time) return <>.</>;
+  return (
+    <>
+      {' '}— it&apos;s{' '}
+      <span className="num text-foreground" suppressHydrationWarning>
+        {time.label}
+      </span>{' '}
+      in {city}.
+    </>
   );
 }
 

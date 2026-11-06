@@ -312,8 +312,10 @@ export function ToolLookup({
           id={inputId}
           value={query}
           onChange={(e) => setQuery(e.target.value)}
-          placeholder="Type a technology — e.g. Terraform"
+          placeholder="Terraform, Kafka, Rust…"
+          name="technology"
           autoComplete="off"
+          spellCheck={false}
           aria-describedby={listId}
           className="h-11 w-full rounded-md border border-border-strong bg-card pr-3 pl-9 text-[16px] text-foreground placeholder:text-muted-foreground focus:border-brand focus:outline-none"
         />

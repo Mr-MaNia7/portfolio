@@ -12,7 +12,8 @@ import {
 } from '@/components/artifact/artifact';
 import { usePanel } from '@/components/chat/side-panel';
 import { FadeImage } from '@/components/ui/fade-image';
-import { ProjectBody, projectCover } from './project-dialog';
+import { projectCover } from '@/lib/project-cover';
+import { ProjectBody } from './project-dialog';
 
 /** Bento shown before "show all": the featured lead plus a 2×2. */
 const COLLAPSED_COUNT = 5;

@@ -7,6 +7,15 @@ import { useEffect, useState } from 'react';
  * "EAT · UTC+3" (the config's `timezone`). Returns null until mounted so the
  * server and first client render agree.
  */
+// The clock is shifted to the offset by hand, then read as UTC: the config gives an
+// offset label, not an IANA zone. 24-hour, to match the "UTC+3" it sits beside.
+const CLOCK = new Intl.DateTimeFormat('en-GB', {
+  hour: '2-digit',
+  minute: '2-digit',
+  hourCycle: 'h23',
+  timeZone: 'UTC',
+});
+
 export function useLocalTime(timezoneLabel: string) {
   const match = timezoneLabel.match(/UTC\s*([+-−])\s*(\d{1,2})(?::?(\d{2}))?/);
   const sign = match && (match[1] === '-' || match[1] === '−') ? -1 : 1;
@@ -31,7 +40,7 @@ export function useLocalTime(timezoneLabel: string) {
   return {
     hours,
     minutes,
-    label: `${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}`,
+    label: CLOCK.format(local),
     // Roughly a working day, so a visitor can tell when to expect a reply.
     isWorkingHours: hours >= 9 && hours < 20,
   };

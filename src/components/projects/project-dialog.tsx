@@ -8,11 +8,10 @@ import { createPortal } from 'react-dom';
 import type { Project } from '@/types/portfolio';
 import { pad2, splitMetric } from '@/components/artifact/artifact';
 import { FadeImage } from '@/components/ui/fade-image';
+import { projectCover } from '@/lib/project-cover';
 
 const EASE = [0.22, 1, 0.36, 1] as const;
 
-export const projectCover = (p: Project) =>
-  p.cover || p.images[0]?.src || '/covers/default.svg';
 
 const LIVE_STATUSES = ['Live', 'Production', 'Ongoing'];
 /** Links named by their host ("aivi.io") read as "Visit aivi.io"; labelled links stand alone. */
@@ -143,7 +142,7 @@ export function ProjectDialog({
             }}
             transition={{ duration: 0.24, ease: EASE }}
             style={{ transformOrigin: '50% 0%' }}
-            className="scrollbar-subtle relative max-h-[92vh] w-full max-w-3xl overflow-y-auto rounded-xl border border-border-strong bg-card shadow-[var(--shadow-float)] sm:max-h-[88vh]"
+            className="scrollbar-subtle relative max-h-[92vh] w-full max-w-3xl overflow-y-auto overscroll-contain rounded-xl border border-border-strong bg-card shadow-[var(--shadow-float)] sm:max-h-[88vh]"
           >
             {/* Header rail */}
             <div className="sticky top-0 z-10 flex min-h-16 items-center justify-between gap-3 border-b border-border-subtle bg-card px-5 py-2 sm:px-8">

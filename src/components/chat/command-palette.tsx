@@ -1,48 +1,11 @@
 'use client';
 
 import { AnimatePresence, motion } from 'framer-motion';
-import {
-  Briefcase,
-  ChessKnight,
-  Command as CommandIcon,
-  Copy,
-  CornerDownLeft,
-  Download,
-  ExternalLink,
-  FileText,
-  FolderGit2,
-  Layers,
-  Mail,
-  MoonStar,
-  Quote,
-  Search,
-  User,
-  Users,
-  MessageSquare,
-} from 'lucide-react';
+import { Command as CommandIcon, CornerDownLeft, Search } from 'lucide-react';
 import { useEffect, useMemo, useRef, useState } from 'react';
-import { Github, Linkedin, Twitter } from '@/components/ui/brand-icons';
+import { ICONS } from './command-icons';
 import type { Command } from '@/lib/commands';
 
-export const ICONS: Record<string, React.ComponentType<{ className?: string }>> = {
-  user: User,
-  folder: FolderGit2,
-  layers: Layers,
-  file: FileText,
-  mail: Mail,
-  briefcase: Briefcase,
-  external: ExternalLink,
-  github: Github,
-  linkedin: Linkedin,
-  twitter: Twitter,
-  copy: Copy,
-  download: Download,
-  theme: MoonStar,
-  quote: Quote,
-  chess: ChessKnight,
-  users: Users,
-  chat: MessageSquare,
-};
 
 const EASE = [0.22, 1, 0.36, 1] as const;
 
@@ -123,6 +86,8 @@ export function CommandPalette({
           flat.length ? (a - 1 + flat.length) % flat.length : 0
         );
       } else if (e.key === 'Enter') {
+        // Enter that confirms an input method's composition is not a choice.
+        if (e.isComposing) return;
         e.preventDefault();
         const cmd = flat[active];
         if (cmd) onRun(cmd);
@@ -186,6 +151,12 @@ export function CommandPalette({
                 value={query}
                 onChange={(e) => setQuery(e.target.value)}
                 placeholder="Ask a question or jump to…"
+                aria-label="Search questions and commands"
+                name="command-search"
+                autoComplete="off"
+                autoCorrect="off"
+                spellCheck={false}
+                enterKeyHint="go"
                 role="combobox"
                 aria-expanded="true"
                 aria-controls="cmd-listbox"
@@ -201,7 +172,7 @@ export function CommandPalette({
               id="cmd-listbox"
               role="listbox"
               aria-label="Commands"
-              className="scrollbar-subtle max-h-[52vh] overflow-y-auto p-1.5"
+              className="scrollbar-subtle max-h-[52vh] overflow-y-auto overscroll-contain p-1.5"
             >
               {flat.length === 0 && (
                 <div className="px-3 py-10 text-center text-sm text-muted-foreground">

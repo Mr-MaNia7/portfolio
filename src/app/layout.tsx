@@ -1,7 +1,9 @@
-import { Analytics } from '@vercel/analytics/react';
+import { Analytics } from '@vercel/analytics/next';
 import type { Metadata, Viewport } from 'next';
 import { Host_Grotesk, JetBrains_Mono } from 'next/font/google';
 import { cn } from '@/lib/utils';
+import { ThemeColor } from '@/components/theme-color';
+import { THEME_COLORS } from '@/lib/theme-colors';
 import { ThemeProvider } from '@/components/theme-provider';
 import { Toaster } from '@/components/ui/sonner';
 import { getConfig } from '@/lib/config-loader';
@@ -90,10 +92,8 @@ export const viewport: Viewport = {
   // Keep the composer above the on-screen keyboard. Pinch-zoom stays available.
   interactiveWidget: 'resizes-content',
   viewportFit: 'cover',
-  themeColor: [
-    { media: '(prefers-color-scheme: light)', color: '#eef0f3' },
-    { media: '(prefers-color-scheme: dark)', color: '#0b0c0e' },
-  ],
+  // The site's default theme. ThemeColor keeps it in step when the visitor switches.
+  themeColor: THEME_COLORS.light,
 };
 
 export default function RootLayout({
@@ -160,12 +160,16 @@ export default function RootLayout({
           jetbrainsMono.variable
         )}
       >
+        <a href="#main" className="skip-link">
+          Skip to main content
+        </a>
         <ThemeProvider
           attribute="class"
           defaultTheme="light"
           enableSystem={false}
           disableTransitionOnChange
         >
+          <ThemeColor />
           {children}
           <Toaster />
         </ThemeProvider>

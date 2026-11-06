@@ -1,6 +1,7 @@
-import { systemPrompt } from '@/lib/config-loader';
+import { getConfig } from '@/lib/config-loader';
+import { buildSystemPrompt } from '@/lib/system-prompt';
 
 export const SYSTEM_PROMPT = {
   role: 'system' as const,
-  content: systemPrompt
+  content: buildSystemPrompt(getConfig()),
 };

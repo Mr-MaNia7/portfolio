@@ -1,16 +1,23 @@
 'use client';
 
+import dynamic from 'next/dynamic';
 import Image from 'next/image';
 import { ArrowRight, ArrowUpRight } from 'lucide-react';
 import React, { useEffect, useRef, useState } from 'react';
 
 import { splitMetric } from '@/components/artifact/artifact';
-import { ProjectDialog, projectCover } from '@/components/projects/project-dialog';
+import { projectCover } from '@/lib/project-cover';
 import { UpworkBadge } from '@/components/ui/upwork-badge';
 import { useLocalTime } from '@/hooks/use-local-time';
 import { presetReplies, getConfig } from '@/lib/config-loader';
 import type { Command } from '@/lib/commands';
 import type { Project } from '@/types/portfolio';
+
+// The case study dialog loads on first open, not with the landing page.
+const ProjectDialog = dynamic(
+  () => import('@/components/projects/project-dialog').then((m) => m.ProjectDialog),
+  { ssr: false }
+);
 
 interface ChatLandingProps {
   submitQuery: (query: string) => void;
@@ -61,7 +68,12 @@ const ChatLanding: React.FC<ChatLandingProps> = ({
   const { personal, stats, availability, projects, reviews, agency, social, resume } = config;
   const time = useLocalTime(personal.timezone);
   const [openIndex, setOpenIndex] = useState<number | null>(null);
+  // Stays mounted after the first open, so closing still animates.
+  const [dialogMounted, setDialogMounted] = useState(false);
+  if (openIndex !== null && !dialogMounted) setDialogMounted(true);
   const composerRef = useRef<HTMLDivElement>(null);
+
+  const closeDialog = () => setOpenIndex(null);
 
   usePointerGlow();
 
@@ -112,7 +124,7 @@ const ChatLanding: React.FC<ChatLandingProps> = ({
 
   return (
     <>
-      <main>
+      <main id="main" tabIndex={-1}>
         {/* ── The twin ─────────────────────────────────────── */}
         <section id="twin" aria-labelledby="hero-heading" className="hero">
           <div className="wrap">
@@ -509,12 +521,14 @@ const ChatLanding: React.FC<ChatLandingProps> = ({
         </div>
       </footer>
 
-      <ProjectDialog
-        projects={projects}
-        index={openIndex}
-        onClose={() => setOpenIndex(null)}
-        onNavigate={(i) => setOpenIndex(i)}
-      />
+      {dialogMounted && (
+        <ProjectDialog
+          projects={projects}
+          index={openIndex}
+          onClose={closeDialog}
+          onNavigate={setOpenIndex}
+        />
+      )}
     </>
   );
 };

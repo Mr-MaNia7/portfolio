@@ -3,9 +3,10 @@
 import { ArrowUpRight, Menu, Search, X } from 'lucide-react';
 import { Github } from '@/components/ui/brand-icons';
 import Image from 'next/image';
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { ThemeToggle } from '@/components/theme-toggle';
 import { getConfig } from '@/lib/config-loader';
+import { trapTab } from '@/lib/focus';
 
 interface TopBarProps {
   onOpenCommand: () => void;
@@ -29,15 +30,26 @@ const WORDS = [
 export function TopBar({ onOpenCommand, onHome, onHire, conversation = false, onOpenSidebar, sidebarOpen = false }: TopBarProps) {
   const { personal, social } = getConfig();
   const [menuOpen, setMenuOpen] = useState(false);
+  const menuRef = useRef<HTMLDivElement>(null);
+  const toggleRef = useRef<HTMLButtonElement>(null);
 
+  // The open menu is modal: focus moves in, Tab stays among the menu and its toggle,
+  // and Esc hands focus back to the toggle.
   useEffect(() => {
     if (!menuOpen) return;
+    const header = toggleRef.current?.closest('header') ?? null;
     const onKey = (e: KeyboardEvent) => {
-      if (e.key === 'Escape') setMenuOpen(false);
+      if (e.key === 'Escape') {
+        setMenuOpen(false);
+        toggleRef.current?.focus({ preventScroll: true });
+      } else {
+        trapTab(e, header);
+      }
     };
     const prev = document.body.style.overflow;
     document.body.style.overflow = 'hidden';
     window.addEventListener('keydown', onKey);
+    menuRef.current?.querySelector<HTMLElement>('a, button')?.focus({ preventScroll: true });
     return () => {
       document.body.style.overflow = prev;
       window.removeEventListener('keydown', onKey);
@@ -136,6 +148,7 @@ export function TopBar({ onOpenCommand, onHome, onHire, conversation = false, on
 
           {!conversation && (
             <button
+              ref={toggleRef}
               type="button"
               onClick={() => setMenuOpen((o) => !o)}
               aria-label={menuOpen ? 'Close menu' : 'Open menu'}
@@ -150,8 +163,10 @@ export function TopBar({ onOpenCommand, onHome, onHire, conversation = false, on
 
       {menuOpen && (
         <div
-          className="fixed inset-x-0 top-[var(--nav)] bottom-0 z-50 overflow-y-auto bg-background lg:hidden"
+          ref={menuRef}
+          className="fixed inset-x-0 top-[var(--nav)] bottom-0 z-50 overflow-y-auto overscroll-contain bg-background lg:hidden"
           role="dialog"
+          aria-modal="true"
           aria-label="Menu"
         >
           <div className="wrap flex flex-col py-2 pb-[calc(16px+env(safe-area-inset-bottom))]">

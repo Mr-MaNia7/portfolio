@@ -8,8 +8,12 @@ import Reviews from '../reviews';
 import Hobbies from '../hobbies';
 import Skills from '../skills';
 
-/** The full detail for a tool, shown in the side panel. */
-export function renderToolArtifact(toolName: string) {
+/** The full detail for a tool, shown in the side panel. Loaded only once a panel opens. */
+export function ToolArtifact({ tool }: { tool: string }) {
+  return renderToolArtifact(tool);
+}
+
+function renderToolArtifact(toolName: string) {
   switch (toolName) {
     case 'getProjects':
       return <AllProjects />;

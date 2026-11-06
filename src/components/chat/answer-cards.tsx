@@ -4,7 +4,7 @@ import { ArrowDownToLine, ArrowUpRight, Mail } from 'lucide-react';
 import type { ReactNode } from 'react';
 import { CopyEmail } from '@/components/artifact/copy-email';
 import { SIDE_PANEL_ID, usePanel } from '@/components/chat/side-panel';
-import { projectCover } from '@/components/projects/project-dialog';
+import { projectCover } from '@/lib/project-cover';
 import { splitMetric } from '@/components/artifact/artifact';
 import { useChessStats } from '@/components/hobbies';
 import { Stars } from '@/components/reviews';

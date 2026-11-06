@@ -742,6 +742,38 @@
     flex-direction: column;
     padding-block: 32px;
   }
+  /* A new, empty chat: the heading and prompt sit mid-screen, starters below */
+  .shell__main--new { justify-content: center; padding-bottom: 14vh; }
+  .shell__main--new .shell__scroller { flex: 0 0 auto; overflow: visible; }
+  .shell__main--new .thread { padding-block: 0 24px; }
+  /* The pin spacer is for a new answer; an empty chat has none */
+  .shell__main--new .shell__scroller > [aria-hidden] { display: none; }
+  .shell__main--new .shell__composer { padding-bottom: 0; }
+  .new-chat__title {
+    color: var(--foreground);
+    font-size: clamp(24px, 2.2vw, 30px);
+    font-weight: 500;
+    letter-spacing: -0.01em;
+    text-align: center;
+  }
+  .new-chat__starters { display: flex; flex-direction: column; gap: 2px; margin-top: 20px; }
+  .new-chat__starter {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    width: 100%;
+    min-height: 44px;
+    padding: 8px 16px;
+    border-radius: var(--radius-md);
+    color: var(--muted-foreground);
+    font-size: 15px;
+    text-align: left;
+    transition: background-color 140ms var(--ease-out-expo), color 140ms var(--ease-out-expo);
+  }
+  .new-chat__starter:focus-visible { outline: 2px solid var(--ring); outline-offset: -2px; }
+  @media (hover: hover) and (pointer: fine) {
+    .new-chat__starter:hover { background: color-mix(in oklab, var(--foreground) 5%, transparent); color: var(--foreground); }
+  }
 
   /* Sidebar */
   .side {
@@ -765,13 +797,99 @@
   }
   /* Collapsed: the two controls stay, nothing else */
   .side--rail {
-    gap: 4px;
-    width: 44px;
-    margin-right: 16px;
+    gap: 2px;
+    width: 42px;
+    margin-right: 14px;
     padding: 16px 0;
     overflow: visible;
     border-right: 0;
+    position: relative;
   }
+  .side--rail > * { position: relative; z-index: 1; }
+  .side--rail > .side__rail-hit { position: absolute; z-index: 0; }
+  /* The toggle's row: it holds the same spot open or collapsed */
+  .side__head { display: flex; align-items: center; height: 40px; }
+  /* Rail icons sit on the same left line as the open sidebar's row icons */
+  .side__rail-btn { width: 42px; height: 40px; }
+  .side:not(.side--rail) .side__head .side__rail-btn,
+  .side-float .side__head .side__rail-btn { margin-left: -12px; }
+  .side__icon { width: 18px; height: 18px; flex-shrink: 0; }
+  .side__rail-btn[data-open] { background: color-mix(in oklab, var(--foreground) 7%, transparent); color: var(--foreground); }
+  .rail-link__keys {
+    margin-left: auto;
+    color: var(--muted-foreground);
+    font-family: inherit;
+    font-size: 12px;
+  }
+
+  /* Recent chats beside the collapsed rail, opened on a click */
+  .recents {
+    position: fixed;
+    z-index: 65;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    width: 280px;
+    max-height: min(400px, calc(100vh - 16px));
+    padding: 8px;
+    overflow-y: auto;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    background: var(--popover);
+    box-shadow: var(--shadow-float);
+    animation: fade 120ms var(--ease-out-expo) both;
+  }
+  .recents__item {
+    display: flex;
+    align-items: center;
+    min-height: 36px;
+    padding: 6px 12px;
+    border-radius: var(--radius-sm);
+    color: var(--foreground);
+    font-size: 15px;
+    text-align: left;
+  }
+  .recents__item[aria-current='page'] { background: color-mix(in oklab, var(--foreground) 6%, transparent); }
+  .recents__item:focus-visible { outline: 2px solid var(--ring); outline-offset: -2px; }
+  @media (hover: hover) and (pointer: fine) {
+    .recents__item:hover { background: color-mix(in oklab, var(--foreground) 7%, transparent); }
+  }
+  .side__rail-hit {
+    position: absolute;
+    inset: 0 -8px;
+    cursor: e-resize;
+  }
+  .side__rail-hit:focus { outline: none; }
+
+  /* The label beside a sidebar control: dark, instant, with its shortcut */
+  .rail-tip {
+    z-index: 70;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 6px 10px;
+    border-radius: 9999px;
+    background: var(--foreground);
+    color: var(--background);
+    font-size: 13px;
+    font-weight: 500;
+    line-height: 1.2;
+    box-shadow: 0 4px 16px color-mix(in oklab, black 18%, transparent);
+    animation: rail-tip-in 120ms var(--ease-out-expo);
+  }
+  .rail-tip__keys {
+    padding: 1px 6px;
+    border-radius: 6px;
+    background: color-mix(in oklab, var(--background) 20%, transparent);
+    font-family: inherit;
+    font-size: 12px;
+  }
+  @keyframes rail-tip-in {
+    from { opacity: 0; transform: translateX(-2px); }
+    to { opacity: 1; transform: none; }
+  }
+  @media (prefers-reduced-motion: reduce) { .rail-tip { animation: none; } }
+  @media (hover: none) { .rail-tip { display: none; } }
   .side__group { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
   .side__label {
     padding-bottom: 6px;
@@ -861,13 +979,6 @@
   @media (hover: none) { .chat-row__delete { opacity: 1; } }
   @media (hover: hover) and (pointer: fine) {
     .chat-row__delete:hover { background: color-mix(in oklab, var(--foreground) 8%, transparent); color: var(--foreground); }
-  }
-
-  /* A look at the sidebar from the rail: it slides over the chat and leaves with the pointer */
-  @media (min-width: 1024px) {
-    .side-float[data-peek] {
-      animation: side-peek 200ms var(--ease-out-expo) both;
-    }
   }
 
   /* One sidebar row */
@@ -1557,10 +1668,6 @@ pre {
     opacity: 0;
     transform: var(--panel-from);
   }
-}
-@keyframes side-peek {
-  from { opacity: 0; transform: translateX(-12px); }
-  to { opacity: 1; transform: none; }
 }
 @keyframes side-in {
   from { transform: translateX(-100%); }

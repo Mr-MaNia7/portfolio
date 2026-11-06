@@ -24,7 +24,7 @@ import { useEffect, useMemo, useRef, useState } from 'react';
 import { Github, Linkedin, Twitter } from '@/components/ui/brand-icons';
 import type { Command } from '@/lib/commands';
 
-const ICONS: Record<string, React.ComponentType<{ className?: string }>> = {
+export const ICONS: Record<string, React.ComponentType<{ className?: string }>> = {
   user: User,
   folder: FolderGit2,
   layers: Layers,

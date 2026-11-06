@@ -48,6 +48,7 @@ import { useMediaQuery } from '@/hooks/use-media-query';
 import { PANEL_TITLES, TOOL_LABELS, suggestQuestions } from '@/lib/answers';
 import { presetReplies, getConfig } from '@/lib/config-loader';
 import { buildCommands, type Command } from '@/lib/commands';
+import { ICONS } from '@/components/chat/command-palette';
 import { onAsk, onHire } from '@/lib/portfolio-events';
 import { chatStore, chatTitle, type SavedChat } from '@/lib/chat-store';
 
@@ -94,6 +95,38 @@ function classifyFailure(error: Error): FailureKind {
   return 'server';
 }
 
+/** Whether the docked sidebar is open, kept in the visitor's browser. */
+const sidebarPref = (() => {
+  const KEY = 'sidebar';
+  const listeners = new Set<() => void>();
+  let open: boolean | null = null;
+  return {
+    get: () => {
+      if (open === null) {
+        try {
+          open = window.localStorage.getItem(KEY) !== 'closed';
+        } catch {
+          open = true;
+        }
+      }
+      return open;
+    },
+    set: (next: boolean) => {
+      open = next;
+      try {
+        window.localStorage.setItem(KEY, next ? 'open' : 'closed');
+      } catch {
+        // Storage can be off (private mode); the choice lasts this visit only.
+      }
+      listeners.forEach((l) => l());
+    },
+    subscribe: (l: () => void) => {
+      listeners.add(l);
+      return () => listeners.delete(l);
+    },
+  };
+})();
+
 const Chat = () => {
   const searchParams = useSearchParams();
   const initialQuery = searchParams.get('query');
@@ -109,11 +142,18 @@ const Chat = () => {
   const [presetItems, setPresetItems] = useState<PresetItem[]>([]);
   const [errorItem, setErrorItem] = useState<ErrorItem | null>(null);
   const [panel, setPanel] = useState<PanelState | null>(null);
-  const [sidebarOpen, setSidebarOpen] = useState(true);
+  // The visitor's choice to keep the sidebar collapsed outlasts the visit.
+  const sidebarOpen = useSyncExternalStore(
+    sidebarPref.subscribe,
+    sidebarPref.get,
+    () => true
+  );
   const [sidebarFloating, setSidebarFloating] = useState(false);
+  // New chat stays in the conversation view with an empty chat, as in ChatGPT.
+  // Back to portfolio leaves it for the landing page.
+  const [inShell, setInShell] = useState(false);
   // The saved chat on screen. Null until the first question of a new chat.
   const [activeChatId, setActiveChatId] = useState<string | null>(null);
-  const [peeking, setPeeking] = useState(false);
   const savedChats = useSyncExternalStore(
     chatStore.subscribe,
     chatStore.list,
@@ -157,7 +197,6 @@ const Chat = () => {
   const activeChatIdRef = useRef<string | null>(null);
   // What was last written for this chat, so opening a chat does not count as a change.
   const lastSavedRef = useRef('');
-  const peekTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   // Opening a saved chat lands on its last question at once, without a glide.
   const instantPinRef = useRef(false);
 
@@ -538,7 +577,7 @@ const Chat = () => {
 
   const collapseSidebar = () => {
     captureFlip(null);
-    setSidebarOpen(false);
+    sidebarPref.set(false);
   };
 
   const expandSidebar = (opener: HTMLElement) => {
@@ -548,8 +587,20 @@ const Chat = () => {
       return;
     }
     captureFlip(null);
-    setSidebarOpen(true);
+    sidebarPref.set(true);
   };
+
+  // ⇧⌘S / Ctrl+Shift+S opens and closes the sidebar, as in ChatGPT.
+  const toggleSidebarRef = useRef<() => void>(() => {});
+  useEffect(() => {
+    toggleSidebarRef.current = () => {
+      const opener = document.activeElement as HTMLElement | null;
+      if (sidebarFloating) closeFloat();
+      else if (!sidebarDocks) openFloat(opener);
+      else if (sidebarRailed) expandSidebar(opener ?? document.body);
+      else collapseSidebar();
+    };
+  });
 
   /** The first question of a new chat gives it an identity, so it can be saved. */
   const ensureChat = () => {
@@ -689,13 +740,11 @@ const Chat = () => {
     setActiveChatId(next?.id ?? null);
     setPanel(null);
     setSidebarFloating(false);
-    setPeeking(false);
   };
 
   const openChat = (id: string) => {
     if (id === activeChatIdRef.current) {
       setSidebarFloating(false);
-      setPeeking(false);
       return;
     }
     leaveCurrentChat();
@@ -719,19 +768,6 @@ const Chat = () => {
     });
   };
 
-  const peekOpen = () => {
-    if (peekTimer.current) clearTimeout(peekTimer.current);
-    // A short pause first, so a pointer crossing the rail does not open it.
-    peekTimer.current = setTimeout(() => setPeeking(true), 150);
-  };
-  const peekStay = () => {
-    if (peekTimer.current) clearTimeout(peekTimer.current);
-  };
-  const peekClose = () => {
-    if (peekTimer.current) clearTimeout(peekTimer.current);
-    peekTimer.current = setTimeout(() => setPeeking(false), 200);
-  };
-
   // Reset the conversation in place — no full-page reload. The chat stays saved.
   const goHome = useCallback(() => {
     leaveCurrentChat();
@@ -746,13 +782,32 @@ const Chat = () => {
     setInput('');
     setPanel(null);
     setSidebarFloating(false);
-    setPeeking(false);
     activeChatIdRef.current = null;
     lastSavedRef.current = '';
     setActiveChatId(null);
+    setInShell(false);
     window.history.replaceState(null, '', '/');
     // eslint-disable-next-line react-hooks/exhaustive-deps -- leaveCurrentChat reads refs only
   }, [stop, setMessages]);
+
+  /** A fresh, empty chat in the conversation view: the prompt sits mid-screen. */
+  const newChat = useCallback(() => {
+    goHome();
+    setInShell(true);
+    setTimeout(() => {
+      if (window.matchMedia('(pointer: fine)').matches) {
+        document
+          .querySelector<HTMLTextAreaElement>('.shell__composer textarea')
+          ?.focus({ preventScroll: true });
+      }
+    }, 30);
+  }, [goHome]);
+
+  // The first questions a new chat offers, with the icons the palette uses.
+  const starters = useMemo(
+    () => commands.filter((c) => c.kind === 'ask').slice(0, 4),
+    [commands]
+  );
 
   const runCommand = useCallback(
     (cmd: Command) => {
@@ -820,12 +875,17 @@ const Chat = () => {
   );
   useEffect(() => onHire(() => setHireOpen(true)), []);
 
-  // ⌘K / Ctrl+K to open the command palette
+  // ⌘K / Ctrl+K to open the command palette, ⇧⌘S / Ctrl+Shift+S for the sidebar
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
-      if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === 'k') {
+      if (!(e.metaKey || e.ctrlKey)) return;
+      const key = e.key.toLowerCase();
+      if (key === 'k' && !e.shiftKey) {
         e.preventDefault();
         setPaletteOpen((o) => !o);
+      } else if (key === 's' && e.shiftKey && !e.altKey) {
+        e.preventDefault();
+        toggleSidebarRef.current();
       }
     };
     window.addEventListener('keydown', onKey);
@@ -929,12 +989,15 @@ const Chat = () => {
     activeChatId,
     askNext,
     onBack: goHome,
-    onNewChat: goHome,
+    onNewChat: newChat,
+    onSearch: () => {
+      setSidebarFloating(false);
+      setPaletteOpen(true);
+    },
     onOpenChat: openChat,
     onDeleteChat: deleteChat,
     onAsk: (q: string) => {
       setSidebarFloating(false);
-      setPeeking(false);
       submitQuery(q);
     },
   };
@@ -950,7 +1013,7 @@ const Chat = () => {
 
       <HireSheet open={hireOpen} onClose={() => setHireOpen(false)} />
 
-      {isEmptyState ? (
+      {isEmptyState && !inShell ? (
         <>
           <TopBar
             onOpenCommand={() => setPaletteOpen(true)}
@@ -1004,14 +1067,13 @@ const Chat = () => {
             <div className="wrap shell__body">
               {sidebarRailed ? (
                 <SidebarRail
-                  onExpand={(opener) => {
-                    setPeeking(false);
-                    expandSidebar(opener);
-                  }}
-                  onNewChat={goHome}
+                  chats={savedChats}
+                  activeChatId={activeChatId}
+                  onExpand={expandSidebar}
+                  onNewChat={newChat}
                   onBack={goHome}
-                  onPeek={peekOpen}
-                  onPeekEnd={peekClose}
+                  onSearch={sidebarProps.onSearch}
+                  onOpenChat={openChat}
                 />
               ) : (
                 <aside aria-label="Sidebar" inert={panelIsModal} className="side scrollbar-subtle">
@@ -1022,9 +1084,17 @@ const Chat = () => {
                 </aside>
               )}
 
-              <main inert={panelIsModal} className="shell__main">
+              <main
+                inert={panelIsModal}
+                className={`shell__main${isEmptyState ? ' shell__main--new' : ''}`}
+              >
                 <div ref={scrollerRef} className="shell__scroller scrollbar-subtle">
                   <div ref={threadRef} className="shell__col thread">
+                    {isEmptyState && (
+                      <h1 className="new-chat__title fade-in">
+                        What would you like to know?
+                      </h1>
+                    )}
                     <AnimatePresence initial={false}>
                       {timeline.map((entry) => {
                         if (entry.kind === 'pending') {
@@ -1163,6 +1233,25 @@ const Chat = () => {
                       </button>
                     )}
                     <ChatBottombar {...composerProps} variant="shell" focusOnMount />
+                    {isEmptyState && (
+                      <ul aria-label="Suggested questions" className="new-chat__starters fade-in">
+                        {starters.map((c) => {
+                          const Icon = ICONS[c.icon];
+                          return (
+                            <li key={c.id}>
+                              <button
+                                type="button"
+                                onClick={() => submitQuery(c.payload ?? c.label)}
+                                className="new-chat__starter"
+                              >
+                                {Icon && <Icon className="h-[18px] w-[18px] shrink-0" />}
+                                {c.label}
+                              </button>
+                            </li>
+                          );
+                        })}
+                      </ul>
+                    )}
                   </div>
                 </div>
               </main>
@@ -1183,30 +1272,12 @@ const Chat = () => {
               )}
             </div>
 
-            {peeking && sidebarRailed && sidebarDocks && !sidebarFloating && (
-              <SidebarFloat
-                {...sidebarProps}
-                peek
-                onPeekStay={peekStay}
-                onPeekEnd={peekClose}
-                onClose={() => setPeeking(false)}
-                blocked={hireOpen || paletteOpen}
-              />
-            )}
-
             {sidebarFloating && (
               <SidebarFloat
                 {...sidebarProps}
                 onClose={closeFloat}
                 blocked={hireOpen || paletteOpen}
-                onOpenCommand={
-                  sidebarDocks
-                    ? undefined
-                    : () => {
-                        setSidebarFloating(false);
-                        setPaletteOpen(true);
-                      }
-                }
+                showAppearance={!sidebarDocks}
               />
             )}
           </div>

@@ -47,6 +47,7 @@ const KIND_LABEL: Record<Command['kind'], string> = {
   resume: 'File',
   theme: 'Toggle',
   hire: 'Hire',
+  chat: 'Open',
 };
 
 export default function ChatBottombar({

@@ -18,6 +18,7 @@ import {
   Search,
   User,
   Users,
+  MessageSquare,
 } from 'lucide-react';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { Github, Linkedin, Twitter } from '@/components/ui/brand-icons';
@@ -40,6 +41,7 @@ const ICONS: Record<string, React.ComponentType<{ className?: string }>> = {
   quote: Quote,
   chess: ChessKnight,
   users: Users,
+  chat: MessageSquare,
 };
 
 const EASE = [0.22, 1, 0.36, 1] as const;
@@ -76,7 +78,7 @@ export function CommandPalette({
   }, [commands, query]);
 
   const groups = useMemo(() => {
-    const order = ['Ask', 'Elsewhere', 'Actions'];
+    const order = ['Ask', 'Your chats', 'Elsewhere', 'Actions'];
     const map = new Map<string, Command[]>();
     for (const c of filtered) {
       if (!map.has(c.group)) map.set(c.group, []);

@@ -1,6 +1,6 @@
 'use client';
 
-import { ArrowLeft, ArrowUpRight, Menu, Search, X } from 'lucide-react';
+import { ArrowUpRight, Menu, Search, X } from 'lucide-react';
 import { Github } from '@/components/ui/brand-icons';
 import Image from 'next/image';
 import { useEffect, useState } from 'react';
@@ -74,12 +74,6 @@ export function TopBar({ onOpenCommand, onHome, onHire, conversation = false, on
               <span className="hidden sm:inline lg:hidden xl:inline">{personal.name}</span>
             </span>
           </button>
-          {conversation && (
-            <button onClick={onHome} className="nav__word !hidden gap-1.5 lg:!inline-flex">
-              <ArrowLeft className="h-4 w-4" aria-hidden />
-              Back to portfolio
-            </button>
-          )}
         </div>
 
         {!conversation && (

@@ -17,6 +17,7 @@ import React, {
   useMemo,
   useRef,
   useState,
+  useSyncExternalStore,
 } from 'react';
 import { toast } from 'sonner';
 
@@ -48,6 +49,7 @@ import { PANEL_TITLES, TOOL_LABELS, suggestQuestions } from '@/lib/answers';
 import { presetReplies, getConfig } from '@/lib/config-loader';
 import { buildCommands, type Command } from '@/lib/commands';
 import { onAsk, onHire } from '@/lib/portfolio-events';
+import { chatStore, chatTitle, type SavedChat } from '@/lib/chat-store';
 
 type PresetItem = {
   id: string;
@@ -109,7 +111,14 @@ const Chat = () => {
   const [panel, setPanel] = useState<PanelState | null>(null);
   const [sidebarOpen, setSidebarOpen] = useState(true);
   const [sidebarFloating, setSidebarFloating] = useState(false);
-  const [jumped, setJumped] = useState<{ key: string; during: string | null } | null>(null);
+  // The saved chat on screen. Null until the first question of a new chat.
+  const [activeChatId, setActiveChatId] = useState<string | null>(null);
+  const [peeking, setPeeking] = useState(false);
+  const savedChats = useSyncExternalStore(
+    chatStore.subscribe,
+    chatStore.list,
+    chatStore.serverList
+  );
   // Questions the visitor pressed stop on.
   const [stoppedIds, setStoppedIds] = useState<ReadonlySet<string>>(new Set());
   const [hasNewerBelow, setHasNewerBelow] = useState(false);
@@ -145,6 +154,12 @@ const Chat = () => {
     anchorTop: number;
   } | null>(null);
   const reduceMotion = useReducedMotion();
+  const activeChatIdRef = useRef<string | null>(null);
+  // What was last written for this chat, so opening a chat does not count as a change.
+  const lastSavedRef = useRef('');
+  const peekTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  // Opening a saved chat lands on its last question at once, without a glide.
+  const instantPinRef = useRef(false);
 
   const { messages, status, stop, regenerate, sendMessage, setMessages } =
     useChat({
@@ -381,8 +396,9 @@ const Chat = () => {
     if (offset === null) return;
     scrollerRef.current?.scrollTo({
       top: Math.max(0, offset - PIN_GAP),
-      behavior: reduceMotion ? 'auto' : 'smooth',
+      behavior: reduceMotion || instantPinRef.current ? 'auto' : 'smooth',
     });
+    instantPinRef.current = false;
     // The chip or row that asked this is gone. Focus takes the question, not the page's top.
     if (document.activeElement === document.body) {
       const starts = threadRef.current?.querySelectorAll<HTMLElement>('[data-turn-start]');
@@ -535,29 +551,18 @@ const Chat = () => {
     setSidebarOpen(true);
   };
 
-  const jumpToTurn = (key: string) => {
-    setSidebarFloating(false);
-    setJumped({ key, during: lastTurnKey });
-    const thread = threadRef.current;
-    const el = thread?.querySelector<HTMLElement>(
-      `[data-turn-key="${CSS.escape(key)}"]`
-    );
-    if (!thread || !el) return;
-    scrollerRef.current?.scrollTo({
-      top: Math.max(
-        0,
-        el.getBoundingClientRect().top - thread.getBoundingClientRect().top - PIN_GAP
-      ),
-      behavior: reduceMotion ? 'auto' : 'smooth',
-    });
-    el.focus({ preventScroll: true });
+  /** The first question of a new chat gives it an identity, so it can be saved. */
+  const ensureChat = () => {
+    if (activeChatIdRef.current) return;
+    const id = crypto.randomUUID();
+    activeChatIdRef.current = id;
+    lastSavedRef.current = '';
+    setActiveChatId(id);
   };
-
-  // The newest question, until the reader jumps to an earlier one.
-  const currentTurnKey = jumped?.during === lastTurnKey ? jumped.key : lastTurnKey;
 
   const addPreset = useCallback(
     (question: string, reply: string, tool: string) => {
+      ensureChat();
       setErrorItem(null);
       setInstantAnnouncement(reply);
       // A question still waiting for its answer keeps that answer directly under it.
@@ -584,6 +589,7 @@ const Chat = () => {
     (text: string) => {
       if (sendingRef.current || isLoadingRef.current) return false;
       sendingRef.current = true;
+      ensureChat();
       setErrorItem(null);
       const count = messagesRef.current.length;
       // An answer stopped before it began left its anchor one past the end.
@@ -628,8 +634,107 @@ const Chat = () => {
     [addPreset]
   );
 
-  // Reset the ephemeral conversation in place — no full-page reload.
+  // The conversation as it would be saved, readable from handlers.
+  const snapshot = useRef<SavedChat | null>(null);
+  useEffect(() => {
+    const id = activeChatId;
+    const title = turns[0] ? chatTitle(turns[0].question) : '';
+    snapshot.current =
+      id && title
+        ? {
+            id,
+            title,
+            updatedAt: 0,
+            messages,
+            presets: presetItems,
+            stopped: [...stoppedIds],
+          }
+        : null;
+    // Save once an answer has settled, and only when something changed.
+    if (isLoading || !snapshot.current) return;
+    const body = JSON.stringify([messages, presetItems, [...stoppedIds]]);
+    if (body === lastSavedRef.current) return;
+    lastSavedRef.current = body;
+    chatStore.save({ ...snapshot.current, updatedAt: Date.now() });
+  }, [activeChatId, turns, messages, presetItems, stoppedIds, isLoading]);
+
+  /** Leaving a chat mid-answer keeps what arrived, marked stopped. */
+  const leaveCurrentChat = () => {
+    const current = snapshot.current;
+    if (isLoadingRef.current) {
+      stop();
+      if (current) {
+        const lastUser = [...current.messages].reverse().find((m) => m.role === 'user');
+        chatStore.save({
+          ...current,
+          stopped: lastUser ? [...current.stopped, lastUser.id] : current.stopped,
+          updatedAt: Date.now(),
+        });
+      }
+    }
+    sendingRef.current = false;
+  };
+
+  const resetConversation = (next: SavedChat | null) => {
+    setMessages(next?.messages ?? []);
+    setPresetItems(next?.presets ?? []);
+    setStoppedIds(new Set(next?.stopped ?? []));
+    setErrorItem(null);
+    setInstantAnnouncement('');
+    orderRef.current = next ? Math.max(0, ...next.presets.map((p) => p.order + 1)) : 0;
+    activeChatIdRef.current = next?.id ?? null;
+    lastSavedRef.current = next
+      ? JSON.stringify([next.messages, next.presets, next.stopped])
+      : '';
+    setActiveChatId(next?.id ?? null);
+    setPanel(null);
+    setSidebarFloating(false);
+    setPeeking(false);
+  };
+
+  const openChat = (id: string) => {
+    if (id === activeChatIdRef.current) {
+      setSidebarFloating(false);
+      setPeeking(false);
+      return;
+    }
+    leaveCurrentChat();
+    const chat = chatStore.get(id);
+    if (!chat) return;
+    instantPinRef.current = true;
+    resetConversation(chat);
+  };
+
+  const deleteChat = (id: string) => {
+    const chat = chatStore.get(id);
+    if (!chat) return;
+    if (id === activeChatIdRef.current) {
+      leaveCurrentChat();
+      resetConversation(null);
+      window.history.replaceState(null, '', '/');
+    }
+    chatStore.remove(id);
+    toast('Chat deleted', {
+      action: { label: 'Undo', onClick: () => chatStore.restore(chat) },
+    });
+  };
+
+  const peekOpen = () => {
+    if (peekTimer.current) clearTimeout(peekTimer.current);
+    // A short pause first, so a pointer crossing the rail does not open it.
+    peekTimer.current = setTimeout(() => setPeeking(true), 150);
+  };
+  const peekStay = () => {
+    if (peekTimer.current) clearTimeout(peekTimer.current);
+  };
+  const peekClose = () => {
+    if (peekTimer.current) clearTimeout(peekTimer.current);
+    peekTimer.current = setTimeout(() => setPeeking(false), 200);
+  };
+
+  // Reset the conversation in place — no full-page reload. The chat stays saved.
   const goHome = useCallback(() => {
+    leaveCurrentChat();
     stop();
     sendingRef.current = false;
     setMessages([]);
@@ -641,7 +746,12 @@ const Chat = () => {
     setInput('');
     setPanel(null);
     setSidebarFloating(false);
+    setPeeking(false);
+    activeChatIdRef.current = null;
+    lastSavedRef.current = '';
+    setActiveChatId(null);
     window.history.replaceState(null, '', '/');
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- leaveCurrentChat reads refs only
   }, [stop, setMessages]);
 
   const runCommand = useCallback(
@@ -671,9 +781,30 @@ const Chat = () => {
         case 'hire':
           setHireOpen(true);
           break;
+        case 'chat':
+          if (cmd.payload) openChat(cmd.payload);
+          break;
       }
     },
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- openChat reads refs and the store
     [submitQuery, config.resume.downloadUrl, setTheme, resolvedTheme]
+  );
+
+  // The palette reaches saved chats from anywhere, the landing page included.
+  const paletteCommands = useMemo<Command[]>(
+    () => [
+      ...commands,
+      ...savedChats.slice(0, 5).map((c) => ({
+        id: `chat-${c.id}`,
+        label: c.title,
+        keywords: ['chat', 'continue', 'history'],
+        group: 'Your chats' as const,
+        kind: 'chat' as const,
+        payload: c.id,
+        icon: 'chat',
+      })),
+    ],
+    [commands, savedChats]
   );
 
   // Cards and landing sections ask questions / open the hire sheet via events.
@@ -735,6 +866,11 @@ const Chat = () => {
       setPanel(null);
       setSidebarFloating(false);
       setInstantAnnouncement('');
+      // Every turn removed: there is no chat left to keep.
+      if (activeChatIdRef.current) chatStore.remove(activeChatIdRef.current);
+      activeChatIdRef.current = null;
+      lastSavedRef.current = '';
+      setActiveChatId(null);
     }
   };
 
@@ -789,13 +925,16 @@ const Chat = () => {
   const panelIsModal = panel?.phase === 'open' && !panelBeside;
 
   const sidebarProps = {
-    turns,
-    currentKey: currentTurnKey,
+    chats: savedChats,
+    activeChatId,
     askNext,
+    onBack: goHome,
     onNewChat: goHome,
-    onJump: jumpToTurn,
+    onOpenChat: openChat,
+    onDeleteChat: deleteChat,
     onAsk: (q: string) => {
       setSidebarFloating(false);
+      setPeeking(false);
       submitQuery(q);
     },
   };
@@ -803,7 +942,7 @@ const Chat = () => {
   return (
     <MotionConfig reducedMotion="user">
       <CommandPalette
-        commands={commands}
+        commands={paletteCommands}
         open={paletteOpen}
         onOpenChange={setPaletteOpen}
         onRun={runCommand}
@@ -864,7 +1003,16 @@ const Chat = () => {
 
             <div className="wrap shell__body">
               {sidebarRailed ? (
-                <SidebarRail onExpand={expandSidebar} onNewChat={goHome} />
+                <SidebarRail
+                  onExpand={(opener) => {
+                    setPeeking(false);
+                    expandSidebar(opener);
+                  }}
+                  onNewChat={goHome}
+                  onBack={goHome}
+                  onPeek={peekOpen}
+                  onPeekEnd={peekClose}
+                />
               ) : (
                 <aside aria-label="Sidebar" inert={panelIsModal} className="side scrollbar-subtle">
                   <SidebarContent
@@ -1035,12 +1183,22 @@ const Chat = () => {
               )}
             </div>
 
+            {peeking && sidebarRailed && sidebarDocks && !sidebarFloating && (
+              <SidebarFloat
+                {...sidebarProps}
+                peek
+                onPeekStay={peekStay}
+                onPeekEnd={peekClose}
+                onClose={() => setPeeking(false)}
+                blocked={hireOpen || paletteOpen}
+              />
+            )}
+
             {sidebarFloating && (
               <SidebarFloat
                 {...sidebarProps}
                 onClose={closeFloat}
                 blocked={hireOpen || paletteOpen}
-                onBackToPortfolio={sidebarDocks ? undefined : goHome}
                 onOpenCommand={
                   sidebarDocks
                     ? undefined

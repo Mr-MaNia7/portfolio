@@ -1,6 +1,6 @@
 import type { PortfolioConfig } from '@/types/portfolio';
 
-export type CommandKind = 'ask' | 'link' | 'copy' | 'theme' | 'resume' | 'hire';
+export type CommandKind = 'ask' | 'link' | 'copy' | 'theme' | 'resume' | 'hire' | 'chat';
 
 export interface Command {
   id: string;
@@ -8,7 +8,7 @@ export interface Command {
   hint?: string;
   slash?: string;
   keywords: string[];
-  group: 'Ask' | 'Elsewhere' | 'Actions';
+  group: 'Ask' | 'Your chats' | 'Elsewhere' | 'Actions';
   kind: CommandKind;
   payload?: string;
   icon: string;

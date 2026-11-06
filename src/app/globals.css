@@ -838,6 +838,38 @@
   .dark .panel-scrim { background: rgba(0, 0, 0, 0.65); }
   .side__row .rail-link { flex: 1 1 0; width: auto; }
 
+  /* A saved chat: the row opens it, the bin on hover or focus deletes it */
+  .chat-row { position: relative; }
+  .chat-row .rail-link { padding-right: 40px; }
+  .chat-row__delete {
+    position: absolute;
+    top: 50%;
+    right: 0;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 32px;
+    height: 32px;
+    border-radius: var(--radius-sm);
+    color: var(--muted-foreground);
+    opacity: 0;
+    transform: translateY(-50%);
+    transition: opacity 140ms var(--ease-out-expo), color 140ms var(--ease-out-expo), background-color 140ms var(--ease-out-expo);
+  }
+  .chat-row:hover .chat-row__delete,
+  .chat-row:has(:focus-visible) .chat-row__delete { opacity: 1; }
+  @media (hover: none) { .chat-row__delete { opacity: 1; } }
+  @media (hover: hover) and (pointer: fine) {
+    .chat-row__delete:hover { background: color-mix(in oklab, var(--foreground) 8%, transparent); color: var(--foreground); }
+  }
+
+  /* A look at the sidebar from the rail: it slides over the chat and leaves with the pointer */
+  @media (min-width: 1024px) {
+    .side-float[data-peek] {
+      animation: side-peek 200ms var(--ease-out-expo) both;
+    }
+  }
+
   /* One sidebar row */
   .rail-link {
     display: flex;
@@ -864,10 +896,10 @@
     -webkit-line-clamp: 2;
   }
   .rail-link--strong { color: var(--foreground); font-weight: 500; }
-  .rail-link[aria-current="true"] { background: color-mix(in oklab, var(--foreground) 7%, transparent); color: var(--foreground); font-weight: 500; }
+  .rail-link[aria-current]:not([aria-current="false"]) { background: color-mix(in oklab, var(--foreground) 7%, transparent); color: var(--foreground); font-weight: 500; }
   .rail-link:active { transform: translateY(1px) scale(0.985); }
   @media (hover: hover) and (pointer: fine) {
-    .rail-link:not([aria-current="true"]):hover { background: color-mix(in oklab, var(--foreground) 6%, transparent); color: var(--foreground); }
+    .rail-link:not([aria-current]):hover { background: color-mix(in oklab, var(--foreground) 6%, transparent); color: var(--foreground); }
   }
 
   /* Messages. The visitor's words sit in a soft grey bubble; the twin's are plain text on the page */
@@ -1525,6 +1557,10 @@ pre {
     opacity: 0;
     transform: var(--panel-from);
   }
+}
+@keyframes side-peek {
+  from { opacity: 0; transform: translateX(-12px); }
+  to { opacity: 1; transform: none; }
 }
 @keyframes side-in {
   from { transform: translateX(-100%); }

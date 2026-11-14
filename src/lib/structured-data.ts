@@ -1,5 +1,5 @@
 import { getConfig } from '@/lib/config-loader';
-import { absoluteUrl, CONTENT_LAST_MODIFIED, SITE_URL, snippet, workPath } from '@/lib/site';
+import { absoluteUrl, CONTENT_LAST_MODIFIED_DATETIME, SITE_URL, snippet, workPath } from '@/lib/site';
 import type { Project } from '@/types/portfolio';
 
 /**
@@ -108,7 +108,7 @@ export function homeGraph(): Node {
         name: `${personal.name} — ${personal.title}`,
         isPartOf: { '@id': ids.website },
         mainEntity: { '@id': ids.person },
-        dateModified: CONTENT_LAST_MODIFIED,
+        dateModified: CONTENT_LAST_MODIFIED_DATETIME,
         inLanguage: 'en',
       },
       personNode(),

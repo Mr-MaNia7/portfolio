@@ -80,6 +80,39 @@ All checks ran against a local production build.
 
 The domain is not in Common Crawl's January–March 2026 web graph, in either the rankings or the vertices. That is expected for a new site with almost no links, and it is the baseline to beat.
 
+## Progress check (2026-11-14, one week after deploy)
+
+From Search Console's URL Inspection and Search Analytics APIs.
+
+**Canonical: fixed.** Google recrawled the homepage on 2026-11-12. The canonical you declare and the one Google selected now both read `https://www.abdulkarimg.com/`; the mismatch from the audit is gone.
+
+**Indexing: 7 of the 12 sitemap URLs are on Google.**
+
+| Status | Pages |
+|---|---|
+| Indexed | `/`, `/work`, `/work/aivi`, `/work/atcom`, `/work/finn`, `/work/afaan-oromoo-sentiment-analysis`, `/work/hiyascaffold` |
+| Discovered, not yet crawled | `/work/aladia` |
+| Not yet known to Google | `/work/gemini-llm-training`, `/work/svetness`, `/work/alertix`, `/work/portfolio` |
+
+**Sitemap:** submitted 2026-11-06 and last read 2026-11-11, with 0 errors and all 12 URLs found. The API's "indexed: 0" figure for sitemaps is a field Google no longer fills in, so it can be ignored.
+
+**Search traffic, 2026-10-17 to 2026-11-11:** 20 impressions and 0 clicks, up from none before the deploy.
+
+| Page | Impressions | Average position |
+|---|---|---|
+| `/` | 12 | 23 |
+| `/work/finn` | 7 | 4.9 |
+| `/work/aivi` | 1 | 5 |
+
+- **Most of the impressions came from searches Google hides.** It withholds queries too rare to report, and so far, searches for your name fall into that group.
+- **The two visible queries are noise.** One was "abdulkarim tower", at position 51. The other was a Thai search meaning "what does the app look like?", where the FINN page ranked 1st. FINN is a Thai app, so that page is starting to rank for searches about it.
+- **All of the impressions date from 2026-11-06 onward,** after the deploy.
+
+**Still open:**
+
+- The GitHub profile's Website field is empty.
+- LinkedIn hasn't been checked; it can't be verified automatically.
+
 ## 1. Scores
 
 | Category (weight) | Score | Main issue |

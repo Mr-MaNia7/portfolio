@@ -35,6 +35,15 @@ export const SEO_DESCRIPTION =
 export const CONTENT_LAST_MODIFIED = meta.lastUpdated;
 
 /**
+ * The same date as a full ISO 8601 date-time, which Google requires for
+ * structured data (a bare "2026-10-25" is reported as an invalid datetime).
+ * Midnight in Addis Ababa, where the content is edited.
+ */
+export const CONTENT_LAST_MODIFIED_DATETIME = /^\d{4}-\d{2}-\d{2}$/.test(meta.lastUpdated)
+  ? `${meta.lastUpdated}T00:00:00+03:00`
+  : meta.lastUpdated;
+
+/**
  * Open Graph for one page. Next merges metadata shallowly, so a page that sets
  * openGraph replaces the layout's whole object: every page builds it here.
  */

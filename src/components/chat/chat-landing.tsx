@@ -227,13 +227,14 @@ const ChatLanding: React.FC<ChatLandingProps> = ({
                   <span className="relative h-10 w-10 shrink-0 overflow-hidden rounded-xl">
                     <Image src={personal.avatar} alt="" fill sizes="40px" unoptimized className="object-cover" priority />
                   </span>
+                  {/* The window names what it is for: the twin is the second way in, after the buttons. */}
                   <span className="min-w-0 flex-1">
-                    <span className="block truncate text-[16px] leading-tight font-medium text-foreground">
-                      {personal.shortName}&apos;s AI twin
-                    </span>
-                    <span className="flex items-center gap-1.5 text-[13px] text-muted-foreground">
+                    <h2 className="font-display truncate text-[18px] leading-tight font-medium tracking-[-0.01em] text-foreground sm:text-[20px]">
+                      Interview my AI twin
+                    </h2>
+                    <span className="mt-0.5 flex items-center gap-1.5 text-[13px] text-muted-foreground">
                       <span className="status-dot !h-1.5 !w-1.5" aria-hidden />
-                      Online
+                      <span className="truncate">Online · answers from my real work</span>
                     </span>
                   </span>
                   <span className="text-right text-[13px] leading-tight text-muted-foreground max-[400px]:hidden" suppressHydrationWarning>

@@ -12,7 +12,7 @@ import {
 import { splitMetric } from '@/lib/metrics';
 import { usePanel } from '@/components/chat/side-panel';
 import { FadeImage } from '@/components/ui/fade-image';
-import { projectCover } from '@/lib/project-cover';
+import { projectCover, projectSummary } from '@/lib/project-cover';
 import { ProjectBody } from './project-dialog';
 
 /** Bento shown before "show all": the featured lead plus a 2×2. */
@@ -288,7 +288,7 @@ const ProjectTile = React.forwardRef<
 
         {(lead || wide) && (
           <span className="text-[16px] leading-relaxed text-ink-soft">
-            {project.description?.split('. ')[0]}.
+            {projectSummary(project)}
           </span>
         )}
 

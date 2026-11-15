@@ -300,51 +300,67 @@ export function ProjectBody({
           ))}
         </dl>
 
-        <p className="measure mt-6 text-[16px] leading-[1.7] text-foreground">
-          {project.description}
-        </p>
+        {project.summary && (
+          <p className="measure mt-6 font-display text-[1.25rem] leading-snug text-foreground">{project.summary}</p>
+        )}
 
-        {/* Impact */}
-        {metrics.length > 0 && (
+        {project.challenge ? (
+          <section className="mt-6" aria-labelledby="challenge-h">
+            <h3 id="challenge-h" className="meta mb-2 text-muted-foreground">
+              The challenge
+            </h3>
+            <p className="measure text-[16px] leading-[1.7] text-foreground">{project.challenge}</p>
+          </section>
+        ) : (
+          <p className="measure mt-6 text-[16px] leading-[1.7] text-foreground">{project.description}</p>
+        )}
+
+        {/* Result: what changed, then the numbers */}
+        {(project.outcome || metrics.length > 0) && (
           <section className="mt-8" aria-labelledby="impact-h">
             <h3 id="impact-h" className="meta mb-3 text-muted-foreground">
-              Impact
+              The result
             </h3>
-            <ul className={`grid gap-px overflow-hidden rounded-md border border-border bg-border-subtle ${inPanel ? '@lg:grid-cols-2' : 'sm:grid-cols-2'}`}>
-              {metrics.map((m, i) => (
-                <li
-                  key={i}
-                  className={`flex flex-col gap-1.5 bg-card px-4 py-4 ${
-                    metrics.length % 2 === 1 && i === metrics.length - 1 ? (inPanel ? '@lg:col-span-2' : 'sm:col-span-2') : ''
-                  }`}
-                >
-                  {m.figure ? (
-                    <>
-                      <span className="num text-[1.75rem] leading-none text-foreground">
-                        {m.figure}
-                      </span>
-                      {m.caption && (
-                        <span className="text-[14px] text-muted-foreground">
-                          {m.caption}
+            {project.outcome && (
+              <p className="measure mb-4 text-[16px] leading-[1.7] text-foreground">{project.outcome}</p>
+            )}
+            {metrics.length > 0 && (
+              <ul className={`grid gap-px overflow-hidden rounded-md border border-border bg-border-subtle ${inPanel ? '@lg:grid-cols-2' : 'sm:grid-cols-2'}`}>
+                {metrics.map((m, i) => (
+                  <li
+                    key={i}
+                    className={`flex flex-col gap-1.5 bg-card px-4 py-4 ${
+                      metrics.length % 2 === 1 && i === metrics.length - 1 ? (inPanel ? '@lg:col-span-2' : 'sm:col-span-2') : ''
+                    }`}
+                  >
+                    {m.figure ? (
+                      <>
+                        <span className="num text-[1.75rem] leading-none text-foreground">
+                          {m.figure}
                         </span>
-                      )}
-                    </>
-                  ) : (
-                    <span className="font-display text-[1.125rem] leading-snug text-foreground">
-                      {m.caption}
-                    </span>
-                  )}
-                </li>
-              ))}
-            </ul>
+                        {m.caption && (
+                          <span className="text-[14px] text-muted-foreground">
+                            {m.caption}
+                          </span>
+                        )}
+                      </>
+                    ) : (
+                      <span className="font-display text-[1.125rem] leading-snug text-foreground">
+                        {m.caption}
+                      </span>
+                    )}
+                  </li>
+                ))}
+              </ul>
+            )}
           </section>
         )}
 
-        {/* Highlights */}
+        {/* What I built */}
         {project.highlights && project.highlights.length > 0 && (
           <section className="mt-8" aria-labelledby="highlights-h">
             <h3 id="highlights-h" className="meta mb-3 text-muted-foreground">
-              Highlights
+              What I built
             </h3>
             <ol>
               {project.highlights.map((h, i) => (

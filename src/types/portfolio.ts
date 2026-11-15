@@ -28,6 +28,12 @@ export interface PersonalInfo {
 export interface Stat {
   value: string;
   label: string;
+  /** A small brand mark shown before the label, e.g. the platform the figure comes from. */
+  icon?: string;
+  /** The words in the label the icon sits before; without it, the icon leads the label. */
+  iconAt?: string;
+  /** Where the source can be checked; the icon and the marked words link there. */
+  href?: string;
 }
 
 export interface Availability {
@@ -164,6 +170,12 @@ export interface Project {
   role?: string;
   client?: string;
   description: string;
+  /** One sentence for cards: what changed, not what it is. */
+  summary?: string;
+  /** The situation before the work: who the client is and what was in the way. */
+  challenge?: string;
+  /** What changed after the work. Only facts the owner has confirmed. */
+  outcome?: string;
   techStack: string[];
   date: string;
   status: string;
@@ -219,10 +231,24 @@ export interface Meta {
   description: string;
 }
 
+/** A buyer's problem, and what I do about it. */
+export interface Service {
+  problem: string;
+  offer: string;
+}
+
+/** How an engagement starts, shown wherever a visitor is about to get in touch. */
+export interface Engagement {
+  summary: string;
+  steps: Array<{ title: string; detail: string }>;
+}
+
 export interface PortfolioConfig {
   personal: PersonalInfo;
   stats: Stat[];
   availability: Availability;
+  services: Service[];
+  engagement: Engagement;
   experience: Experience[];
   education: Education;
   skills: Skills;

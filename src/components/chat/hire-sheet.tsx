@@ -23,7 +23,7 @@ export function HireSheet({
   open: boolean;
   onClose: () => void;
 }) {
-  const { personal, availability, social, agency } = getConfig();
+  const { personal, availability, social, agency, engagement } = getConfig();
   const city = personal.location.split(',')[0];
   const panelRef = useRef<HTMLDivElement>(null);
   const closeRef = useRef<HTMLButtonElement>(null);
@@ -61,11 +61,7 @@ export function HireSheet({
 
   if (typeof document === 'undefined') return null;
 
-  const steps = [
-    'Send a few lines about your project.',
-    'I reply within 0–4 hours with questions and an honest fit check.',
-    'We start on Upwork or directly, shipping in small, reviewable pieces.',
-  ];
+  const steps = engagement.steps.map((s) => `${s.title}. ${s.detail}`);
 
   return createPortal(
     <AnimatePresence>

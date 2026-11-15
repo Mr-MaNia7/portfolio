@@ -25,7 +25,7 @@ export const getProjects = tool({
         metrics: project.metrics || [],
       })),
       summary:
-        "AIVI leads: a multi-region AI voice platform I've shipped 500+ PRs into. Then Svetness's rebuilt operations platform, Aladia's learning platform, and earlier work across fintech, call centers, frontier-model training and speech-sentiment research. Ask me about any one and I'll go deeper.",
+        "AIVI leads: a multi-region AI voice platform where the services I built run at 99.9% uptime, with 500+ of my PRs merged. Then Svetness's rebuilt operations platform, Aladia's learning platform, and earlier work across fintech, call centers, frontier-model training and speech-sentiment research. Ask me about any one and I'll go deeper.",
     };
   },
 });

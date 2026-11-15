@@ -7,7 +7,7 @@ import { ArrowRight, ArrowUpRight } from 'lucide-react';
 import React, { useEffect, useRef, useState } from 'react';
 
 import { splitMetric } from '@/lib/metrics';
-import { projectCover } from '@/lib/project-cover';
+import { projectCover, projectSummary } from '@/lib/project-cover';
 import { workPath } from '@/lib/site';
 import { UpworkBadge } from '@/components/ui/upwork-badge';
 import { useLocalTime } from '@/hooks/use-local-time';
@@ -67,7 +67,7 @@ const ChatLanding: React.FC<ChatLandingProps> = ({
   onComposerVisible,
 }) => {
   const config = getConfig();
-  const { personal, stats, availability, projects, reviews, agency, social, resume } = config;
+  const { personal, stats, availability, services, engagement, projects, reviews, agency, social, resume } = config;
   const time = useLocalTime(personal.timezone);
   const [openIndex, setOpenIndex] = useState<number | null>(null);
   // Stays mounted after the first open, so closing still animates.
@@ -130,12 +130,43 @@ const ChatLanding: React.FC<ChatLandingProps> = ({
 
   const statList = (
     <>
-      {stats.map((s) => (
-        <div key={s.label} className="flex flex-col gap-1">
-          <dt className="text-[14px] leading-snug text-muted-foreground">{s.label}</dt>
-          <dd className="hero__stat-figure num order-first leading-none font-medium tracking-tight text-foreground">{s.value}</dd>
-        </div>
-      ))}
+      {stats.map((s) => {
+        // The icon sits before the words it marks (iconAt: "Hours delivered on [logo] Upwork"),
+        // or before the first word when it marks the whole label.
+        const at = s.iconAt ? Math.max(0, s.label.indexOf(s.iconAt)) : 0;
+        const markedEnd = s.iconAt ? at + s.iconAt.length : s.label.indexOf(' ') > 0 ? s.label.indexOf(' ') : s.label.length;
+        const icon = s.icon && (
+          <Image src={s.icon} alt="" width={14} height={14} unoptimized className="mr-1 inline-block h-3.5 w-3.5 align-[-2px]" />
+        );
+        const marked = s.label.slice(at, markedEnd);
+        return (
+          <div key={s.label} className="flex flex-col gap-1">
+            <dt className="text-[14px] leading-snug text-muted-foreground">
+              {s.icon ? (
+                <>
+                  {s.label.slice(0, at)}
+                  {s.href ? (
+                    <a href={s.href} target="_blank" rel="noopener noreferrer" className="whitespace-nowrap text-foreground">
+                      {icon}
+                      <span className="link">{marked}</span>
+                      <span className="sr-only"> (opens in a new tab)</span>
+                    </a>
+                  ) : (
+                    <span className="whitespace-nowrap">
+                      {icon}
+                      {marked}
+                    </span>
+                  )}
+                  {s.label.slice(markedEnd)}
+                </>
+              ) : (
+                s.label
+              )}
+            </dt>
+            <dd className="hero__stat-figure num order-first leading-none font-medium tracking-tight text-foreground">{s.value}</dd>
+          </div>
+        );
+      })}
     </>
   );
 
@@ -147,23 +178,16 @@ const ChatLanding: React.FC<ChatLandingProps> = ({
           <div className="wrap">
             <div className="hero-text">
             <div className="hero__text">
-              {availability.open && (
-                <p className="hero__notice flex items-center gap-2 text-[14px] font-medium text-ink-soft max-sm:hidden">
-                  <span className="status-dot" aria-hidden />
-                  {availability.headline}
-                </p>
-              )}
               {/* The name and role open the heading, so search engines read who this is; the promise stays the headline. */}
-              <h1 id="hero-heading" className="mt-4 text-foreground">
-                <span className="hero__name">{personal.name} · Freelance AI engineer</span>
-                <span className="block">Interview my AI twin before you hire me</span>
+              <h1 id="hero-heading" className="text-foreground">
+                <span className="hero__name">{personal.name} · Senior AI engineer</span>
+                <span className="block">{personal.headline}</span>
               </h1>
               <p className="hero__lead">
-                I&apos;m a senior full-stack and AI engineer. I take AI voice agents and multi-tenant SaaS to production, ready for enterprise buyers.
-                Ask my twin what you&apos;d ask in a first call.
+                I build the backends, infrastructure and voice agents behind AI products, plus the SOC 2 work enterprise buyers ask for.
                 {personal.currently && (
-                  <span className="max-sm:hidden">
-                    {' '}Right now I&apos;m building AI voice agents at{' '}
+                  <span className="hidden xl:inline">
+                    {' '}Right now I&apos;m building the AI voice platform at{' '}
                     <a href={personal.currently.url} target="_blank" rel="noopener noreferrer" className="link text-foreground">
                       {personal.currently.company}
                     </a>
@@ -173,16 +197,24 @@ const ChatLanding: React.FC<ChatLandingProps> = ({
               </p>
               <div className="hero__actions flex flex-wrap gap-3 max-sm:hidden">
                 <button type="button" onClick={onHire} aria-haspopup="dialog" className="btn btn--primary">
-                  Hire me
+                  Start a project
                   <ArrowUpRight className="nudge-ur h-4 w-4" aria-hidden />
                 </button>
                 <a href={workPath(flagship)} onClick={openCaseStudy(flagshipIndex)} aria-haspopup="dialog" className="btn btn--secondary">
-                  See the {flagship.client ?? 'flagship'} case study
+                  Read the {flagship.client ?? 'flagship'} case study
                 </a>
               </div>
+              {/* Availability sits under the buttons, where the visitor decides whether to reach out. */}
+              {availability.open && (
+                <p className="mt-4 flex items-center gap-2 text-[14px] text-ink-soft max-sm:hidden">
+                  <span className="status-dot" aria-hidden />
+                  Available now for contract work · replies in 0–4 hours
+                </p>
+              )}
               {/* The proof, as one block at the foot of the column */}
               <div className="hero__proof max-sm:hidden">
-                <UpworkBadge className="!text-[14px]" />
+                {/* Only where the stats grid is hidden; the grid carries the same badge on its Job Success stat. */}
+                <UpworkBadge className="!text-[14px] lg:[@media(min-height:821px)]:!hidden" />
                 <dl className="hidden grid-cols-2 gap-x-6 gap-y-5 lg:grid [@media(max-height:820px)]:hidden">
                   {statList}
                 </dl>
@@ -228,7 +260,7 @@ const ChatLanding: React.FC<ChatLandingProps> = ({
                         <i /><i /><i />
                       </span>
                       <span className="play-a__text block">
-                      {flagship.client} hired me on a 45-day trial to make its backend multi-tenant. Since June 2025 my scope has grown to the whole platform, with {flagship.metrics?.[0]} so far.{' '}
+                      {flagship.client} hired me on a 45-day trial to make its backend multi-tenant. Since June 2025 my scope has grown to the whole platform, and the services I built run at {flagship.metrics?.[0]}.{' '}
                       <a href={workPath(flagship)} onClick={openCaseStudy(flagshipIndex)} aria-haspopup="dialog" className="link">
                         Read the case study
                       </a>
@@ -288,7 +320,7 @@ const ChatLanding: React.FC<ChatLandingProps> = ({
         </section>
 
         {/* ── Flagship ─────────────────────────────────────── */}
-        <section id="flagship" aria-labelledby="flagship-heading" className="section">
+        <section id="flagship" aria-labelledby="flagship-heading" className="section section--alt">
           <div className="wrap">
             <div className="section__head">
               <div>
@@ -334,7 +366,7 @@ const ChatLanding: React.FC<ChatLandingProps> = ({
         </section>
 
         {/* ── More work ────────────────────────────────────── */}
-        <section id="work" aria-labelledby="work-heading" className="section section--alt">
+        <section id="work" aria-labelledby="work-heading" className="section">
           <div className="wrap">
             <div className="section__head">
               <div>
@@ -358,24 +390,28 @@ const ChatLanding: React.FC<ChatLandingProps> = ({
         </section>
 
         {/* ── Services ─────────────────────────────────────── */}
-        <section id="services" aria-labelledby="services-heading" className="section">
+        <section id="services" aria-labelledby="services-heading" className="section section--alt">
           <div className="wrap">
             <div className="section__head">
               <div>
-                <h2 id="services-heading" className="title">Services: AI, SaaS, cloud and SOC 2</h2>
-                <p className="section__lead">Pick the problem closest to yours. My twin explains how I&apos;d approach it.</p>
+                <h2 id="services-heading" className="title">Services for AI and SaaS teams</h2>
+                <p className="section__lead">Pick the problem closest to yours. My twin explains how I&apos;d handle it.</p>
               </div>
             </div>
             <div className="grid-12 section__body">
               <ol className="row-list col-span-12 lg:col-span-7">
-                {availability.focusAreas.map((area) => (
-                  <li key={area} className="border-b border-border">
+                {services.map((s) => (
+                  <li key={s.problem} className="border-b border-border">
                     <button
                       type="button"
-                      onClick={() => submitQuery(`How would you help with this: ${area}?`)}
+                      onClick={() => submitQuery(`How would you help me ${s.offer.charAt(0).toLowerCase()}${s.offer.slice(1)}?`)}
                       className="group flex w-full items-center gap-4 py-2 text-left"
                     >
-                      <span className="row-list__title font-display flex-1 leading-snug text-foreground">{area}</span>
+                      <span className="flex flex-1 flex-col gap-0.5">
+                        <span className="row-list__title font-display leading-snug text-foreground">{s.problem}</span>
+                        {/* Short desktop screens keep the one-screen rhythm with the problem alone */}
+                        <span className="text-[15px] leading-snug text-muted-foreground lg:[@media(max-height:800px)]:hidden">{s.offer}</span>
+                      </span>
                       <span className="flex shrink-0 items-center gap-1.5 text-[15px] font-medium text-brand-ink">
                         <span className="hidden sm:inline">Ask my twin</span>
                         <ArrowRight aria-hidden className="h-4 w-4 transition-transform duration-150 group-hover:translate-x-[3px]" />
@@ -410,15 +446,15 @@ const ChatLanding: React.FC<ChatLandingProps> = ({
         </section>
 
         {/* ── Reviews ──────────────────────────────────────── */}
-        <section id="reviews" aria-labelledby="reviews-heading" className="section section--alt">
+        <section id="reviews" aria-labelledby="reviews-heading" className="section">
           <div className="wrap">
             <div className="section__head">
               <div>
                 <h2 id="reviews-heading" className="title">Client reviews: {reviews.rating}★ on Upwork</h2>
                 {/* The rated clients left stars, not text, so the quotes are credited to the clients who wrote them. */}
                 <p className="section__lead">
-                  <span className="num font-medium text-foreground">{reviews.rating}★</span> from {ratedClients}. The quotes are other
-                  clients&apos; reviews, verbatim from{' '}
+                  {ratedClients} each rated my work <span className="num font-medium text-foreground">{reviews.rating}★</span>. The
+                  quotes are from other clients, word for word from{' '}
                   <a href={reviews.source.url} target="_blank" rel="noopener noreferrer" className="link text-foreground">
                     {reviews.source.name}
                   </a>
@@ -456,11 +492,11 @@ const ChatLanding: React.FC<ChatLandingProps> = ({
 
         {/* ── About ────────────────────────────────────────── */}
         {/* Who this is, in plain sentences in the HTML: what search engines and AI assistants quote. */}
-        <section id="about" aria-labelledby="about-heading" className="section">
+        <section id="about" aria-labelledby="about-heading" className="section section--alt">
           <div className="wrap">
             <div className="section__head">
               <div>
-                <h2 id="about-heading" className="title">About {personal.fullName}</h2>
+                <h2 id="about-heading" className="title">About me</h2>
               </div>
             </div>
             <div className="grid-12">
@@ -472,7 +508,15 @@ const ChatLanding: React.FC<ChatLandingProps> = ({
               <dl className="card col-span-12 gap-4 p-6 lg:col-span-5">
                 {personal.currently && current && (
                   <AboutFact label="Now">
-                    {personal.currently.role} at {personal.currently.company} · <span className="num">{current.duration}</span>
+                    {personal.currently.role} at{' '}
+                    {personal.currently.url ? (
+                      <a href={personal.currently.url} target="_blank" rel="noopener noreferrer" className="link text-foreground">
+                        {personal.currently.company}
+                      </a>
+                    ) : (
+                      personal.currently.company
+                    )}{' '}
+                    · <span className="num">{current.duration}</span>
                   </AboutFact>
                 )}
                 <AboutFact label="Founded">
@@ -506,11 +550,11 @@ const ChatLanding: React.FC<ChatLandingProps> = ({
         </section>
 
         {/* ── Questions ────────────────────────────────────── */}
-        <section id="questions" aria-labelledby="questions-heading" className="section section--alt">
+        <section id="questions" aria-labelledby="questions-heading" className="section">
           <div className="wrap">
             <div className="section__head">
               <div>
-                <h2 id="questions-heading" className="title">FAQ: questions to ask before you hire me</h2>
+                <h2 id="questions-heading" className="title">Questions clients ask before hiring me</h2>
                 <p className="section__lead">
                   These cards answer instantly. Type anything else and my twin answers live.
                 </p>
@@ -568,12 +612,20 @@ const ChatLanding: React.FC<ChatLandingProps> = ({
             <h2 id="close-heading" className="close__title max-w-[16ch] leading-[1] font-medium tracking-[-0.04em]">
               Tell me what you need built
             </h2>
-            <p className="mt-8 max-w-[62ch] text-[18px] leading-relaxed text-[var(--band-muted)]">
-              Send a few lines about the project. I reply within 0–4 hours with questions and an honest read on whether I&apos;m the right fit.
-            </p>
-            <div className="mt-8 flex flex-wrap gap-3 max-sm:flex-col">
+            <ol className="mt-8 grid max-w-[72rem] lg:[@media(max-height:800px)]:mt-6 gap-x-8 gap-y-5 sm:grid-cols-3">
+              {engagement.steps.map((step, i) => (
+                <li key={step.title} className="flex flex-col gap-1.5 border-t border-[var(--band-line)] pt-4">
+                  <span className="text-[18px] leading-snug font-medium text-[var(--band-ink)]">
+                    <span className="num mr-2 text-[var(--band-muted)]">{i + 1}</span>
+                    {step.title}
+                  </span>
+                  <span className="text-[16px] leading-relaxed text-[var(--band-muted)]">{step.detail}</span>
+                </li>
+              ))}
+            </ol>
+            <div className="mt-8 flex flex-wrap gap-3 max-sm:flex-col lg:[@media(max-height:800px)]:mt-6">
               <button type="button" onClick={onHire} aria-haspopup="dialog" className="btn btn--primary">
-                Hire me
+                Start a project
                 <ArrowUpRight className="nudge-ur h-4 w-4" aria-hidden />
               </button>
               <a href={`mailto:${personal.email}`} className="btn btn--secondary">
@@ -647,7 +699,7 @@ function WorkTile({ project, onOpen }: { project: Project; onOpen: (e: React.Mou
           <span className="num shrink-0">{project.date}</span>
         </span>
         <span className="font-display text-[20px] leading-[1.2] text-foreground">{project.title}</span>
-        <span className="work-tile__line text-[16px] leading-relaxed text-ink-soft">{project.description?.split('. ')[0]}.</span>
+        <span className="work-tile__line text-[16px] leading-relaxed text-ink-soft">{projectSummary(project)}</span>
       </span>
     </a>
   );

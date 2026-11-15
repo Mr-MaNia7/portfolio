@@ -39,7 +39,7 @@ export function SiteHeader() {
 }
 
 export function SiteFooter() {
-  const { personal, social, resume } = getConfig();
+  const { personal, social, resume, engagement } = getConfig();
   const city = personal.location.split(',')[0];
   return (
     <footer className="closing closing--compact" aria-labelledby="close-heading">
@@ -49,7 +49,7 @@ export function SiteFooter() {
             Tell me what you need built
           </h2>
           <p className="mt-6 max-w-[62ch] text-[18px] leading-relaxed text-[var(--band-muted)]">
-            Send a few lines about the project. I reply within 0–4 hours with questions and an honest read on whether I&apos;m the right fit.
+            {engagement.summary}
           </p>
           <div className="mt-8 flex flex-wrap gap-3 max-sm:flex-col">
             <a href={`mailto:${personal.email}`} className="btn btn--primary">

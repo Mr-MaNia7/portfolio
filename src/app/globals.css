@@ -1478,7 +1478,7 @@
     gap: 24px;
   }
   .hero__text { grid-column: span 5; display: flex; flex-direction: column; min-width: 0; }
-  /* The pitch sits on top, the proof at the foot; the space between them separates two ideas */
+  /* The proof follows the pitch at a fixed distance; spare height falls below it, not in the middle */
   .hero__proof { margin-top: 16px; }
   .hero__stat-figure { font-size: 28px; }
   @media (min-width: 1024px) and (min-height: 821px) {
@@ -1486,8 +1486,7 @@
       display: flex;
       flex-direction: column;
       gap: 20px;
-      margin-top: auto;
-      padding-top: 32px;
+      margin-top: clamp(40px, 6svh, 72px);
     }
     .hero__stat-figure { font-size: clamp(28px, 3.2svh, 36px); }
   }

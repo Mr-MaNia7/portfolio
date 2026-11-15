@@ -6,7 +6,7 @@
     "shortName": "Abdulkarim",
     "initials": "AG",
     "title": "Senior Full-Stack & AI Platform Engineer",
-    "headline": "I build AI products that hold up in production.",
+    "headline": "I take AI products from demo to production.",
     "tagline": "Senior full-stack and AI engineer. I take AI products to production and get them ready for enterprise buyers, from multi-tenant backends and multi-region infrastructure to voice agents.",
     "location": "Addis Ababa, Ethiopia",
     "timezone": "EAT · UTC+3",
@@ -14,7 +14,7 @@
     "handle": "@abdulkarimgmohammed",
     "upworkBadge": "Top Rated Plus · 100% Job Success",
     "upworkBadgeImage": "/icons/top-rated-plus-badge.svg",
-    "bio": "I'm Abdulkarim, a senior full-stack and AI engineer based in Addis Ababa, working hours that overlap with US and EU teams. I've shipped software for clients around the world for 5+ years. On Upwork I'm Top Rated Plus with a 100% Job Success score: $60K+ earned across 26 jobs.\n\nSince June 2025 I've been building AIVI, a platform of AI voice agents and CRM for lending, insurance and contact centers. They brought me in on a 45-day trial to make the backend properly multi-tenant on Supabase, and my scope kept growing from there. Today I work across the backend, frontend, DevOps, security and SOC 2: multi-region cells, a micro-frontend platform, voice-guided co-browsing, and a reinforcement-learning policy that learns from call quality. That's 500+ merged PRs so far.\n\nBefore that I rebuilt Svetness's legacy system as Supabase microservices with a Next.js front end, led the frontend of Aladia's learning platform, trained Google's Bard (now Gemini) through Turing, and built a real-time call-center platform for Canal+. I also founded Eaglix Tech, an agency that brings Ethiopian engineers to enterprise software and AI work.\n\nOff the clock you'll find me at the chessboard or in central midfield.",
+    "bio": "I'm Abdulkarim Getachew Mohammed, a senior full-stack and AI engineer based in Addis Ababa, working hours that overlap with US and EU teams. I've shipped software for clients around the world for 5+ years. On Upwork I'm Top Rated Plus with a 100% Job Success score: $60K+ earned across 26 jobs.\n\nSince June 2025 I've been building AIVI, a platform of AI voice agents and CRM for lending, insurance and contact centers. They brought me in on a 45-day trial to make the backend properly multi-tenant on Supabase, and my scope kept growing from there. Today I work across the backend, frontend, DevOps, security and SOC 2: multi-region cells, a micro-frontend platform, voice-guided co-browsing, and a reinforcement-learning policy that learns from call quality. That's 500+ merged PRs so far.\n\nBefore that I rebuilt Svetness's legacy system as Supabase microservices with a Next.js front end, led the frontend of Aladia's learning platform, trained Google's Bard (now Gemini) through Turing, and built a real-time call-center platform for Canal+. I also founded Eaglix Tech, an agency that brings Ethiopian engineers to enterprise software and AI work.\n\nOff the clock you'll find me at the chessboard or in central midfield.",
     "currently": {
       "role": "Software Engineer",
       "company": "AIVI",
@@ -25,14 +25,14 @@
     "photo": "/headshot-placeholder.svg"
   },
   "stats": [
-    { "value": "$60K+", "label": "Earned on Upwork" },
-    { "value": "100%", "label": "Job Success · Top Rated Plus" },
-    { "value": "5,000+", "label": "Hours delivered" },
+    { "value": "99.9%", "label": "Uptime on services I build" },
+    { "value": "100%", "label": "Job Success · Top Rated Plus", "icon": "/icons/top-rated-plus-badge.svg" },
+    { "value": "5,000+", "label": "Hours delivered on Upwork", "icon": "/icons/upwork.svg", "iconAt": "Upwork", "href": "https://www.upwork.com/freelancers/~01dc65c291b2936bc3" },
     { "value": "5+ yrs", "label": "Shipping for global clients" }
   ],
   "availability": {
     "open": true,
-    "headline": "Available now for freelance contracts, full- or part-time",
+    "headline": "Available now for contract work, full- or part-time",
     "types": ["Contract · part-time", "Contract · full-time", "Team builds via Eaglix Tech"],
     "workMode": "Remote",
     "location": "Addis Ababa, Ethiopia — overlapping US & EU hours",
@@ -48,6 +48,21 @@
     "workStyle": "Senior and autonomous. I scope tightly, ship in small reviewable PRs, and leave clean, tested, documented code behind.",
     "goals": "I'm looking for teams building ambitious products where I can own real surface area: the platform, the AI, or both.",
     "note": "Top Rated Plus on Upwork (100% Job Success) — happy to start the engagement there or work directly. Typical response time: 0–4 hours."
+  },
+  "services": [
+    { "problem": "Your AI demo works, but it isn't ready for customers", "offer": "Ship AI products and voice agents that work in production" },
+    { "problem": "One customer's data must never reach another's", "offer": "Build or fix multi-tenant SaaS on Supabase and Postgres" },
+    { "problem": "Your infrastructure has to grow past one region", "offer": "Scale cloud infrastructure across regions with Kubernetes and Terraform" },
+    { "problem": "An enterprise buyer is asking for SOC 2", "offer": "Get ready for enterprise buyers: security and SOC 2" },
+    { "problem": "Your designs need a fast production frontend", "offer": "Ship Next.js frontends, split into micro-frontends when one app outgrows a team" }
+  ],
+  "engagement": {
+    "summary": "Send a few lines about the project. I reply within 0–4 hours, and after a short call you get a written plan and estimate within 48 hours.",
+    "steps": [
+      { "title": "Send a few lines", "detail": "What you're building and what's in the way. I reply within 0–4 hours." },
+      { "title": "A 30-minute call", "detail": "Your problem, stack and timeline, and an honest read on whether I'm the right fit." },
+      { "title": "A written plan within 48 hours", "detail": "Scope, milestones and an estimate. We start on Upwork or work directly." }
+    ]
   },
   "agency": {
     "name": "Eaglix Tech",
@@ -75,6 +90,7 @@
         "A reinforcement-learning decision policy trained nightly on call-quality rewards, rolled out in shadow mode",
         "SOC 2 compliance and security hardening",
         "Observability with OpenTelemetry, autoscaling, and load-tested concurrent voice calls",
+        "99.9% uptime on the services I built",
         "500+ merged PRs · ~1,500 commits"
       ],
       "technologies": ["TypeScript", "Python", "Go", "Supabase", "PostgreSQL", "Next.js", "Kubernetes", "Terraform", "OpenTelemetry", "KEDA"]
@@ -266,6 +282,7 @@
         "name": "Observability & scale",
         "summary": "I trace, alert and load-test before customers find the edges, and let the platform scale on real demand.",
         "proof": [
+          "AIVI: 99.9% uptime on the services I built",
           "AIVI: OpenTelemetry tracing and alerting across services",
           "Load tests for concurrent voice calls",
           "Autoscaling on real demand signals"
@@ -332,6 +349,9 @@
       "role": "Software Engineer: Platform & Full-Stack",
       "client": "AIVI",
       "description": "The platform behind AIVI's AI voice agents for lending, insurance and contact centers. I came in to make the Supabase backend multi-tenant, and now work across the whole stack: multi-region cells with ownership-aware routing at the edge, a micro-frontend platform behind one auth layer, a co-browsing widget the voice agent drives to guide callers through complex forms, a reinforcement-learning policy trained nightly on call quality, and the security and SOC 2 work that lets enterprises buy it.",
+      "summary": "Hired for a 45-day trial to make the backend multi-tenant. Now I work across the whole AI voice platform.",
+      "challenge": "AIVI builds AI voice agents and a CRM for lending, insurance and contact centers. In June 2025 they brought me in through Eaglix Tech on a 45-day trial with one job: make the Supabase backend properly multi-tenant, so one platform could safely serve many customers.",
+      "outcome": "The trial became a full-time engagement, and my scope grew from the backend to the frontend, DevOps, security and SOC 2. The services I built run at 99.9% uptime, I've merged 500+ PRs on the production platform, and AIVI rated the work 5.0★.",
       "techStack": ["TypeScript", "Python", "Go", "Supabase", "PostgreSQL", "Next.js", "Kubernetes", "Terraform", "OpenTelemetry"],
       "date": "2025 — Present",
       "status": "Live",
@@ -345,7 +365,7 @@
         "SOC 2 compliance and security hardening",
         "OpenTelemetry, autoscaling and load-tested concurrent voice calls"
       ],
-      "metrics": ["500+ merged PRs", "~1,500 commits", "5.0★ client rating"],
+      "metrics": ["99.9% uptime", "500+ merged PRs", "5.0★ client rating"],
       "cover": "/covers/aivi.png",
       "links": [{ "name": "aivi.io", "url": "https://aivi.io" }],
       "images": [
@@ -363,6 +383,9 @@
       "role": "System Designer & Full-Stack Engineer",
       "client": "Svetness",
       "description": "Svetness runs in-home personal training across the US. I redesigned their legacy system and rebuilt it as a Supabase microservice backend with a Next.js front end. Then I built a unified communication layer — SMS, calls and email, with two-way sync on every channel — feeding one operational dashboard, so every client's conversation history lives in one place.",
+      "summary": "Rebuilt a legacy system as Supabase microservices and put SMS, calls and email into one dashboard.",
+      "challenge": "Svetness runs in-home personal training across the US. Their legacy system needed a redesign, and the team needed every client's conversation history in one place instead of split across SMS, calls and email.",
+      "outcome": "Delivered between December 2025 and January 2026. The team now works from one operational dashboard with each client's full history across three channels, and Svetness rated the engagement 5.0★.",
       "techStack": ["Supabase", "PostgreSQL", "Edge Functions", "Next.js", "TypeScript"],
       "date": "2025 — 2026",
       "status": "Delivered",
@@ -384,65 +407,15 @@
       ]
     },
     {
-      "title": "Aladia — Build Your Academy. Find Your Academy.",
-      "slug": "aladia",
-      "category": "EdTech · Frontend",
-      "role": "Senior Frontend Engineer",
-      "client": "Aladia",
-      "description": "Aladia is where academies are built and found: one workspace for courses, live classes, chat and community, plus a marketplace where learners find them. I led frontend engineering on Nuxt/Vue — turning Figma designs into the production workspace and integrating the AI chatbot — deployed on Google Cloud.",
-      "techStack": ["Nuxt.js", "Vue.js", "TypeScript", "AI Chatbot", "Figma", "Google Cloud"],
-      "date": "2024 — 2025",
-      "status": "Live",
-      "featured": true,
-      "highlights": [
-        "Course workspace, live classes, chat and community",
-        "Course marketplace for learners",
-        "AI chatbot integration",
-        "Figma-to-production frontend leadership"
-      ],
-      "metrics": ["5.0★ client rating", "1,285 hours", "Live at aladia.io"],
-      "cover": "/covers/aladia.jpg",
-      "links": [{ "name": "aladia.io", "url": "https://aladia.io" }],
-      "images": [
-        { "src": "/projects/aladia/corso.jpg", "alt": "Aladia course page: video lessons, chapters and course details" },
-        { "src": "/projects/aladia/marketplace.jpg", "alt": "Aladia marketplace, where learners find courses and academies" },
-        { "src": "/projects/aladia/chat.jpg", "alt": "Aladia chat inside the learning workspace" },
-        { "src": "/projects/aladia/calendario.jpg", "alt": "Aladia calendar with live classes and lessons" }
-      ]
-    },
-    {
-      "title": "Alertix AI — Amazon Listing Monitoring",
-      "slug": "alertix",
-      "category": "SaaS · AI",
-      "role": "Full-Stack Developer & AI",
-      "client": "Upwork client",
-      "description": "A SaaS platform that makes sure Amazon sellers never miss a critical listing alert — real-time monitoring, automated alerts, and instant resolutions. Tracks active alerts, issue resolution, and SKU-level suppression risk, flagging deleted, inactive, suppressed, lost-buy-box, and FBA-stockout listings before they cost the seller sales.",
-      "techStack": ["Next.js", "NestJS", "Supabase", "Vercel", "AI Agent Development"],
-      "date": "2025",
-      "status": "Delivered",
-      "featured": true,
-      "highlights": [
-        "Real-time listing monitoring with automated alerts",
-        "Suppression-risk and buy-box loss detection",
-        "AI-agent-driven issue resolution tracking"
-      ],
-      "metrics": ["5.0★ — “Would gladly rehire.”"],
-      "cover": "/covers/alertix.jpg",
-      "links": [],
-      "images": [
-        { "src": "/projects/alertix/dashboard.jpg", "alt": "Alertix dashboard: active alerts, issues resolved, SKUs monitored and alerts over time" },
-        { "src": "/projects/alertix/summary.jpg", "alt": "Alertix alert summary with suppression-risk warning" },
-        { "src": "/projects/alertix/alert-types.jpg", "alt": "Alert types Alertix watches: deleted and inactive listings, lost or suppressed buy box, FBA stockouts and more" },
-        { "src": "/projects/alertix/asins.jpg", "alt": "Alertix monitored ASINs view, with new and unresolved alerts per product" }
-      ]
-    },
-    {
       "title": "ATCOM — Real-Time Call-Center Management",
       "slug": "atcom",
       "category": "Telecom · Full-Stack",
       "role": "Full-Stack Developer",
       "client": "Canal+",
       "description": "A real-time call-center management platform built on Django and Vue.js with FreePBX/Asterisk VOIP and IVR configuration. Three role-based interfaces — operators, managers, and admins — with call-agent QA, reporting, Telegram integration for incident management, and live dashboards driven over WebSockets. Improved customer support handling by roughly 35% and gave the team a data-driven view of service performance.",
+      "summary": "A real-time call-center platform that improved customer support handling by about 35%.",
+      "challenge": "Canal+ needed a call-center management system: telephony and IVR, plus a live view of calls, queues and agents for operators, managers and admins.",
+      "outcome": "Customer support handling improved by roughly 35%, and managers got a data-driven view of service performance.",
       "techStack": ["Django", "Python", "Vue.js", "Asterisk", "PostgreSQL", "WebSockets"],
       "date": "2022 — 2024",
       "status": "Delivered",
@@ -464,12 +437,99 @@
       ]
     },
     {
+      "title": "Alertix AI — Amazon Listing Monitoring",
+      "slug": "alertix",
+      "category": "SaaS · AI",
+      "role": "Full-Stack Developer & AI",
+      "client": "Upwork client",
+      "description": "A SaaS platform that makes sure Amazon sellers never miss a critical listing alert — real-time monitoring, automated alerts, and instant resolutions. Tracks active alerts, issue resolution, and SKU-level suppression risk, flagging deleted, inactive, suppressed, lost-buy-box, and FBA-stockout listings before they cost the seller sales.",
+      "summary": "A SaaS that catches problems with Amazon listings before they cost the seller sales.",
+      "challenge": "Amazon sellers lose sales when a listing is deleted, suppressed, loses the buy box or runs out of FBA stock. The client wanted a product that catches these problems early and tracks each one until it's resolved.",
+      "outcome": "Delivered in 2025 on Next.js, NestJS and Supabase. The client rated it 5.0★ and wrote: “Would gladly rehire.”",
+      "techStack": ["Next.js", "NestJS", "Supabase", "Vercel", "AI Agent Development"],
+      "date": "2025",
+      "status": "Delivered",
+      "featured": true,
+      "highlights": [
+        "Real-time listing monitoring with automated alerts",
+        "Suppression-risk and buy-box loss detection",
+        "AI-agent-driven issue resolution tracking"
+      ],
+      "metrics": ["5.0★ — “Would gladly rehire.”"],
+      "cover": "/covers/alertix.jpg",
+      "links": [],
+      "images": [
+        { "src": "/projects/alertix/dashboard.jpg", "alt": "Alertix dashboard: active alerts, issues resolved, SKUs monitored and alerts over time" },
+        { "src": "/projects/alertix/summary.jpg", "alt": "Alertix alert summary with suppression-risk warning" },
+        { "src": "/projects/alertix/alert-types.jpg", "alt": "Alert types Alertix watches: deleted and inactive listings, lost or suppressed buy box, FBA stockouts and more" },
+        { "src": "/projects/alertix/asins.jpg", "alt": "Alertix monitored ASINs view, with new and unresolved alerts per product" }
+      ]
+    },
+    {
+      "title": "Aladia — Learning Platform Frontend",
+      "slug": "aladia",
+      "category": "EdTech · Frontend",
+      "role": "Senior Frontend Engineer",
+      "client": "Aladia",
+      "description": "Aladia is where academies are built and found: one workspace for courses, live classes, chat and community, plus a marketplace where learners find them. I led frontend engineering on Nuxt/Vue — turning Figma designs into the production workspace and integrating the AI chatbot — deployed on Google Cloud.",
+      "summary": "Led the frontend of a learning platform from Figma designs to production, AI chatbot included.",
+      "challenge": "Aladia is one workspace where academies are built and found: courses, live classes, chat and community, plus a marketplace for learners. The designs were in Figma and needed to become a production frontend.",
+      "outcome": "The platform is live at aladia.io. I put 1,285 hours into it over six months, and Aladia rated the work 5.0★.",
+      "techStack": ["Nuxt.js", "Vue.js", "TypeScript", "AI Chatbot", "Figma", "Google Cloud"],
+      "date": "2024 — 2025",
+      "status": "Live",
+      "featured": true,
+      "highlights": [
+        "Course workspace, live classes, chat and community",
+        "Course marketplace for learners",
+        "AI chatbot integration",
+        "Figma-to-production frontend leadership"
+      ],
+      "metrics": ["5.0★ client rating", "1,285 hours", "Live at aladia.io"],
+      "cover": "/covers/aladia.jpg",
+      "links": [{ "name": "aladia.io", "url": "https://aladia.io" }],
+      "images": [
+        { "src": "/projects/aladia/corso.jpg", "alt": "Aladia course page: video lessons, chapters and course details" },
+        { "src": "/projects/aladia/marketplace.jpg", "alt": "Aladia marketplace, where learners find courses and academies" },
+        { "src": "/projects/aladia/chat.jpg", "alt": "Aladia chat inside the learning workspace" },
+        { "src": "/projects/aladia/calendario.jpg", "alt": "Aladia calendar with live classes and lessons" }
+      ]
+    },
+    {
+      "title": "Google Bard → Gemini — LLM Training",
+      "slug": "gemini-llm-training",
+      "category": "AI · LLM training",
+      "role": "Expert LLM Trainer (coding domain)",
+      "client": "Google (via Turing)",
+      "description": "Six months making Google's flagship model, Bard (now Gemini), a better coder. Through Turing, I worked as a coding domain expert across C++, Rust, Python and full-stack JavaScript: ranking responses for RLHF, writing SFT examples, running side-by-side evaluations, designing rubrics and reviewing the model's code for correctness, safety and style.",
+      "summary": "Six months making Google's Bard (now Gemini) a better coder, through Turing.",
+      "challenge": "Google needed coding experts to judge and improve Bard's answers across C++, Rust, Python and full-stack JavaScript.",
+      "outcome": "Reviewers approved 85% of my tasks, and I spent 20% less time per task than peers in the department.",
+      "techStack": ["RLHF", "SFT", "LLM Evaluation", "C++", "Rust", "Python", "TypeScript"],
+      "date": "2024",
+      "status": "Delivered",
+      "featured": true,
+      "highlights": [
+        "RLHF preference ranking on coding tasks",
+        "SFT data: prompts and ideal responses",
+        "Side-by-side evaluations and rubric design",
+        "Code review of model outputs across C++, Rust, Python and full stack"
+      ],
+      "metrics": ["85% reviewer-approved tasks", "20% less time per task than peers"],
+      "cover": "/covers/llm-training.jpg",
+      "links": [],
+      "images": []
+    },
+    {
       "title": "FINN — Earned Wage Access App",
       "slug": "finn",
       "category": "Fintech · Backend & Security",
       "role": "Backend Engineer",
       "client": "EWA Services",
       "description": "FINN is an earned-wage-access and financial-health app in Thailand: employees draw on salary they've already earned before payday, with no interest or fees, and see their spending through a financial health score. I built the backend — secure authentication, accounts, payments and a transaction ledger on Node.js, TypeScript and NestJS with Firebase and GCP — and the whole KYC feature, then led security hardening that removed many vulnerabilities across the API. The client is an Angular web app shipped to mobile with Ionic.",
+      "summary": "The backend, payments ledger and the whole KYC feature for an earned-wage-access app in Thailand.",
+      "challenge": "FINN lets employees in Thailand draw on salary they've already earned before payday, with no interest or fees. An app that moves employees' money needs secure accounts, a correct ledger and identity checks.",
+      "outcome": "FINN is live at finn-app.com. I built KYC end to end, and my security pass removed many vulnerabilities across the API.",
       "techStack": ["Node.js", "TypeScript", "NestJS", "Firebase", "GCP", "Angular", "Ionic", "PostgreSQL"],
       "date": "2023",
       "status": "Live",
@@ -492,26 +552,34 @@
       ]
     },
     {
-      "title": "Google Bard → Gemini — LLM Training",
-      "slug": "gemini-llm-training",
-      "category": "AI · LLM training",
-      "role": "Expert LLM Trainer (coding domain)",
-      "client": "Google (via Turing)",
-      "description": "Six months making Google's flagship model, Bard (now Gemini), a better coder. Through Turing, I worked as a coding domain expert across C++, Rust, Python and full-stack JavaScript: ranking responses for RLHF, writing SFT examples, running side-by-side evaluations, designing rubrics and reviewing the model's code for correctness, safety and style.",
-      "techStack": ["RLHF", "SFT", "LLM Evaluation", "C++", "Rust", "Python", "TypeScript"],
-      "date": "2024",
+      "title": "HiyaScaffold — Rental Management System",
+      "slug": "hiyascaffold",
+      "category": "Web App · Operations",
+      "role": "Full-stack & DevOps engineer",
+      "client": "Hiya General Trading PLC",
+      "description": "Hiya rents scaffolding and construction materials, and ran the business on scattered Excel workbooks: agreements, delivery and return sheets, stock summaries. I wrote the requirements spec, designed the UI and built HiyaScaffold Service, one web app for items and stock, customers, transactions, proformas and rental agreements, with a live view of what's available, on loan, in maintenance or defective. Staff productivity rose by about 75% and screen time fell by half.",
+      "summary": "Replaced a rental firm's Excel workbooks with one web app. Staff productivity rose about 75%.",
+      "challenge": "Hiya rents scaffolding and construction materials, and ran the business on scattered Excel workbooks: agreements, delivery and return sheets, stock summaries.",
+      "outcome": "Staff productivity rose by about 75%, screen time fell by half, and the project came in 20% under time and budget.",
+      "techStack": ["Java", "Spring Boot", "PostgreSQL", "JavaScript", "HTML & CSS", "Heroku"],
+      "date": "2021 — 2022",
       "status": "Delivered",
-      "featured": true,
+      "featured": false,
       "highlights": [
-        "RLHF preference ranking on coding tasks",
-        "SFT data: prompts and ideal responses",
-        "Side-by-side evaluations and rubric design",
-        "Code review of model outputs across C++, Rust, Python and full stack"
+        "Requirements spec (SRS), UI design, build, deployment and documentation, end to end",
+        "Items and stock with loan prices, unit prices and area coverage",
+        "Customers, transactions, proformas and rental agreements in one place",
+        "Per-item status: available, on loan, in maintenance, defective",
+        "Worked directly with the client's accountants and sales managers"
       ],
-      "metrics": ["85% reviewer-approved tasks", "20% less time per task than peers"],
-      "cover": "/covers/llm-training.jpg",
+      "metrics": ["~75% productivity gain", "50% less screen time", "20% under time & budget"],
+      "cover": "/covers/hiya.jpg",
       "links": [],
-      "images": []
+      "images": [
+        { "src": "/projects/hiya/home.jpg", "alt": "Home: one entry point for company, items, customers, transactions, proformas and agreements" },
+        { "src": "/projects/hiya/items.jpg", "alt": "Items: every scaffolding part with loan price, unit price, stock and area coverage" },
+        { "src": "/projects/hiya/summary.jpg", "alt": "Stock summary: available, loaned, in maintenance and defective counts per item" }
+      ]
     },
     {
       "title": "Afaan Oromoo Audio-Based Sentiment Analysis",
@@ -519,6 +587,9 @@
       "category": "Research · Speech & NLP",
       "role": "Co-author · team of five",
       "description": "Our final-year BSc thesis in the AI stream: can you read sentiment straight from Afaan Oromoo speech, a low-resource language? We built a 40,000-clip audio dataset labelled negative, neutral or positive, then compared two routes: spectrogram CNNs on the raw audio, and text models (CNN with FastText, CNN with Word2Vec, BERT) on machine transcripts. Audio won: 74% test accuracy, against 61% for the best text model.",
+      "summary": "Reading sentiment straight from Afaan Oromoo speech. Audio beat text, 74% to 61%.",
+      "challenge": "Afaan Oromoo is a low-resource language with little labelled data. For our final-year thesis we asked whether sentiment can be read from the speech itself, without transcribing it first.",
+      "outcome": "The spectrogram CNN reached 74% test accuracy across three classes, against 61% for the best text model. The thesis is open access on Zenodo.",
       "techStack": ["Python", "CNN", "CNN-LSTM", "BERT", "FastText", "Word2Vec", "Fairseq", "Spectrograms & MFCC"],
       "date": "Jun 2024",
       "status": "Open access",
@@ -541,38 +612,14 @@
       ]
     },
     {
-      "title": "HiyaScaffold — Rental Management System",
-      "slug": "hiyascaffold",
-      "category": "Web App · Operations",
-      "role": "Full-stack & DevOps engineer",
-      "client": "Hiya General Trading PLC",
-      "description": "Hiya rents scaffolding and construction materials, and ran the business on scattered Excel workbooks: agreements, delivery and return sheets, stock summaries. I wrote the requirements spec, designed the UI and built HiyaScaffold Service, one web app for items and stock, customers, transactions, proformas and rental agreements, with a live view of what's available, on loan, in maintenance or defective. Staff productivity rose by about 75% and screen time fell by half.",
-      "techStack": ["Java", "Spring Boot", "PostgreSQL", "JavaScript", "HTML & CSS", "Heroku"],
-      "date": "2021 — 2022",
-      "status": "Delivered",
-      "featured": false,
-      "highlights": [
-        "Requirements spec (SRS), UI design, build, deployment and documentation, end to end",
-        "Items and stock with loan prices, unit prices and area coverage",
-        "Customers, transactions, proformas and rental agreements in one place",
-        "Per-item status: available, on loan, in maintenance, defective",
-        "Worked directly with the client's accountants and sales managers"
-      ],
-      "metrics": ["~75% productivity gain", "50% less screen time", "20% under time & budget"],
-      "cover": "/covers/hiya.jpg",
-      "links": [],
-      "images": [
-        { "src": "/projects/hiya/home.jpg", "alt": "Home: one entry point for company, items, customers, transactions, proformas and agreements" },
-        { "src": "/projects/hiya/items.jpg", "alt": "Items: every scaffolding part with loan price, unit price, stock and area coverage" },
-        { "src": "/projects/hiya/summary.jpg", "alt": "Stock summary: available, loaned, in maintenance and defective counts per item" }
-      ]
-    },
-    {
       "title": "This Portfolio — Conversational AI Site",
       "slug": "portfolio",
       "category": "AI · Web",
       "role": "Designer & Engineer",
       "description": "The site you're on, designed and built end to end. Scan it in seconds, or ask it anything about my work and it answers in my voice with structured cards. Curated answers render instantly with no model call; open questions go to a live model that can call seven tools. One config file drives the site, the AI's system prompt, the résumé PDF and the social cards, so none of them can drift.",
+      "summary": "This site: scan it in seconds, or ask it anything and it answers in my voice.",
+      "challenge": "Clients want to check an engineer before the first call, and a static page can't answer their particular question.",
+      "outcome": "Curated answers render instantly with no model call, and open questions go to a live model with seven tools. One config drives the site, the system prompt, the résumé PDF and the social cards.",
       "techStack": ["Next.js 16", "React 19", "TypeScript", "Vercel AI SDK", "Gemini", "Tailwind CSS v4", "react-pdf"],
       "date": "2026",
       "status": "Live",

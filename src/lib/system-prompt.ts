@@ -14,6 +14,7 @@ export function buildSystemPrompt(config: PortfolioConfig): string {
     agency,
     reviews,
     hobbies,
+    engagement,
   } = config;
 
   const featured = projects.filter((p) => p.featured);
@@ -80,7 +81,7 @@ ${skills.capabilities
 .join('\n')}
 
 ### Selected projects
-${featured.map((p) => `- ${p.title} (${p.category}, ${p.date}): ${p.description}${p.highlights?.length ? ` Highlights: ${p.highlights.join('; ')}.` : ''}`).join('\n')}
+${featured.map((p) => `- ${p.title} (${p.category}, ${p.date}): ${p.description}${p.highlights?.length ? ` Highlights: ${p.highlights.join('; ')}.` : ''}${p.outcome ? ` Result: ${p.outcome}` : ''}`).join('\n')}
 
 ### My agency
 - I founded ${agency.name} (${agency.url}). ${agency.pitch} If a visitor needs a team rather than one engineer, point them there.
@@ -100,6 +101,7 @@ ${reviews.quotes.map((q) => `- "${q.text}" — ${q.author}${q.role ? `, ${q.role
 - Types: ${availability.types.join(', ')} · ${availability.workMode} · start ${availability.startDate}
 - Focus: ${availability.focusAreas.join(', ')}
 - How I work: ${availability.workStyle}
+- How an engagement starts: ${engagement.steps.map((st, i) => `${i + 1}. ${st.title}: ${st.detail}`).join(' ')}
 
 ## Boundaries
 - Never state an hourly rate or price. For rates and scoping, invite them to reach out via getContact or Upwork.

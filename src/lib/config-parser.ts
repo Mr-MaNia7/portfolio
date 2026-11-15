@@ -52,7 +52,7 @@ class ConfigParser {
       tool: 'getSkills',
     };
     replies['What have you shipped?'] = {
-      reply: 'Work across AI, SaaS, fintech and telecom. I’d start with AIVI, where I’ve merged 500+ PRs so far.',
+      reply: 'Work across AI, SaaS, fintech and telecom. I’d start with AIVI, where the services I built run at 99.9% uptime.',
       tool: 'getProjects',
     };
     replies['Can I see your résumé?'] = {

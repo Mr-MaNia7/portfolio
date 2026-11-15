@@ -4,7 +4,7 @@ import Link from 'next/link';
 import { JsonLd } from '@/components/json-ld';
 import { SiteFooter, SiteHeader } from '@/components/site-chrome';
 import { getConfig } from '@/lib/config-loader';
-import { projectCover } from '@/lib/project-cover';
+import { projectCover, projectSummary } from '@/lib/project-cover';
 import { pageOpenGraph, pageTwitter, workPath } from '@/lib/site';
 import { workIndexGraph } from '@/lib/structured-data';
 
@@ -41,7 +41,7 @@ export default function WorkIndexPage() {
             </h1>
             <p className="mt-5 text-[18px] leading-relaxed text-ink-soft">
               {projects.length} projects I&apos;ve shipped as a freelance full-stack and AI engineer: AI voice agents, multi-tenant SaaS on Supabase,
-              LLM training, fintech, telecom and research. Each one lists what I built, the stack and the results.
+              LLM training, fintech, telecom and research. Each one covers the problem, what I built and what changed.
             </p>
           </header>
           <ul className="mt-12 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
@@ -67,7 +67,7 @@ export default function WorkIndexPage() {
                         <span className="num shrink-0">{p.date}</span>
                       </span>
                       <span className="font-display text-[20px] leading-[1.2] text-foreground">{p.title}</span>
-                      <span className="text-[16px] leading-relaxed text-ink-soft">{p.description.split('. ')[0]}.</span>
+                      <span className="text-[16px] leading-relaxed text-ink-soft">{projectSummary(p)}</span>
                     </span>
                   </Link>
                 </li>

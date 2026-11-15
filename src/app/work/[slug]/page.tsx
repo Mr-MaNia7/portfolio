@@ -51,7 +51,7 @@ export default async function CaseStudyPage({ params }: PageProps<'/work/[slug]'
   const cover = projectCover(project);
   const subject = project.client && !/upwork client/i.test(project.client) ? project.client : project.title.split(' — ')[0];
   const askTwin = `/?query=${encodeURIComponent(`Tell me about your ${subject} work`)}`;
-  const paragraphs = project.description.split(/\n{2,}/);
+  const paragraphs = (project.challenge ?? project.description).split(/\n{2,}/);
 
   return (
     <>
@@ -80,7 +80,10 @@ export default async function CaseStudyPage({ params }: PageProps<'/work/[slug]'
             <h1 className="mt-4 text-[clamp(34px,1rem+3vw,64px)] leading-[1.04] font-medium tracking-[-0.035em] text-foreground">
               {project.title}
             </h1>
-            <p className="mt-5 text-[18px] leading-relaxed text-ink-soft">
+            {project.summary && (
+              <p className="mt-5 text-[clamp(20px,1rem+0.5vw,24px)] leading-snug text-foreground">{project.summary}</p>
+            )}
+            <p className="mt-4 text-[17px] leading-relaxed text-muted-foreground">
               {project.role}
               {project.client && <> · for {project.client}</>}
             </p>
@@ -116,7 +119,9 @@ export default async function CaseStudyPage({ params }: PageProps<'/work/[slug]'
 
           <div className="grid-12 mt-12 lg:mt-16">
             <div className="col-span-12 lg:col-span-7">
-              <h2 className="font-display text-[26px] leading-tight text-foreground">The project</h2>
+              <h2 className="font-display text-[26px] leading-tight text-foreground">
+                {project.challenge ? 'The challenge' : 'The project'}
+              </h2>
               {paragraphs.map((p) => (
                 <p key={p.slice(0, 32)} className="mt-4 text-[18px] leading-relaxed text-ink-soft">{p}</p>
               ))}
@@ -130,6 +135,12 @@ export default async function CaseStudyPage({ params }: PageProps<'/work/[slug]'
                   </ul>
                 </>
               ) : null}
+              {project.outcome && (
+                <>
+                  <h2 className="mt-12 font-display text-[26px] leading-tight text-foreground">The result</h2>
+                  <p className="mt-4 text-[18px] leading-relaxed text-foreground">{project.outcome}</p>
+                </>
+              )}
             </div>
 
             <aside className="col-span-12 lg:col-span-4 lg:col-start-9" aria-label="Project details">
